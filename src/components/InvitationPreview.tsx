@@ -31,39 +31,51 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
   } = invitation;
 
   return (
-    <div className="space-y-8">
-      <div className="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden">
+    <div className="w-full max-w-2xl space-y-8">
+      <div className="bg-white rounded-lg shadow-xl overflow-hidden">
         <div 
-          className="h-64 bg-cover bg-center"
+          className="h-80 bg-cover bg-center relative"
           style={{
-            backgroundImage: `url("${coverPhoto || 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80'}")`
+            backgroundImage: `url("${coverPhoto || 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80'}")`,
+            backgroundRepeat: 'no-repeat'
           }}
-        />
+        >
+          <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <h1 className="text-4xl font-serif text-white text-center px-4">
+              {brideNames} & {groomNames}
+            </h1>
+          </div>
+        </div>
         
         <div className="p-8 space-y-8">
-          <div className="text-center space-y-4">
-            <h3 className="text-gray-500 text-lg" dangerouslySetInnerHTML={{ __html: openingText }} />
+          <div className="text-center space-y-6">
+            <h3 className="text-gray-600 text-lg font-serif italic" dangerouslySetInnerHTML={{ __html: openingText }} />
             
             <div className="grid grid-cols-2 gap-8">
               {bridePhoto && (
-                <div className="space-y-2">
-                  <img src={bridePhoto} alt={brideNames} className="w-32 h-32 mx-auto rounded-full object-cover" />
+                <div className="space-y-3">
+                  <div className="w-40 h-40 mx-auto rounded-full overflow-hidden ring-4 ring-pink-100">
+                    <img src={bridePhoto} alt={brideNames} className="w-full h-full object-cover" />
+                  </div>
                   <h2 className="text-2xl font-serif text-gray-800">{brideNames}</h2>
                 </div>
               )}
               {groomPhoto && (
-                <div className="space-y-2">
-                  <img src={groomPhoto} alt={groomNames} className="w-32 h-32 mx-auto rounded-full object-cover" />
+                <div className="space-y-3">
+                  <div className="w-40 h-40 mx-auto rounded-full overflow-hidden ring-4 ring-pink-100">
+                    <img src={groomPhoto} alt={groomNames} className="w-full h-full object-cover" />
+                  </div>
                   <h2 className="text-2xl font-serif text-gray-800">{groomNames}</h2>
                 </div>
               )}
             </div>
 
             <div className="flex items-center justify-center">
-              <Heart className="text-pink-500 w-8 h-8 mx-4" />
+              <Heart className="text-pink-500 w-8 h-8 mx-4 animate-pulse" />
             </div>
             
-            <p className="text-gray-600 italic" dangerouslySetInnerHTML={{ __html: invitationText }} />
+            <p className="text-gray-600 italic font-serif text-lg" dangerouslySetInnerHTML={{ __html: invitationText }} />
           </div>
 
           {/* Countdown Timer */}
@@ -143,21 +155,18 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
             </div>
           </div>
 
-          <div className="text-center">
-            <p className="text-gray-600 italic" dangerouslySetInnerHTML={{ __html: message }} />
-          </div>
-
           {gallery.length > 0 && (
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-center">Our Gallery</h3>
+            <div className="space-y-6">
+              <h3 className="text-2xl font-serif text-gray-800 text-center">Our Gallery</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {gallery.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image}
-                    alt={`Gallery ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg"
-                  />
+                  <div key={index} className="aspect-square rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <img
+                      src={image}
+                      alt={`Gallery ${index + 1}`}
+                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
                 ))}
               </div>
             </div>
@@ -165,24 +174,24 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
 
           {socialLinks && socialLinks.length > 0 && (
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-center">Social Media</h3>
+              <h3 className="text-2xl font-serif text-gray-800 text-center">Social Media</h3>
               <div className="space-y-8">
                 {socialLinks.map((link, index) => (
-                  <div key={index} className="space-y-3">
-                    <div className="space-y-1">
-                      <h4 className="font-medium text-gray-900">{link.title}</h4>
+                  <div key={index} className="space-y-3 bg-pink-50 p-6 rounded-xl">
+                    <div className="space-y-2">
+                      <h4 className="font-medium text-gray-900 text-lg">{link.title}</h4>
                       <a
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center text-pink-500 hover:text-pink-600"
+                        className="inline-flex items-center text-pink-500 hover:text-pink-600 transition-colors duration-200"
                       >
-                        <Link className="w-4 h-4 mr-1" />
+                        <Link className="w-4 h-4 mr-2" />
                         {link.platform}
                       </a>
                     </div>
                     {link.embedCode && (
-                      <div className="w-full rounded-lg overflow-hidden">
+                      <div className="w-full rounded-lg overflow-hidden shadow-lg">
                         <div
                           className="aspect-video"
                           dangerouslySetInnerHTML={{ __html: link.embedCode }}
@@ -194,16 +203,41 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
               </div>
             </div>
           )}
+
+          {bankAccounts && bankAccounts.length > 0 && (
+            <div className="space-y-6">
+              <div className="text-center space-y-2">
+                <div className="inline-flex items-center justify-center space-x-2">
+                  <Gift className="w-6 h-6 text-pink-500" />
+                  <h3 className="text-2xl font-serif text-gray-800">Wedding Gift</h3>
+                </div>
+                <p className="text-gray-600 italic">Your prayers and presence are our greatest gifts. However, if you wish to give a gift, you may send it through:</p>
+              </div>
+              <div className="grid gap-4">
+                {bankAccounts.map((account, index) => (
+                  <div key={index} className="bg-pink-50 p-6 rounded-xl space-y-2">
+                    <h4 className="font-medium text-gray-900">{account.bankName}</h4>
+                    <p className="text-gray-700">{account.accountNumber}</p>
+                    <p className="text-gray-600">{account.accountName}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="text-center space-y-4">
+            <p className="text-gray-600 italic font-serif text-lg" dangerouslySetInnerHTML={{ __html: message }} />
+            <div className="pt-4">
+              <p className="text-sm text-gray-500">Made with ❤️ by WeddingGas</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {id && (
-        <>
+        <div className="bg-white rounded-lg shadow-xl p-8">
           <Comments invitationId={id} />
-          {bankAccounts && bankAccounts.length > 0 && (
-            <GiftSection bankAccounts={bankAccounts} />
-          )}
-        </>
+        </div>
       )}
     </div>
   );
