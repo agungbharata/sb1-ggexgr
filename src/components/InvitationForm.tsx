@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Save, Link } from 'lucide-react';
+import { Calendar, Clock, MapPin, Save, Link, Plus, Minus } from 'lucide-react';
 import type { InvitationData } from '../types';
 import ImageUpload from './ImageUpload';
 import GalleryUpload from './GalleryUpload';
@@ -338,16 +338,29 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       />
 
       {/* Media Sosial */}
-      <div>
-        <button
-          type="button"
-          onClick={() => setShowSocialLinks(!showSocialLinks)}
-          className="font-medium text-pink-600 hover:text-pink-700"
-        >
-          {showSocialLinks ? 'Sembunyikan Media Sosial' : 'Tambah Media Sosial'}
-        </button>
+      <div className="space-y-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-700">Media Sosial</h3>
+          <button
+            type="button"
+            onClick={() => setShowSocialLinks(!showSocialLinks)}
+            className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-pink-600 hover:text-pink-700 bg-white rounded-md border border-pink-200 hover:bg-pink-50 transition-colors duration-200"
+          >
+            {showSocialLinks ? (
+              <>
+                <Minus className="mr-1.5 w-4 h-4" />
+                Sembunyikan
+              </>
+            ) : (
+              <>
+                <Plus className="mr-1.5 w-4 h-4" />
+                Tambah Media Sosial
+              </>
+            )}
+          </button>
+        </div>
         {showSocialLinks && (
-          <div className="mt-4">
+          <div className="pt-2">
             <SocialLinks
               links={formData.socialLinks || []}
               onChange={(socialLinks) => setFormData(prev => ({ ...prev, socialLinks }))}
@@ -357,16 +370,29 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       </div>
 
       {/* Rekening */}
-      <div>
-        <button
-          type="button"
-          onClick={() => setShowBankAccounts(!showBankAccounts)}
-          className="font-medium text-pink-600 hover:text-pink-700"
-        >
-          {showBankAccounts ? 'Sembunyikan Rekening' : 'Tambah Rekening'}
-        </button>
+      <div className="space-y-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-gray-700">Rekening Bank</h3>
+          <button
+            type="button"
+            onClick={() => setShowBankAccounts(!showBankAccounts)}
+            className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-pink-600 hover:text-pink-700 bg-white rounded-md border border-pink-200 hover:bg-pink-50 transition-colors duration-200"
+          >
+            {showBankAccounts ? (
+              <>
+                <Minus className="mr-1.5 w-4 h-4" />
+                Sembunyikan
+              </>
+            ) : (
+              <>
+                <Plus className="mr-1.5 w-4 h-4" />
+                Tambah Rekening
+              </>
+            )}
+          </button>
+        </div>
         {showBankAccounts && (
-          <div className="mt-4">
+          <div className="pt-2">
             <BankAccounts
               accounts={formData.bankAccounts || []}
               onChange={(bankAccounts) => setFormData(prev => ({ ...prev, bankAccounts }))}
