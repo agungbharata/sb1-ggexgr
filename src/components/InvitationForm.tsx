@@ -22,8 +22,8 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
 }) => {
   const [formData, setFormData] = useState<InvitationData>({
     ...initialData,
-    openingText: initialData.openingText || 'Together with their families',
-    invitationText: initialData.invitationText || 'Request the pleasure of your company',
+    openingText: initialData.openingText || 'Bersama keluarga mereka',
+    invitationText: initialData.invitationText || 'Mengundang kehadiran Anda',
   });
   const [isSaving, setIsSaving] = useState(false);
   const [savedUrl, setSavedUrl] = useState<string>('');
@@ -48,7 +48,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     setCustomSlug(newSlug);
 
     if (newSlug && !isSlugUnique(newSlug) && newSlug !== initialData.customSlug) {
-      setSlugError('This URL is already taken. Please choose another.');
+      setSlugError('URL ini sudah digunakan. Silakan pilih yang lain.');
     } else {
       setSlugError('');
     }
@@ -89,7 +89,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     e.preventDefault();
 
     if (slugError) {
-      alert('Please fix the URL error before saving.');
+      alert('Silakan perbaiki kesalahan URL sebelum menyimpan.');
       return;
     }
 
@@ -123,7 +123,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     setSavedUrl(invitationUrl);
 
     // Show success message
-    alert(isEditing ? 'Invitation updated successfully!' : 'Invitation created successfully!');
+    alert(isEditing ? 'Undangan berhasil diperbarui!' : 'Undangan berhasil disimpan!');
 
     // Reset form if not editing
     if (!isEditing) {
@@ -134,8 +134,8 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         time: '',
         venue: '',
         message: '',
-        openingText: 'Together with their families',
-        invitationText: 'Request the pleasure of your company',
+        openingText: 'Bersama keluarga mereka',
+        invitationText: 'Mengundang kehadiran Anda',
       });
       setCustomSlug('');
     }
@@ -145,130 +145,83 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-6">
       {savedUrl && (
         <div className="mb-6">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Share your invitation:</h3>
+          <h3 className="mb-2 text-sm font-medium text-gray-700">Bagikan undangan Anda:</h3>
           <CopyLinkButton url={savedUrl} />
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Foto Sampul */}
+      <ImageUpload
+        label="Foto Sampul"
+        value={formData.coverPhoto}
+        onChange={(base64) => {
+          setFormData(prev => ({ ...prev, coverPhoto: base64 }));
+        }}
+        onClear={() => {
+          setFormData(prev => ({ ...prev, coverPhoto: undefined }));
+        }}
+      />
+
+      {/* Foto Mempelai */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <ImageUpload
-          label="Bride's Photo"
+          label="Foto Mempelai Wanita"
           value={formData.bridePhoto}
           onChange={(base64) => {
-            const newData = { ...formData, bridePhoto: base64 };
-            setFormData(newData);
-            onUpdate(newData);
+            setFormData(prev => ({ ...prev, bridePhoto: base64 }));
           }}
           onClear={() => {
-            const newData = { ...formData, bridePhoto: undefined };
-            setFormData(newData);
-            onUpdate(newData);
+            setFormData(prev => ({ ...prev, bridePhoto: undefined }));
           }}
         />
         <ImageUpload
-          label="Groom's Photo"
+          label="Foto Mempelai Pria"
           value={formData.groomPhoto}
           onChange={(base64) => {
-            const newData = { ...formData, groomPhoto: base64 };
-            setFormData(newData);
-            onUpdate(newData);
+            setFormData(prev => ({ ...prev, groomPhoto: base64 }));
           }}
           onClear={() => {
-            const newData = { ...formData, groomPhoto: undefined };
-            setFormData(newData);
-            onUpdate(newData);
+            setFormData(prev => ({ ...prev, groomPhoto: undefined }));
           }}
         />
       </div>
 
-      <ImageUpload
-        label="Cover Photo"
-        value={formData.coverPhoto}
-        onChange={(base64) => {
-          const newData = { ...formData, coverPhoto: base64 };
-          setFormData(newData);
-          onUpdate(newData);
-        }}
-        onClear={() => {
-          const newData = { ...formData, coverPhoto: undefined };
-          setFormData(newData);
-          onUpdate(newData);
-        }}
-      />
-
-      <RichTextEditor
-        label="Opening Text"
-        value={formData.openingText}
-        onChange={(value) => {
-          const newData = { ...formData, openingText: value };
-          setFormData(newData);
-          onUpdate(newData);
-        }}
-        height={150}
-      />
-
-      <RichTextEditor
-        label="Invitation Text"
-        value={formData.invitationText}
-        onChange={(value) => {
-          const newData = { ...formData, invitationText: value };
-          setFormData(newData);
-          onUpdate(newData);
-        }}
-        height={150}
-      />
-
-      <GalleryUpload
-        images={formData.gallery || []}
-        onChange={(images) => {
-          const newData = { ...formData, gallery: images };
-          setFormData(newData);
-          onUpdate(newData);
-        }}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Bride's Names</label>
+      {/* Nama Lengkap */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <input
             type="text"
             name="brideNames"
             value={formData.brideNames}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            placeholder="Enter bride's names"
-            required
+            placeholder="Nama Mempelai Wanita"
+            className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
           />
-        </div>
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">Groom's Names</label>
           <input
             type="text"
             name="groomNames"
             value={formData.groomNames}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            placeholder="Enter groom's names"
-            required
+            placeholder="Nama Mempelai Pria"
+            className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
           />
         </div>
       </div>
 
+      {/* Tautan Khusus */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-sm font-medium text-gray-700">
-            <Link className="inline-block w-4 h-4 mr-2" />
-            Custom URL
-          </label>
+        <label className="block text-sm font-medium text-gray-700">
+          <Link className="inline-block mr-2 w-4 h-4" />
+          Tautan Khusus
+        </label>
+        <div className="flex items-center space-x-2">
           <button
             type="button"
             onClick={() => setCustomSlug('')}
-            className="inline-flex items-center text-sm text-pink-600 hover:text-pink-700"
+            className="px-4 py-2 text-sm text-gray-600 rounded-md border border-gray-300 hover:text-gray-700 hover:bg-gray-50"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 9l-7 7-7-7"/>
-            </svg>
-            Reset
+            Atur Ulang
           </button>
         </div>
         <div className="space-y-1">
@@ -289,176 +242,156 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           )}
           {!customSlug && (
             <p className="text-sm text-gray-500">
-              Leave empty to use the default URL based on names
+              Biarkan kosong untuk menggunakan URL default berdasarkan nama
             </p>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Teks Pembuka */}
+      <div className="space-y-2">
+        <RichTextEditor
+          label="Teks Pembuka"
+          value={formData.openingText}
+          onChange={(value) => handleInputChange('openingText', value)}
+          height={150}
+        />
+      </div>
+
+      {/* Teks Undangan */}
+      <div className="space-y-2">
+        <RichTextEditor
+          label="Teks Undangan"
+          value={formData.invitationText}
+          onChange={(value) => handleInputChange('invitationText', value)}
+          height={150}
+        />
+      </div>
+
+      {/* Tanggal dan Waktu Pernikahan */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            <Calendar className="inline-block w-4 h-4 mr-2" />
-            Wedding Date
+            <Calendar className="inline-block mr-2 w-4 h-4" />
+            Tanggal Pernikahan
           </label>
           <input
             type="date"
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            required
+            className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
           />
         </div>
+
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
-            <Clock className="inline-block w-4 h-4 mr-2" />
-            Wedding Time
+            <Clock className="inline-block mr-2 w-4 h-4" />
+            Waktu Akad/Resepsi
           </label>
           <input
             type="time"
             name="time"
             value={formData.time}
             onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            required
+            className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
           />
         </div>
       </div>
 
+      {/* Lokasi Acara */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          <MapPin className="inline-block w-4 h-4 mr-2" />
-          Venue
+          <MapPin className="inline-block mr-2 w-4 h-4" />
+          Lokasi Acara
         </label>
         <input
           type="text"
           name="venue"
           value={formData.venue}
           onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-          placeholder="Enter wedding venue"
-          required
+          placeholder="Masukkan lokasi acara pernikahan"
+          className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
         />
       </div>
 
+      {/* Tautan Google Maps */}
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          <Link className="inline-block w-4 h-4 mr-2" />
-          Google Maps Link
+          <MapPin className="inline-block mr-2 w-4 h-4" />
+          Tautan Google Maps
         </label>
         <input
-          type="url"
-          name="googleMapsUrl"
+          type="text"
           value={formData.googleMapsUrl || ''}
           onChange={handleGoogleMapsChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-          placeholder="Paste Google Maps short link (g.co/...)"
-        />
-        {formData.googleMapsEmbed && (
-          <div className="mt-4 border border-gray-200 rounded-lg p-4">
-            <div className="text-sm text-gray-500 mb-2">Location Preview:</div>
-            <div className="aspect-video w-full rounded-lg overflow-hidden">
-              <iframe
-                src={formData.googleMapsEmbed}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Wedding Venue Location"
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Personal Message</label>
-        <RichTextEditor
-          value={formData.message || ''}
-          onChange={(value) => handleChange({ target: { name: 'message', value } })}
+          placeholder="Tempel tautan Google Maps (g.co/...)"
+          className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
         />
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-sm font-medium text-gray-700">Social Media Links</label>
-          <button
-            type="button"
-            onClick={() => setShowSocialLinks(!showSocialLinks)}
-            className="inline-flex items-center text-sm text-pink-600 hover:text-pink-700"
-          >
-            {showSocialLinks ? (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 9l-7 7-7-7"/>
-                </svg>
-                Hide Links
-              </>
-            ) : (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 5l7 7-7 7"/>
-                </svg>
-                Show Links
-              </>
-            )}
-          </button>
-        </div>
+      {/* Galeri Foto */}
+      <GalleryUpload
+        images={formData.gallery || []}
+        onChange={(gallery) => setFormData(prev => ({ ...prev, gallery }))}
+        label="Galeri Foto"
+      />
+
+      {/* Media Sosial */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setShowSocialLinks(!showSocialLinks)}
+          className="font-medium text-pink-600 hover:text-pink-700"
+        >
+          {showSocialLinks ? 'Sembunyikan Media Sosial' : 'Tambah Media Sosial'}
+        </button>
         {showSocialLinks && (
-          <div className="mt-1 p-4 bg-white border border-gray-300 rounded-md shadow-sm">
+          <div className="mt-4">
             <SocialLinks
               links={formData.socialLinks || []}
-              onChange={(links) => handleChange({ target: { name: 'socialLinks', value: links } } as any)}
+              onChange={(socialLinks) => setFormData(prev => ({ ...prev, socialLinks }))}
             />
           </div>
         )}
       </div>
 
-      <div className="space-y-2">
-        <div className="flex items-center justify-between">
-          <label className="block text-sm font-medium text-gray-700">Digital Gifts</label>
-          <button
-            type="button"
-            onClick={() => setShowBankAccounts(!showBankAccounts)}
-            className="inline-flex items-center text-sm text-pink-600 hover:text-pink-700"
-          >
-            {showBankAccounts ? (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 9l-7 7-7-7"/>
-                </svg>
-                Hide Accounts
-              </>
-            ) : (
-              <>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 5l7 7-7 7"/>
-                </svg>
-                Show Accounts
-              </>
-            )}
-          </button>
-        </div>
+      {/* Rekening */}
+      <div>
+        <button
+          type="button"
+          onClick={() => setShowBankAccounts(!showBankAccounts)}
+          className="font-medium text-pink-600 hover:text-pink-700"
+        >
+          {showBankAccounts ? 'Sembunyikan Rekening' : 'Tambah Rekening'}
+        </button>
         {showBankAccounts && (
-          <div className="mt-1 p-4 bg-white border border-gray-300 rounded-md shadow-sm">
+          <div className="mt-4">
             <BankAccounts
               accounts={formData.bankAccounts || []}
-              onChange={(accounts) => handleChange({ target: { name: 'bankAccounts', value: accounts } } as any)}
+              onChange={(bankAccounts) => setFormData(prev => ({ ...prev, bankAccounts }))}
             />
           </div>
         )}
+      </div>
+
+      {/* Pesan Pribadi */}
+      <div className="space-y-2">
+        <RichTextEditor
+          label="Pesan Pribadi"
+          value={formData.message}
+          onChange={(value) => handleInputChange('message', value)}
+          height={200}
+        />
       </div>
 
       <button
         type="submit"
         disabled={isSaving}
-        className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex justify-center items-center px-6 py-3 w-full text-base font-medium text-white bg-gradient-to-r from-pink-500 to-rose-500 rounded-md border border-transparent hover:from-pink-600 hover:to-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Save className="w-5 h-5 mr-2" />
-        {isSaving ? 'Saving...' : isEditing ? 'Update Invitation' : 'Save Invitation'}
+        <Save className="mr-2 w-5 h-5" />
+        {isSaving ? 'Menyimpan...' : isEditing ? 'Perbarui Undangan' : 'Simpan Undangan'}
       </button>
     </form>
   );
