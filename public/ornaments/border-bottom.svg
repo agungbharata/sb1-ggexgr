@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="100" viewBox="0 0 500 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Center Ornament -->
+  <g transform="translate(250, 50)">
+    <path d="M0,30 C10,30 20,20 20,10 C20,0 10,-10 0,-10 C-10,-10 -20,0 -20,10 C-20,20 -10,30 0,30" 
+          fill="#FFB6C1" fill-opacity="0.6"/>
+    <circle cx="0" cy="0" r="5" fill="#FFB6C1"/>
+  </g>
+  
+  <!-- Left Side -->
+  <g transform="translate(200, 50)">
+    <path d="M0,0 C-20,0 -40,10 -50,30 C-60,50 -60,70 -50,90 S-20,110 0,110" 
+          stroke="#FFB6C1" stroke-width="2" fill="none"/>
+    <path d="M-30,40 C-40,50 -45,60 -45,70 C-45,80 -40,90 -30,95" 
+          stroke="#FFB6C1" stroke-width="1.5" fill="none"/>
+  </g>
+  
+  <!-- Right Side -->
+  <g transform="translate(300, 50)">
+    <path d="M0,0 C20,0 40,10 50,30 C60,50 60,70 50,90 S20,110 0,110" 
+          stroke="#FFB6C1" stroke-width="2" fill="none"/>
+    <path d="M30,40 C40,50 45,60 45,70 C45,80 40,90 30,95" 
+          stroke="#FFB6C1" stroke-width="1.5" fill="none"/>
+  </g>
+  
+  <!-- Decorative Flowers -->
+  <g transform="translate(150, 70)">
+    <circle cx="0" cy="0" r="3" fill="#FFB6C1" fill-opacity="0.8"/>
+    <circle cx="5" cy="-5" r="2" fill="#FFB6C1" fill-opacity="0.6"/>
+    <circle cx="-5" cy="-5" r="2" fill="#FFB6C1" fill-opacity="0.6"/>
+  </g>
+  <g transform="translate(350, 70)">
+    <circle cx="0" cy="0" r="3" fill="#FFB6C1" fill-opacity="0.8"/>
+    <circle cx="5" cy="-5" r="2" fill="#FFB6C1" fill-opacity="0.6"/>
+    <circle cx="-5" cy="-5" r="2" fill="#FFB6C1" fill-opacity="0.6"/>
+  </g>
+</svg>

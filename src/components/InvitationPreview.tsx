@@ -214,7 +214,7 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
           <div className="text-center space-y-4">
             <p className="text-gray-600 italic font-serif text-lg" dangerouslySetInnerHTML={{ __html: message }} />
             <div className="pt-4">
-              <p className="text-sm text-gray-500">Made with ❤️ by WeddingGas</p>
+              <p className="text-sm text-gray-500">Made with ❤️ by Walimah.Me</p>
             </div>
           </div>
         </div>

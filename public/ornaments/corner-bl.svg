@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main Swirl -->
+  <path d="M0 200C20 200 40 190 50 170C60 150 60 130 50 110C40 90 20 80 0 80"
+        stroke="#FFB6C1" stroke-width="2" fill="none"/>
+  
+  <!-- Secondary Swirls -->
+  <path d="M20 200C30 190 35 180 35 170C35 160 30 150 20 145"
+        stroke="#FFB6C1" stroke-width="1.5" fill="none"/>
+  <path d="M0 160C10 160 20 155 25 145C30 135 30 125 25 115"
+        stroke="#FFB6C1" stroke-width="1.5" fill="none"/>
+  
+  <!-- Decorative Dots -->
+  <circle cx="45" cy="168" r="3" fill="#FFB6C1"/>
+  <circle cx="25" cy="148" r="2" fill="#FFB6C1"/>
+  <circle cx="10" cy="128" r="2" fill="#FFB6C1"/>
+  
+  <!-- Leaves -->
+  <path d="M40 190C45 185 47 180 45 175C43 170 38 168 33 170"
+        stroke="#90EE90" stroke-width="1.5" fill="none"/>
+  <path d="M15 165C20 160 22 155 20 150C18 145 13 143 8 145"
+        stroke="#90EE90" stroke-width="1.5" fill="none"/>
+  
+  <!-- Small Flowers -->
+  <circle cx="37" cy="182" r="3" fill="#FFB6C1" fill-opacity="0.6"/>
+  <circle cx="12" cy="157" r="2" fill="#FFB6C1" fill-opacity="0.6"/>
+  <circle cx="27" cy="137" r="2" fill="#FFB6C1" fill-opacity="0.6"/>
+</svg>

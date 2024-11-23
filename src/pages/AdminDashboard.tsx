@@ -38,7 +38,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <Heart className="w-6 h-6 text-pink-500 mr-2" />
-              <h1 className="text-2xl font-semibold text-gray-900">Wedding Invitation Builder</h1>
+              <h1 className="text-2xl font-semibold text-gray-900">Walimah.Me</h1>
             </div>
             <div className="flex space-x-4">
               <button

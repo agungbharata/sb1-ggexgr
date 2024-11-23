@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- First Ring -->
+  <circle cx="35" cy="50" r="20" stroke="#FFB6C1" stroke-width="4"/>
+  <circle cx="35" cy="50" r="16" stroke="#FFB6C1" stroke-width="2"/>
+  
+  <!-- Second Ring -->
+  <circle cx="65" cy="50" r="20" stroke="#FFB6C1" stroke-width="4"/>
+  <circle cx="65" cy="50" r="16" stroke="#FFB6C1" stroke-width="2"/>
+  
+  <!-- Diamonds -->
+  <path d="M35 34L39 30L43 34L39 38L35 34Z" fill="#FFB6C1"/>
+  <path d="M65 34L69 30L73 34L69 38L65 34Z" fill="#FFB6C1"/>
+</svg>

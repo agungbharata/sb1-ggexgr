@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gift, Copy, Check } from 'lucide-react';
+import { Gift, Copy, Check, Building2 } from 'lucide-react';
 import type { BankAccount } from '../types';
 
 interface GiftSectionProps {
@@ -36,15 +36,8 @@ export default function GiftSection({ bankAccounts }: GiftSectionProps) {
         {bankAccounts.map((account, index) => (
           <div key={index} className="bg-pink-50 p-4 rounded-xl flex items-center justify-between hover:shadow-md transition-all duration-200">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 flex items-center justify-center bg-white rounded-lg p-2">
-                <img
-                  src={`/bank-logos/${account.bank.toLowerCase()}.png`}
-                  alt={account.bank}
-                  className="w-full h-full object-contain"
-                  onError={(e) => {
-                    e.currentTarget.src = '/bank-logos/default.png';
-                  }}
-                />
+              <div className="w-12 h-12 flex items-center justify-center bg-white rounded-lg">
+                <Building2 className="w-6 h-6 text-pink-500" />
               </div>
               <div>
                 <p className="font-medium text-gray-900">{account.bank}</p>
