@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Trash2, Eye, Calendar, Link } from 'lucide-react';
+import { Trash2, Eye, Calendar, Link, Edit2 } from 'lucide-react';
 import type { InvitationData } from '../types';
 import InvitationPreview from './InvitationPreview';
 import CopyLinkButton from './CopyLinkButton';
 import { generateSlug } from '../utils/slug';
 
-export default function AdminPanel() {
+interface AdminPanelProps {
+  onEdit: (invitation: InvitationData) => void;
+}
+
+export default function AdminPanel({ onEdit }: AdminPanelProps) {
   const [invitations, setInvitations] = useState<InvitationData[]>([]);
   const [selectedInvitation, setSelectedInvitation] = useState<InvitationData | null>(null);
 
@@ -26,7 +30,7 @@ export default function AdminPanel() {
   };
 
   const getInvitationUrl = (invitation: InvitationData): string => {
-    const slug = generateSlug(invitation.brideNames, invitation.groomNames);
+    const slug = invitation.customSlug || generateSlug(invitation.brideNames, invitation.groomNames);
     return `${window.location.origin}/${slug}`;
   };
 
@@ -53,29 +57,42 @@ export default function AdminPanel() {
                         <Calendar className="w-4 h-4 mr-1" />
                         {new Date(invitation.date).toLocaleDateString()}
                       </div>
+                      <div className="flex items-center text-sm text-gray-500">
+                        <Link className="w-4 h-4 mr-1" />
+                        {invitation.customSlug ? (
+                          <span className="text-pink-600">{invitation.customSlug}</span>
+                        ) : (
+                          <span>{generateSlug(invitation.brideNames, invitation.groomNames)}</span>
+                        )}
+                      </div>
                     </div>
                     <div className="flex space-x-2">
                       <button
                         onClick={() => setSelectedInvitation(invitation)}
-                        className="p-2 text-gray-500 hover:text-pink-500 transition-colors"
+                        className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
                         title="Preview"
                       >
                         <Eye className="w-5 h-5" />
                       </button>
                       <button
+                        onClick={() => onEdit(invitation)}
+                        className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
+                        title="Edit"
+                      >
+                        <Edit2 className="w-5 h-5" />
+                      </button>
+                      <button
                         onClick={() => handleDelete(invitation.id!)}
-                        className="p-2 text-gray-500 hover:text-red-500 transition-colors"
+                        className="p-2 text-gray-500 hover:text-red-600 transition-colors"
                         title="Delete"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
                     </div>
                   </div>
-                  
-                  <div className="pt-2 border-t border-gray-100">
-                    <div className="flex items-center space-x-2 text-sm">
-                      <Link className="w-4 h-4 text-pink-500" />
-                      <span className="text-gray-600">Invitation Link:</span>
+                  <div className="flex justify-between items-center">
+                    <div className="text-sm text-gray-500">
+                      {invitation.venue}
                     </div>
                     <CopyLinkButton url={getInvitationUrl(invitation)} />
                   </div>
@@ -86,18 +103,11 @@ export default function AdminPanel() {
         </div>
       </div>
       
-      <div className="space-y-6">
-        <div className="sticky top-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Preview</h2>
-          {selectedInvitation ? (
-            <InvitationPreview {...selectedInvitation} />
-          ) : (
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center text-gray-500">
-              Select an invitation to preview
-            </div>
-          )}
+      {selectedInvitation && (
+        <div className="lg:sticky lg:top-6">
+          <InvitationPreview invitation={selectedInvitation} />
         </div>
-      </div>
+      )}
     </div>
   );
 }

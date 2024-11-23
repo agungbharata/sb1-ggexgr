@@ -3,28 +3,33 @@ import { Calendar, Clock, MapPin, Heart, Gift, Link } from 'lucide-react';
 import type { InvitationData } from '../types';
 import Comments from './Comments';
 import GiftSection from './GiftSection';
+import CountdownTimer from './CountdownTimer';
 
-interface PreviewProps extends Partial<InvitationData> {}
+interface PreviewProps {
+  invitation: InvitationData;
+}
 
-export default function InvitationPreview({
-  id,
-  brideNames = "Bride's Name",
-  groomNames = "Groom's Name",
-  date = "2024-12-31",
-  time = "18:00",
-  venue = "Wedding Venue",
-  message = "We invite you to share in our joy...",
-  openingText = "Together with their families",
-  invitationText = "Request the pleasure of your company",
-  bridePhoto,
-  groomPhoto,
-  coverPhoto,
-  gallery = [],
-  bankAccounts = [],
-  googleMapsUrl,
-  googleMapsEmbed,
-  socialLinks = []
-}: PreviewProps) {
+export default function InvitationPreview({ invitation }: PreviewProps) {
+  const {
+    id,
+    brideNames = "Bride's Name",
+    groomNames = "Groom's Name",
+    date = "2024-12-31",
+    time = "18:00",
+    venue = "Wedding Venue",
+    message = "We invite you to share in our joy...",
+    openingText = "Together with their families",
+    invitationText = "Request the pleasure of your company",
+    bridePhoto,
+    groomPhoto,
+    coverPhoto,
+    gallery = [],
+    bankAccounts = [],
+    googleMapsUrl,
+    googleMapsEmbed,
+    socialLinks = []
+  } = invitation;
+
   return (
     <div className="space-y-8">
       <div className="w-full max-w-2xl bg-white rounded-lg shadow-xl overflow-hidden">
@@ -61,38 +66,68 @@ export default function InvitationPreview({
             <p className="text-gray-600 italic" dangerouslySetInnerHTML={{ __html: invitationText }} />
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3 text-gray-700">
-              <Calendar className="w-5 h-5 text-pink-500" />
-              <span>{new Date(date).toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}</span>
-            </div>
-            <div className="flex items-center space-x-3 text-gray-700">
-              <Clock className="w-5 h-5 text-pink-500" />
-              <span>{time}</span>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-3 text-gray-700">
-                <MapPin className="w-5 h-5 text-pink-500" />
-                <span>{venue}</span>
+          {/* Countdown Timer */}
+          <div className="my-8">
+            <CountdownTimer weddingDate={date} weddingTime={time} />
+          </div>
+
+          {/* Date and Time Cards - 2 columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            {/* Wedding Date Card */}
+            <div className="bg-pink-50 rounded-xl p-6 text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              <div className="flex flex-col items-center space-y-3">
+                <div className="bg-white p-3 rounded-full">
+                  <Calendar className="w-6 h-6 text-pink-500" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-medium text-gray-900">Wedding Date</h3>
+                  <p className="text-gray-600">{new Date(date).toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}</p>
+                </div>
               </div>
-              {googleMapsUrl && (
-                <a
-                  href={googleMapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center text-sm text-pink-500 hover:text-pink-600 ml-8"
-                >
-                  <Link className="w-4 h-4 mr-1" />
-                  View on Google Maps
-                </a>
-              )}
+            </div>
+
+            {/* Wedding Time Card */}
+            <div className="bg-pink-50 rounded-xl p-6 text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+              <div className="flex flex-col items-center space-y-3">
+                <div className="bg-white p-3 rounded-full">
+                  <Clock className="w-6 h-6 text-pink-500" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-medium text-gray-900">Wedding Time</h3>
+                  <p className="text-gray-600">{time} WIB</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Venue Card - Full width */}
+          <div className="bg-pink-50 rounded-xl p-6 transform transition-all duration-300 hover:shadow-lg">
+            <div className="flex flex-col items-center space-y-4">
+              <div className="bg-white p-3 rounded-full">
+                <MapPin className="w-6 h-6 text-pink-500" />
+              </div>
+              <div className="text-center space-y-2">
+                <h3 className="font-medium text-gray-900">Venue</h3>
+                <p className="text-gray-600">{venue}</p>
+                {googleMapsUrl && (
+                  <a
+                    href={googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center text-sm text-pink-500 hover:text-pink-600 mt-2"
+                  >
+                    <Link className="w-4 h-4 mr-1" />
+                    View on Google Maps
+                  </a>
+                )}
+              </div>
               {googleMapsEmbed && (
-                <div className="mt-4 aspect-video w-full rounded-lg overflow-hidden">
+                <div className="w-full mt-4 aspect-video rounded-lg overflow-hidden shadow-lg">
                   <iframe
                     src={googleMapsEmbed}
                     width="100%"
@@ -109,7 +144,7 @@ export default function InvitationPreview({
           </div>
 
           <div className="text-center">
-            <p className="text-gray-600 italic">{message}</p>
+            <p className="text-gray-600 italic" dangerouslySetInnerHTML={{ __html: message }} />
           </div>
 
           {gallery.length > 0 && (
@@ -128,7 +163,7 @@ export default function InvitationPreview({
             </div>
           )}
 
-          {socialLinks.length > 0 && (
+          {socialLinks && socialLinks.length > 0 && (
             <div className="space-y-6">
               <h3 className="text-xl font-semibold text-center">Social Media</h3>
               <div className="space-y-8">
@@ -165,8 +200,8 @@ export default function InvitationPreview({
       {id && (
         <>
           <Comments invitationId={id} />
-          {bankAccounts.length > 0 && (
-            <GiftSection invitationId={id} bankAccounts={bankAccounts} />
+          {bankAccounts && bankAccounts.length > 0 && (
+            <GiftSection bankAccounts={bankAccounts} />
           )}
         </>
       )}

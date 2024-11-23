@@ -13,8 +13,11 @@ export default function InvitationPage() {
     const loadInvitation = () => {
       const savedInvitations: InvitationData[] = JSON.parse(localStorage.getItem('invitations') || '[]');
       const foundInvitation = savedInvitations.find(inv => {
-        const slug = generateSlug(inv.brideNames, inv.groomNames);
-        return slug === invitationSlug;
+        if (inv.customSlug) {
+          return inv.customSlug === invitationSlug;
+        }
+        const defaultSlug = generateSlug(inv.brideNames, inv.groomNames);
+        return defaultSlug === invitationSlug;
       });
       
       setInvitation(foundInvitation || null);
@@ -35,10 +38,7 @@ export default function InvitationPage() {
   if (!invitation) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Invitation Not Found</h1>
-          <p className="text-gray-600">The invitation you're looking for doesn't exist.</p>
-        </div>
+        <div className="text-pink-500">Invitation not found</div>
       </div>
     );
   }
@@ -46,7 +46,7 @@ export default function InvitationPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-50 py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        <InvitationPreview {...invitation} />
+        <InvitationPreview invitation={invitation} />
       </div>
     </div>
   );

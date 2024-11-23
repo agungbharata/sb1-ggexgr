@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Save, Link } from 'lucide-react';
 import type { InvitationData } from '../types';
 import ImageUpload from './ImageUpload';
@@ -6,27 +6,58 @@ import GalleryUpload from './GalleryUpload';
 import BankAccounts from './BankAccounts';
 import SocialLinks from './SocialLinks';
 import RichTextEditor from './RichTextEditor';
-import { generateSlug } from '../utils/slug';
+import { generateSlug, isSlugUnique, sanitizeSlug } from '../utils/slug';
 import CopyLinkButton from './CopyLinkButton';
 
-interface FormProps {
+interface InvitationFormProps {
   onUpdate: (data: InvitationData) => void;
   initialData: InvitationData;
+  isEditing?: boolean;
 }
 
-export default function InvitationForm({ onUpdate, initialData }: FormProps) {
+const InvitationForm: React.FC<InvitationFormProps> = ({
+  onUpdate,
+  initialData,
+  isEditing = false,
+}) => {
   const [formData, setFormData] = useState<InvitationData>({
     ...initialData,
     openingText: initialData.openingText || 'Together with their families',
-    invitationText: initialData.invitationText || 'Request the pleasure of your company'
+    invitationText: initialData.invitationText || 'Request the pleasure of your company',
   });
   const [isSaving, setIsSaving] = useState(false);
   const [savedUrl, setSavedUrl] = useState<string>('');
+  const [customSlug, setCustomSlug] = useState(initialData.customSlug || '');
+  const [slugError, setSlugError] = useState('');
+  const [showSocialLinks, setShowSocialLinks] = useState(false);
+  const [showBankAccounts, setShowBankAccounts] = useState(false);
+
+  const defaultSlug = generateSlug(formData.brideNames, formData.groomNames);
+  const currentSlug = customSlug || defaultSlug;
+
+  useEffect(() => {
+    if (!customSlug && (formData.brideNames || formData.groomNames)) {
+      const newSlug = generateSlug(formData.brideNames, formData.groomNames);
+      setCustomSlug('');
+      setSlugError('');
+    }
+  }, [formData.brideNames, formData.groomNames]);
+
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSlug = sanitizeSlug(e.target.value);
+    setCustomSlug(newSlug);
+
+    if (newSlug && !isSlugUnique(newSlug) && newSlug !== initialData.customSlug) {
+      setSlugError('This URL is already taken. Please choose another.');
+    } else {
+      setSlugError('');
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const newData = {
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     };
     setFormData(newData);
     onUpdate(newData);
@@ -35,11 +66,20 @@ export default function InvitationForm({ onUpdate, initialData }: FormProps) {
   const handleGoogleMapsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     const embedUrl = url.replace('https://g.co/', 'https://www.google.com/maps/embed?pb=');
-    
+
     const newData = {
       ...formData,
       googleMapsUrl: url,
-      googleMapsEmbed: embedUrl
+      googleMapsEmbed: embedUrl,
+    };
+    setFormData(newData);
+    onUpdate(newData);
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    const newData = {
+      ...formData,
+      [field]: value,
     };
     setFormData(newData);
     onUpdate(newData);
@@ -47,37 +87,46 @@ export default function InvitationForm({ onUpdate, initialData }: FormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.brideNames || !formData.groomNames) {
-      alert('Please enter both bride and groom names');
+
+    if (slugError) {
+      alert('Please fix the URL error before saving.');
       return;
     }
 
-    setIsSaving(true);
-    
-    try {
-      const invitations: InvitationData[] = JSON.parse(localStorage.getItem('invitations') || '[]');
-      const slug = generateSlug(formData.brideNames, formData.groomNames);
-      
-      const newInvitation: InvitationData = {
-        ...formData,
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString()
-      };
+    const invitationData = {
+      ...formData,
+      id: isEditing ? formData.id : crypto.randomUUID(),
+      customSlug: customSlug || undefined,
+      createdAt: isEditing ? formData.createdAt : new Date().toISOString(),
+    };
 
-      const existingIndex = invitations.findIndex(inv => 
-        generateSlug(inv.brideNames, inv.groomNames) === slug
+    // Get existing invitations
+    const existingInvitations = JSON.parse(localStorage.getItem('invitations') || '[]');
+
+    let updatedInvitations;
+    if (isEditing) {
+      // Update existing invitation
+      updatedInvitations = existingInvitations.map((inv: InvitationData) =>
+        inv.id === invitationData.id ? invitationData : inv
       );
+    } else {
+      // Add new invitation
+      updatedInvitations = [...existingInvitations, invitationData];
+    }
 
-      if (existingIndex >= 0) {
-        invitations[existingIndex] = newInvitation;
-      } else {
-        invitations.push(newInvitation);
-      }
+    // Save to localStorage
+    localStorage.setItem('invitations', JSON.stringify(updatedInvitations));
 
-      localStorage.setItem('invitations', JSON.stringify(invitations));
-      const invitationUrl = `${window.location.origin}/${slug}`;
-      setSavedUrl(invitationUrl);
-      
+    // Update URL
+    const finalSlug = generateSlug(invitationData.brideNames, invitationData.groomNames, invitationData.customSlug);
+    const invitationUrl = `${window.location.origin}/${finalSlug}`;
+    setSavedUrl(invitationUrl);
+
+    // Show success message
+    alert(isEditing ? 'Invitation updated successfully!' : 'Invitation created successfully!');
+
+    // Reset form if not editing
+    if (!isEditing) {
       setFormData({
         brideNames: '',
         groomNames: '',
@@ -87,26 +136,8 @@ export default function InvitationForm({ onUpdate, initialData }: FormProps) {
         message: '',
         openingText: 'Together with their families',
         invitationText: 'Request the pleasure of your company',
-        gallery: [],
-        bankAccounts: []
       });
-      onUpdate({
-        brideNames: '',
-        groomNames: '',
-        date: '',
-        time: '',
-        venue: '',
-        message: '',
-        openingText: 'Together with their families',
-        invitationText: 'Request the pleasure of your company',
-        gallery: [],
-        bankAccounts: []
-      });
-    } catch (error) {
-      console.error('Save error:', error);
-      alert('Failed to save invitation. Please try again.');
-    } finally {
-      setIsSaving(false);
+      setCustomSlug('');
     }
   };
 
@@ -223,6 +254,47 @@ export default function InvitationForm({ onUpdate, initialData }: FormProps) {
         </div>
       </div>
 
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-700">
+            <Link className="inline-block w-4 h-4 mr-2" />
+            Custom URL
+          </label>
+          <button
+            type="button"
+            onClick={() => setCustomSlug('')}
+            className="inline-flex items-center text-sm text-pink-600 hover:text-pink-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+            Reset
+          </button>
+        </div>
+        <div className="space-y-1">
+          <div className="flex items-center space-x-2">
+            <span className="text-gray-500">{window.location.origin}/</span>
+            <input
+              type="text"
+              value={customSlug}
+              onChange={handleSlugChange}
+              placeholder={defaultSlug}
+              className={`flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
+                slugError ? 'border-red-300' : 'border-gray-300'
+              }`}
+            />
+          </div>
+          {slugError && (
+            <p className="text-sm text-red-500">{slugError}</p>
+          )}
+          {!customSlug && (
+            <p className="text-sm text-gray-500">
+              Leave empty to use the default URL based on names
+            </p>
+          )}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="block text-sm font-medium text-gray-700">
@@ -304,34 +376,81 @@ export default function InvitationForm({ onUpdate, initialData }: FormProps) {
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">Personal Message</label>
-        <textarea
-          name="message"
-          value={formData.message}
-          onChange={handleChange}
-          rows={4}
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-          placeholder="Enter your personal message"
-          required
+        <RichTextEditor
+          value={formData.message || ''}
+          onChange={(value) => handleChange({ target: { name: 'message', value } })}
         />
       </div>
 
-      <SocialLinks
-        links={formData.socialLinks || []}
-        onChange={(links) => {
-          const newData = { ...formData, socialLinks: links };
-          setFormData(newData);
-          onUpdate(newData);
-        }}
-      />
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-700">Social Media Links</label>
+          <button
+            type="button"
+            onClick={() => setShowSocialLinks(!showSocialLinks)}
+            className="inline-flex items-center text-sm text-pink-600 hover:text-pink-700"
+          >
+            {showSocialLinks ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 9l-7 7-7-7"/>
+                </svg>
+                Hide Links
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 5l7 7-7 7"/>
+                </svg>
+                Show Links
+              </>
+            )}
+          </button>
+        </div>
+        {showSocialLinks && (
+          <div className="mt-1 p-4 bg-white border border-gray-300 rounded-md shadow-sm">
+            <SocialLinks
+              links={formData.socialLinks || []}
+              onChange={(links) => handleChange({ target: { name: 'socialLinks', value: links } } as any)}
+            />
+          </div>
+        )}
+      </div>
 
-      <BankAccounts
-        accounts={formData.bankAccounts || []}
-        onChange={(accounts) => {
-          const newData = { ...formData, bankAccounts: accounts };
-          setFormData(newData);
-          onUpdate(newData);
-        }}
-      />
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <label className="block text-sm font-medium text-gray-700">Digital Gifts</label>
+          <button
+            type="button"
+            onClick={() => setShowBankAccounts(!showBankAccounts)}
+            className="inline-flex items-center text-sm text-pink-600 hover:text-pink-700"
+          >
+            {showBankAccounts ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 9l-7 7-7-7"/>
+                </svg>
+                Hide Accounts
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 5l7 7-7 7"/>
+                </svg>
+                Show Accounts
+              </>
+            )}
+          </button>
+        </div>
+        {showBankAccounts && (
+          <div className="mt-1 p-4 bg-white border border-gray-300 rounded-md shadow-sm">
+            <BankAccounts
+              accounts={formData.bankAccounts || []}
+              onChange={(accounts) => handleChange({ target: { name: 'bankAccounts', value: accounts } } as any)}
+            />
+          </div>
+        )}
+      </div>
 
       <button
         type="submit"
@@ -339,8 +458,10 @@ export default function InvitationForm({ onUpdate, initialData }: FormProps) {
         className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Save className="w-5 h-5 mr-2" />
-        {isSaving ? 'Saving...' : 'Save Invitation'}
+        {isSaving ? 'Saving...' : isEditing ? 'Update Invitation' : 'Save Invitation'}
       </button>
     </form>
   );
-}
+};
+
+export default InvitationForm;

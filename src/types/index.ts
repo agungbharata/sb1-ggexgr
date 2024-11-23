@@ -5,17 +5,18 @@ export interface InvitationData {
   date: string;
   time: string;
   venue: string;
-  message: string;
-  openingText: string;
-  invitationText: string;
+  message: string; // Can contain HTML content
+  openingText?: string;
+  invitationText?: string;
   bridePhoto?: string;
   groomPhoto?: string;
   coverPhoto?: string;
   gallery?: string[];
   bankAccounts?: BankAccount[];
+  socialLinks?: SocialLink[];
   googleMapsUrl?: string;
   googleMapsEmbed?: string;
-  socialLinks?: SocialLink[];
+  customSlug?: string;
   createdAt?: string;
 }
 
