@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import InvitationPreview from '../components/InvitationPreview';
 import SplashScreen from '../components/SplashScreen';
 import { InvitationData } from '../types';
@@ -9,16 +9,43 @@ const Invitation: React.FC = () => {
   const [showInvitation, setShowInvitation] = useState(false);
   const [invitation, setInvitation] = useState<InvitationData | null>(null);
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams] = useSearchParams();
+  const guestName = searchParams.get('to') || '';
 
   useEffect(() => {
-    // Get invitation data from localStorage
-    const invitations = JSON.parse(localStorage.getItem('invitations') || '[]');
-    const currentInvitation = invitations.find((inv: InvitationData) => 
-      (inv.customSlug || generateSlug(inv.brideNames, inv.groomNames)) === slug
-    );
-    
-    if (currentInvitation) {
-      setInvitation(currentInvitation);
+    const loadInvitation = () => {
+      try {
+        // Get invitation data from localStorage
+        const invitationsStr = localStorage.getItem('invitations');
+        console.log('Raw invitations from localStorage:', invitationsStr);
+        
+        if (!invitationsStr) {
+          console.log('No invitations found in localStorage');
+          return;
+        }
+
+        const invitations = JSON.parse(invitationsStr);
+        console.log('Parsed invitations:', invitations);
+        console.log('Looking for slug:', slug);
+
+        const currentInvitation = invitations.find((inv: InvitationData) => {
+          const generatedSlug = inv.customSlug || generateSlug(inv.brideNames, inv.groomNames);
+          console.log('Comparing:', generatedSlug, 'with:', slug);
+          return generatedSlug === slug;
+        });
+        
+        console.log('Found invitation:', currentInvitation);
+        
+        if (currentInvitation) {
+          setInvitation(currentInvitation);
+        }
+      } catch (error) {
+        console.error('Error loading invitation:', error);
+      }
+    };
+
+    if (slug) {
+      loadInvitation();
     }
   }, [slug]);
 
@@ -39,6 +66,7 @@ const Invitation: React.FC = () => {
         <SplashScreen
           brideNames={invitation.brideNames}
           groomNames={invitation.groomNames}
+          guestName={guestName}
           onEnter={() => setShowInvitation(true)}
         />
       </div>

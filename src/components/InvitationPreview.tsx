@@ -131,9 +131,9 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
                     href={googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center text-sm text-pink-500 hover:text-pink-600 mt-2"
+                    className="inline-flex items-center text-pink-500 hover:text-pink-600 transition-colors duration-200"
                   >
-                    <Link className="w-4 h-4 mr-1" />
+                    <Link className="w-4 h-4 mr-2" />
                     View on Google Maps
                   </a>
                 )}
@@ -204,24 +204,10 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
             </div>
           )}
 
+          {/* Wedding Gift Section */}
           {bankAccounts && bankAccounts.length > 0 && (
             <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <div className="inline-flex items-center justify-center space-x-2">
-                  <Gift className="w-6 h-6 text-pink-500" />
-                  <h3 className="text-2xl font-serif text-gray-800">Wedding Gift</h3>
-                </div>
-                <p className="text-gray-600 italic">Your prayers and presence are our greatest gifts. However, if you wish to give a gift, you may send it through:</p>
-              </div>
-              <div className="grid gap-4">
-                {bankAccounts.map((account, index) => (
-                  <div key={index} className="bg-pink-50 p-6 rounded-xl space-y-2">
-                    <h4 className="font-medium text-gray-900">{account.bankName}</h4>
-                    <p className="text-gray-700">{account.accountNumber}</p>
-                    <p className="text-gray-600">{account.accountName}</p>
-                  </div>
-                ))}
-              </div>
+              <GiftSection bankAccounts={bankAccounts} />
             </div>
           )}
 
@@ -235,9 +221,9 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
       </div>
 
       {id && (
-        <div className="bg-white rounded-lg shadow-xl p-8">
+        <>
           <Comments invitationId={id} />
-        </div>
+        </>
       )}
     </div>
   );
