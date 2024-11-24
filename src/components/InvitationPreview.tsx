@@ -18,8 +18,8 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
     time = "18:00",
     venue = "Wedding Venue",
     message = "We invite you to share in our joy...",
-    openingText = "Together with their families",
-    invitationText = "Request the pleasure of your company",
+    openingText = "Bersama keluarga mereka",
+    invitationText = "Mengundang kehadiran Anda..",
     bridePhoto,
     groomPhoto,
     coverPhoto,
@@ -31,51 +31,51 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
   } = invitation;
 
   return (
-    <div className="w-full max-w-2xl space-y-8">
-      <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+    <div className="space-y-8 w-full max-w-2xl">
+      <div className="overflow-hidden bg-white rounded-lg shadow-xl">
         <div 
-          className="h-80 bg-cover bg-center relative"
+          className="relative h-80 bg-center bg-cover"
           style={{
             backgroundImage: `url("${coverPhoto || 'https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80'}")`,
             backgroundRepeat: 'no-repeat'
           }}
         >
           <div className="absolute inset-0 bg-black bg-opacity-30"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <h1 className="text-4xl font-serif text-white text-center px-4">
+          <div className="flex absolute inset-0 justify-center items-center">
+            <h1 className="px-4 font-serif text-4xl text-center text-white">
               {brideNames} & {groomNames}
             </h1>
           </div>
         </div>
         
         <div className="p-8 space-y-8">
-          <div className="text-center space-y-6">
-            <h3 className="text-gray-600 text-lg font-serif italic" dangerouslySetInnerHTML={{ __html: openingText }} />
+          <div className="space-y-6 text-center">
+            <h3 className="font-serif text-lg italic text-gray-600" dangerouslySetInnerHTML={{ __html: openingText }} />
             
             <div className="grid grid-cols-2 gap-8">
               {bridePhoto && (
                 <div className="space-y-3">
-                  <div className="w-40 h-40 mx-auto rounded-full overflow-hidden ring-4 ring-pink-100">
-                    <img src={bridePhoto} alt={brideNames} className="w-full h-full object-cover" />
+                  <div className="overflow-hidden mx-auto w-40 h-40 rounded-full ring-4 ring-pink-100">
+                    <img src={bridePhoto} alt={brideNames} className="object-cover w-full h-full" />
                   </div>
-                  <h2 className="text-2xl font-serif text-gray-800">{brideNames}</h2>
+                  <h2 className="font-serif text-2xl text-gray-800">{brideNames}</h2>
                 </div>
               )}
               {groomPhoto && (
                 <div className="space-y-3">
-                  <div className="w-40 h-40 mx-auto rounded-full overflow-hidden ring-4 ring-pink-100">
-                    <img src={groomPhoto} alt={groomNames} className="w-full h-full object-cover" />
+                  <div className="overflow-hidden mx-auto w-40 h-40 rounded-full ring-4 ring-pink-100">
+                    <img src={groomPhoto} alt={groomNames} className="object-cover w-full h-full" />
                   </div>
-                  <h2 className="text-2xl font-serif text-gray-800">{groomNames}</h2>
+                  <h2 className="font-serif text-2xl text-gray-800">{groomNames}</h2>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-center">
-              <Heart className="text-pink-500 w-8 h-8 mx-4 animate-pulse" />
+            <div className="flex justify-center items-center">
+              <Heart className="mx-4 w-8 h-8 text-pink-500 animate-pulse" />
             </div>
             
-            <p className="text-gray-600 italic font-serif text-lg" dangerouslySetInnerHTML={{ __html: invitationText }} />
+            <p className="font-serif text-lg italic text-gray-600" dangerouslySetInnerHTML={{ __html: invitationText }} />
           </div>
 
           {/* Countdown Timer */}
@@ -84,11 +84,11 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
           </div>
 
           {/* Date and Time Cards - 2 columns */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2">
             {/* Wedding Date Card */}
-            <div className="bg-pink-50 rounded-xl p-6 text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+            <div className="p-6 text-center bg-pink-50 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
               <div className="flex flex-col items-center space-y-3">
-                <div className="bg-white p-3 rounded-full">
+                <div className="p-3 bg-white rounded-full">
                   <Calendar className="w-6 h-6 text-pink-500" />
                 </div>
                 <div className="space-y-1">
@@ -104,9 +104,9 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
             </div>
 
             {/* Wedding Time Card */}
-            <div className="bg-pink-50 rounded-xl p-6 text-center transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+            <div className="p-6 text-center bg-pink-50 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
               <div className="flex flex-col items-center space-y-3">
-                <div className="bg-white p-3 rounded-full">
+                <div className="p-3 bg-white rounded-full">
                   <Clock className="w-6 h-6 text-pink-500" />
                 </div>
                 <div className="space-y-1">
@@ -118,38 +118,43 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
           </div>
 
           {/* Venue Card - Full width */}
-          <div className="bg-pink-50 rounded-xl p-6 transform transition-all duration-300 hover:shadow-lg">
+          <div className="p-6 bg-pink-50 rounded-xl transition-all duration-300 transform hover:shadow-lg">
             <div className="flex flex-col items-center space-y-4">
-              <div className="bg-white p-3 rounded-full">
+              <div className="p-3 bg-white rounded-full">
                 <MapPin className="w-6 h-6 text-pink-500" />
               </div>
-              <div className="text-center space-y-2">
+              <div className="space-y-2 text-center">
                 <h3 className="font-medium text-gray-900">Venue</h3>
                 <p className="text-gray-600">{venue}</p>
-                {googleMapsUrl && (
-                  <a
-                    href={googleMapsUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-pink-500 hover:text-pink-600 transition-colors duration-200"
-                  >
-                    <Link className="w-4 h-4 mr-2" />
-                    View on Google Maps
-                  </a>
-                )}
               </div>
-              {googleMapsEmbed && (
-                <div className="w-full mt-4 aspect-video rounded-lg overflow-hidden shadow-lg">
-                  <iframe
-                    src={googleMapsEmbed}
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Wedding Venue Location"
-                  />
+              {(googleMapsUrl || venue) && (
+                <div className="mt-4 w-full">
+                  <div className="overflow-hidden rounded-lg shadow-lg">
+                    <div className="relative" style={{ paddingBottom: '75%' }}>
+                      <iframe
+                        src={googleMapsEmbed}
+                        className="absolute top-0 left-0 w-full h-full"
+                        frameBorder="0"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        aria-hidden="false"
+                        tabIndex={0}
+                      />
+                    </div>
+                  </div>
+                  {googleMapsUrl && (
+                    <div className="mt-2 text-center">
+                      <a
+                        href={googleMapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center text-pink-500 transition-colors duration-200 hover:text-pink-600"
+                      >
+                        <Link className="mr-2 w-4 h-4" />
+                        Lihat di Google Maps
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -157,14 +162,14 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
 
           {gallery.length > 0 && (
             <div className="space-y-6">
-              <h3 className="text-2xl font-serif text-gray-800 text-center">Our Gallery</h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <h3 className="font-serif text-2xl text-center text-gray-800">Our Gallery</h3>
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                 {gallery.map((image, index) => (
-                  <div key={index} className="aspect-square rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300">
+                  <div key={index} className="overflow-hidden rounded-lg shadow-md transition-shadow duration-300 aspect-square hover:shadow-xl">
                     <img
                       src={image}
                       alt={`Gallery ${index + 1}`}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                      className="object-cover w-full h-full transition-transform duration-500 hover:scale-110"
                     />
                   </div>
                 ))}
@@ -174,24 +179,24 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
 
           {socialLinks && socialLinks.length > 0 && (
             <div className="space-y-6">
-              <h3 className="text-2xl font-serif text-gray-800 text-center">Social Media</h3>
+              <h3 className="font-serif text-2xl text-center text-gray-800">Social Media</h3>
               <div className="space-y-8">
                 {socialLinks.map((link, index) => (
-                  <div key={index} className="space-y-3 bg-pink-50 p-6 rounded-xl">
+                  <div key={index} className="p-6 space-y-3 bg-pink-50 rounded-xl">
                     <div className="space-y-2">
-                      <h4 className="font-medium text-gray-900 text-lg">{link.title}</h4>
+                      <h4 className="text-lg font-medium text-gray-900">{link.title}</h4>
                       <a
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center text-pink-500 hover:text-pink-600 transition-colors duration-200"
+                        className="inline-flex items-center text-pink-500 transition-colors duration-200 hover:text-pink-600"
                       >
-                        <Link className="w-4 h-4 mr-2" />
+                        <Link className="mr-2 w-4 h-4" />
                         {link.platform}
                       </a>
                     </div>
                     {link.embedCode && (
-                      <div className="w-full rounded-lg overflow-hidden shadow-lg">
+                      <div className="overflow-hidden w-full rounded-lg shadow-lg">
                         <div
                           className="aspect-video"
                           dangerouslySetInnerHTML={{ __html: link.embedCode }}
@@ -211,8 +216,8 @@ export default function InvitationPreview({ invitation }: PreviewProps) {
             </div>
           )}
 
-          <div className="text-center space-y-4">
-            <p className="text-gray-600 italic font-serif text-lg" dangerouslySetInnerHTML={{ __html: message }} />
+          <div className="space-y-4 text-center">
+            <p className="font-serif text-lg italic text-gray-600" dangerouslySetInnerHTML={{ __html: message }} />
             <div className="pt-4">
               <p className="text-sm text-gray-500">Made with ❤️ by Walimah.Me</p>
             </div>

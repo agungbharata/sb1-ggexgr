@@ -65,12 +65,37 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
 
   const handleGoogleMapsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
-    const embedUrl = url.replace('https://g.co/', 'https://www.google.com/maps/embed?pb=');
+    let embedUrl = '';
+
+    if (url) {
+      // Extract the location query from the URL
+      let query = '';
+      
+      if (url.includes('place/')) {
+        // Get location name from place URL
+        const placePath = url.split('place/')[1];
+        query = placePath.split('/')[0].split('?')[0];
+      } else if (url.includes('@')) {
+        // Get coordinates from URL
+        const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+        if (match) {
+          query = `${match[1]},${match[2]}`;
+        }
+      } else if (url.includes('g.co/') || url.includes('goo.gl/')) {
+        // For short URLs, use the venue name
+        query = formData.venue;
+      }
+
+      // Create a simple embed URL
+      if (query) {
+        embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+      }
+    }
 
     const newData = {
       ...formData,
       googleMapsUrl: url,
-      googleMapsEmbed: embedUrl,
+      googleMapsEmbed: embedUrl || `https://maps.google.com/maps?q=${encodeURIComponent(formData.venue)}&output=embed`,
     };
     setFormData(newData);
     onUpdate(newData);
@@ -155,10 +180,14 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         label="Foto Sampul"
         value={formData.coverPhoto}
         onChange={(base64) => {
-          setFormData(prev => ({ ...prev, coverPhoto: base64 }));
+          const newData = { ...formData, coverPhoto: base64 };
+          setFormData(newData);
+          onUpdate(newData);
         }}
         onClear={() => {
-          setFormData(prev => ({ ...prev, coverPhoto: undefined }));
+          const newData = { ...formData, coverPhoto: undefined };
+          setFormData(newData);
+          onUpdate(newData);
         }}
       />
 
@@ -168,20 +197,28 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           label="Foto Mempelai Wanita"
           value={formData.bridePhoto}
           onChange={(base64) => {
-            setFormData(prev => ({ ...prev, bridePhoto: base64 }));
+            const newData = { ...formData, bridePhoto: base64 };
+            setFormData(newData);
+            onUpdate(newData);
           }}
           onClear={() => {
-            setFormData(prev => ({ ...prev, bridePhoto: undefined }));
+            const newData = { ...formData, bridePhoto: undefined };
+            setFormData(newData);
+            onUpdate(newData);
           }}
         />
         <ImageUpload
           label="Foto Mempelai Pria"
           value={formData.groomPhoto}
           onChange={(base64) => {
-            setFormData(prev => ({ ...prev, groomPhoto: base64 }));
+            const newData = { ...formData, groomPhoto: base64 };
+            setFormData(newData);
+            onUpdate(newData);
           }}
           onClear={() => {
-            setFormData(prev => ({ ...prev, groomPhoto: undefined }));
+            const newData = { ...formData, groomPhoto: undefined };
+            setFormData(newData);
+            onUpdate(newData);
           }}
         />
       </div>
@@ -252,7 +289,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       <div className="space-y-2">
         <RichTextEditor
           label="Teks Pembuka"
-          value={formData.openingText}
+          value={formData.openingText || ''}
           onChange={(value) => handleInputChange('openingText', value)}
           height={150}
         />
@@ -262,7 +299,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       <div className="space-y-2">
         <RichTextEditor
           label="Teks Undangan"
-          value={formData.invitationText}
+          value={formData.invitationText || ''}
           onChange={(value) => handleInputChange('invitationText', value)}
           height={150}
         />
@@ -333,13 +370,17 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       {/* Galeri Foto */}
       <GalleryUpload
         images={formData.gallery || []}
-        onChange={(gallery) => setFormData(prev => ({ ...prev, gallery }))}
+        onChange={(gallery) => {
+          const newData = { ...formData, gallery };
+          setFormData(newData);
+          onUpdate(newData);
+        }}
         label="Galeri Foto"
       />
 
       {/* Media Sosial */}
-      <div className="space-y-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
-        <div className="flex items-center justify-between">
+      <div className="p-4 space-y-4 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="flex justify-between items-center">
           <h3 className="text-sm font-medium text-gray-700">Media Sosial</h3>
           <button
             type="button"
@@ -363,15 +404,19 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           <div className="pt-2">
             <SocialLinks
               links={formData.socialLinks || []}
-              onChange={(socialLinks) => setFormData(prev => ({ ...prev, socialLinks }))}
+              onChange={(socialLinks) => {
+                const newData = { ...formData, socialLinks };
+                setFormData(newData);
+                onUpdate(newData);
+              }}
             />
           </div>
         )}
       </div>
 
       {/* Rekening */}
-      <div className="space-y-4 p-4 rounded-lg border border-gray-200 bg-gray-50">
-        <div className="flex items-center justify-between">
+      <div className="p-4 space-y-4 bg-gray-50 rounded-lg border border-gray-200">
+        <div className="flex justify-between items-center">
           <h3 className="text-sm font-medium text-gray-700">Rekening Bank</h3>
           <button
             type="button"
@@ -395,7 +440,11 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           <div className="pt-2">
             <BankAccounts
               accounts={formData.bankAccounts || []}
-              onChange={(bankAccounts) => setFormData(prev => ({ ...prev, bankAccounts }))}
+              onChange={(bankAccounts) => {
+                const newData = { ...formData, bankAccounts };
+                setFormData(newData);
+                onUpdate(newData);
+              }}
             />
           </div>
         )}
@@ -405,7 +454,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       <div className="space-y-2">
         <RichTextEditor
           label="Pesan Pribadi"
-          value={formData.message}
+          value={formData.message || ''}
           onChange={(value) => handleInputChange('message', value)}
           height={200}
         />

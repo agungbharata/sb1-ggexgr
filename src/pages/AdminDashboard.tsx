@@ -8,14 +8,15 @@ import type { InvitationData } from '../types';
 export default function AdminDashboard() {
   const [currentView, setCurrentView] = useState<'create' | 'admin'>('create');
   const [formData, setFormData] = useState<InvitationData>({
+    id: '', // Add this line
     brideNames: '',
     groomNames: '',
     date: '',
     time: '',
     venue: '',
     message: '',
-    openingText: 'Together with their families',
-    invitationText: 'Request the pleasure of your company',
+    openingText: 'Bersama keluarga mereka',
+    invitationText: 'Mengundang kehadiran Anda',
     gallery: [],
     bankAccounts: []
   });
@@ -34,10 +35,10 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-50">
       <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
+        <div className="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center">
             <div className="flex items-center">
-              <Heart className="w-6 h-6 text-pink-500 mr-2" />
+              <Heart className="mr-2 w-6 h-6 text-pink-500" />
               <h1 className="text-2xl font-semibold text-gray-900">Walimah.Me</h1>
             </div>
             <div className="flex space-x-4">
@@ -46,14 +47,15 @@ export default function AdminDashboard() {
                   setCurrentView('create');
                   if (!isEditing) {
                     setFormData({
+                      id: '', // Add this line
                       brideNames: '',
                       groomNames: '',
                       date: '',
                       time: '',
                       venue: '',
                       message: '',
-                      openingText: 'Together with their families',
-                      invitationText: 'Request the pleasure of your company',
+                      openingText: 'Bersama keluarga mereka',
+                      invitationText: 'Mengundang kehadiran Anda',
                       gallery: [],
                       bankAccounts: []
                     });
@@ -85,23 +87,23 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <main className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
         {currentView === 'create' ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Preview Section - Sekarang di sebelah kiri */}
-            <div className="space-y-6 order-2 lg:order-1">
+            <div className="order-2 space-y-6 lg:order-1">
               <div className="sticky top-8">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Preview</h2>
-                <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                <h2 className="mb-6 text-xl font-semibold text-gray-900">Preview</h2>
+                <div className="overflow-hidden bg-white rounded-lg shadow-lg">
                   <InvitationPreview invitation={formData} />
                 </div>
               </div>
             </div>
 
             {/* Form Section - Sekarang di sebelah kanan */}
-            <div className="space-y-6 order-1 lg:order-2">
-              <div className="bg-white shadow-lg rounded-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+            <div className="order-1 space-y-6 lg:order-2">
+              <div className="p-6 bg-white rounded-lg shadow-lg">
+                <h2 className="mb-6 text-xl font-semibold text-gray-900">
                   {isEditing ? 'Edit Invitation' : 'Create Your Invitation'}
                 </h2>
                 <InvitationForm
