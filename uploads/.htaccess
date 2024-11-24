@@ -1,0 +1,57 @@
+# Disable directory listing
+Options -Indexes
+
+# Deny access to files starting with dot
+<FilesMatch "^.">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Allow only specific image types
+<FilesMatch ".(jpg|jpeg|png|gif)$">
+  Order allow,deny
+  Allow from all
+</FilesMatch>
+
+# Deny access to sensitive files
+<FilesMatch ".(php|php3|php4|php5|phtml|pl|py|jsp|asp|htm|html|shtml|sh|cgi)$">
+  Order allow,deny
+  Deny from all
+</FilesMatch>
+
+# Enable Apache XSS protection
+<IfModule mod_headers.c>
+  Header set X-XSS-Protection "1; mode=block"
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+</IfModule>
+
+# Disable PHP execution
+<FilesMatch ".+.ph(p[3457]?|t|tml)$">
+  deny from all
+</FilesMatch>
+
+# Protect against malicious file uploads
+<FilesMatch "(?i).(php|php3|php4|php5|phtml|pl|py|jsp|asp|htm|html|shtml|sh|cgi)$">
+  deny from all
+</FilesMatch>
+
+# Protect .htaccess
+<Files .htaccess>
+  Order allow,deny
+  Deny from all
+</Files>
+
+# Set content-type for images
+<IfModule mod_mime.c>
+  AddType image/jpeg .jpg .jpeg
+  AddType image/png .png
+  AddType image/gif .gif
+</IfModule>
+
+# Enable CORS for images
+<IfModule mod_headers.c>
+  <FilesMatch ".(jpg|jpeg|png|gif)$">
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+</IfModule>
