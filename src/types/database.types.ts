@@ -38,6 +38,50 @@ export interface Database {
           created_at?: string | null
         }
       }
+      invitations: {
+        Row: {
+          id: string
+          user_id: string
+          template_id: string
+          event_name: string
+          groom_name: string
+          bride_name: string
+          event_date: string
+          venue: string
+          custom_data: Json
+          is_published: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          template_id: string
+          event_name: string
+          groom_name: string
+          bride_name: string
+          event_date: string
+          venue: string
+          custom_data?: Json
+          is_published?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          template_id?: string
+          event_name?: string
+          groom_name?: string
+          bride_name?: string
+          event_date?: string
+          venue?: string
+          custom_data?: Json
+          is_published?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
   }
 }

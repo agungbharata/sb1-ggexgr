@@ -3,23 +3,10 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../config/supabase'
 import Navbar from '../components/Navbar'
+import type { Database } from '../types/database.types'
 
-interface Invitation {
-  id: string
-  title: string
-  bride_name: string
-  groom_name: string
-  date: string
-  venue: string
-  created_at: string
-  status: string
-}
-
-interface Profile {
-  username: string
-  full_name: string
-  avatar_url: string | null
-}
+type Invitation = Database['public']['Tables']['invitations']['Row']
+type Profile = Database['public']['Tables']['profiles']['Row']
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -41,7 +28,7 @@ export default function Dashboard() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('username, full_name, avatar_url')
+        .select('*')
         .eq('id', user.id)
         .single()
 
@@ -91,6 +78,142 @@ export default function Dashboard() {
           <div className="mb-8">
             <h1 className="text-3xl font-serif font-bold text-emerald-800">Welcome{profile?.full_name ? `, ${profile.full_name}` : ''}</h1>
             <p className="mt-2 text-gray-600">Manage your wedding invitations and create beautiful memories.</p>
+          </div>
+
+          {/* Features Section */}
+          <div className="mb-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Template Builder */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200">
+              <div className="p-6">
+                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-serif font-semibold text-gray-900 mb-2">Template Builder</h3>
+                <p className="text-gray-600 mb-4">Choose from our beautiful templates or create your own custom design.</p>
+                <Link
+                  to="/templates"
+                  className="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                >
+                  Browse Templates
+                  <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            {/* Guest List Manager */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200">
+              <div className="p-6">
+                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-serif font-semibold text-gray-900 mb-2">Guest List Manager</h3>
+                <p className="text-gray-600 mb-4">Organize your guest list, track RSVPs, and manage seating arrangements.</p>
+                <Link
+                  to="/guests"
+                  className="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                >
+                  Manage Guests
+                  <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            {/* RSVP & Messages */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200">
+              <div className="p-6">
+                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-serif font-semibold text-gray-900 mb-2">RSVP & Messages</h3>
+                <p className="text-gray-600 mb-4">Collect RSVPs and messages from your guests in real-time.</p>
+                <Link
+                  to="/messages"
+                  className="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                >
+                  View Messages
+                  <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            {/* Event Schedule */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200">
+              <div className="p-6">
+                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-serif font-semibold text-gray-900 mb-2">Event Schedule</h3>
+                <p className="text-gray-600 mb-4">Plan and share your wedding day timeline with guests.</p>
+                <Link
+                  to="/schedule"
+                  className="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                >
+                  Plan Schedule
+                  <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            {/* Photo Gallery */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200">
+              <div className="p-6">
+                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-serif font-semibold text-gray-900 mb-2">Photo Gallery</h3>
+                <p className="text-gray-600 mb-4">Share your precious moments with a beautiful photo gallery.</p>
+                <Link
+                  to="/gallery"
+                  className="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                >
+                  Manage Gallery
+                  <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
+
+            {/* Settings & Preview */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-200">
+              <div className="p-6">
+                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mb-4">
+                  <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-serif font-semibold text-gray-900 mb-2">Settings & Preview</h3>
+                <p className="text-gray-600 mb-4">Customize settings and preview your invitation before publishing.</p>
+                <Link
+                  to="/settings"
+                  className="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700"
+                >
+                  Open Settings
+                  <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* Quick Actions */}
@@ -146,14 +269,20 @@ export default function Dashboard() {
                     >
                       <div className="p-6">
                         <h3 className="text-lg font-medium text-gray-900 mb-2">
-                          {invitation.bride_name} & {invitation.groom_name}
+                          {invitation.event_name}
                         </h3>
                         <div className="text-sm text-gray-500 space-y-2">
                           <p className="flex items-center">
                             <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            {invitation.bride_name} & {invitation.groom_name}
+                          </p>
+                          <p className="flex items-center">
+                            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
-                            {new Date(invitation.date).toLocaleDateString()}
+                            {new Date(invitation.event_date).toLocaleDateString()}
                           </p>
                           <p className="flex items-center">
                             <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,6 +290,12 @@ export default function Dashboard() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
                             {invitation.venue}
+                          </p>
+                          <p className="flex items-center">
+                            <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {invitation.is_published ? 'Published' : 'Draft'}
                           </p>
                         </div>
                         <div className="mt-4 flex space-x-3">
