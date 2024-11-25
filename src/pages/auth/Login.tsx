@@ -1,8 +1,14 @@
 import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { Navigate } from 'react-router-dom'
+import { Navigate, Link, useLocation } from 'react-router-dom'
+
+interface LocationState {
+  message?: string;
+}
 
 export default function Login() {
+  const location = useLocation()
+  const state = location.state as LocationState
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -37,11 +43,18 @@ export default function Login() {
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
-            <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
               register for a new account
-            </a>
+            </Link>
           </p>
         </div>
+
+        {state?.message && (
+          <div className="p-4 text-sm text-green-700 bg-green-100 rounded-lg">
+            {state.message}
+          </div>
+        )}
+
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
