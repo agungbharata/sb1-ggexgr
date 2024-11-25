@@ -6,7 +6,7 @@ import type { User } from '@supabase/supabase-js'
 interface AuthContextType {
   user: User | null
   signIn: (email: string, password: string) => Promise<void>
-  signUp: (email: string, password: string) => Promise<void>
+  signUp: (email: string, password: string, options?: { data: { username: string; full_name: string } }) => Promise<void>
   signOut: () => Promise<void>
   loading: boolean
 }
@@ -34,10 +34,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, options?: { data: { username: string; full_name: string } }) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
+      options
     })
     if (error) throw error
     // Signup successful - user will need to verify email
