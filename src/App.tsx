@@ -1,48 +1,28 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import AdminDashboard from './pages/AdminDashboard';
-import Invitation from './pages/Invitation';
-import TemplatesPage from './pages/dashboard/templates';
-import Login from './pages/auth/Login';
-import { AuthProvider } from './contexts/AuthContext';
-import ProtectedRoute from './components/ProtectedRoute';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import Login from './pages/auth/Login'
+import Dashboard from './pages/Dashboard'
+import PrivateRoute from './components/PrivateRoute'
 
 function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/:slug" element={<Invitation />} />
-
-        {/* Protected Admin Routes */}
-        <Route 
-          path="/" 
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/dashboard/templates" 
-          element={
-            <ProtectedRoute allowedRoles={['admin']}>
-              <TemplatesPage />
-            </ProtectedRoute>
-          } 
-        />
-      </Routes>
-    </AuthProvider>
-  );
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/dashboard"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </AuthProvider>
+    </Router>
+  )
 }
 
-export default App;
+export default App

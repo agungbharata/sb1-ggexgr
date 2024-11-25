@@ -1,47 +1,47 @@
-import React, { useState } from 'react';
-import { Upload, X } from 'lucide-react';
-import { uploadImage } from '../lib/storage';
+import React, { useState } from 'react'
+import { Upload, X } from 'lucide-react'
+import { uploadImage } from '../lib/storage'
 
-interface GalleryUploadProps {
-  images: string[];
-  onChange: (images: string[]) => void;
+interface VenuePhotoUploadProps {
+  images: string[]
+  onChange: (images: string[]) => void
 }
 
-export default function GalleryUpload({ images, onChange }: GalleryUploadProps) {
-  const [uploading, setUploading] = useState(false);
+export default function VenuePhotoUpload({ images, onChange }: VenuePhotoUploadProps) {
+  const [uploading, setUploading] = useState(false)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      const files = Array.from(e.target.files || []);
-      setUploading(true);
+      const files = Array.from(e.target.files || [])
+      setUploading(true)
 
       // Upload each file
-      const uploadPromises = files.map(file => uploadImage(file, 'gallery'));
-      const uploadedUrls = await Promise.all(uploadPromises);
+      const uploadPromises = files.map(file => uploadImage(file, 'venue'))
+      const uploadedUrls = await Promise.all(uploadPromises)
 
       // Add new URLs to existing images
-      onChange([...images, ...uploadedUrls]);
+      onChange([...images, ...uploadedUrls])
     } catch (error) {
-      console.error('Error uploading images:', error);
-      alert('Failed to upload images. Please try again.');
+      console.error('Error uploading images:', error)
+      alert('Failed to upload images. Please try again.')
     } finally {
-      setUploading(false);
+      setUploading(false)
     }
-  };
+  }
 
   const removeImage = (index: number) => {
-    onChange(images.filter((_, i) => i !== index));
-  };
+    onChange(images.filter((_, i) => i !== index))
+  }
 
   return (
     <div className="space-y-4">
-      <label className="block text-sm font-medium text-gray-700">Photo Gallery</label>
+      <label className="block text-sm font-medium text-gray-700">Venue Photos</label>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {images.map((image, index) => (
           <div key={index} className="relative">
             <img
               src={image}
-              alt={`Gallery ${index + 1}`}
+              alt={`Venue ${index + 1}`}
               className="w-full h-32 object-cover rounded-lg"
             />
             <button
@@ -60,7 +60,7 @@ export default function GalleryUpload({ images, onChange }: GalleryUploadProps) 
             ) : (
               <>
                 <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                <p className="text-xs text-gray-500">Add Photos</p>
+                <p className="text-xs text-gray-500">Add Venue Photos</p>
               </>
             )}
           </div>
@@ -75,5 +75,5 @@ export default function GalleryUpload({ images, onChange }: GalleryUploadProps) 
         </label>
       </div>
     </div>
-  );
+  )
 }
