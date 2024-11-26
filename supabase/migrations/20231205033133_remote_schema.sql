@@ -51,7 +51,7 @@ BEGIN
         split_part(NEW.email, '@', 1),
         '',
         CASE 
-            WHEN NEW.email = 'admin@weddinggas.com' THEN 'admin'
+            WHEN NEW.email = 'dripsendermu@gmail.com' THEN 'admin'
             ELSE 'user'
         END
     );
@@ -63,17 +63,3 @@ $$;
 CREATE TRIGGER on_auth_user_created
     AFTER INSERT ON auth.users
     FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- Insert initial admin if not exists
-DO $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM auth.users WHERE email = 'admin@weddinggas.com'
-    ) THEN
-        -- Note: You'll need to set this password manually through Supabase dashboard
-        INSERT INTO auth.users (email, encrypted_password, email_confirmed_at)
-        VALUES ('admin@weddinggas.com', '', NOW())
-        ON CONFLICT DO NOTHING;
-    END IF;
-END
-$$;
