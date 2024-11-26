@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Save, Link, Plus, Minus } from 'lucide-react';
-import type { InvitationData } from '../types';
+import { Link, MapPin, Calendar, Clock, Save, Plus, Minus } from 'lucide-react';
+import type { InvitationData } from '../types/invitation';
+import { supabase } from '../supabase';
 import ImageUpload from './ImageUpload';
 import GalleryUpload from './GalleryUpload';
 import BankAccounts from './BankAccounts';
@@ -11,12 +12,14 @@ import CopyLinkButton from './CopyLinkButton';
 
 interface InvitationFormProps {
   onUpdate: (data: InvitationData) => void;
+  onChange?: (data: InvitationData) => void;
   initialData: InvitationData;
   isEditing?: boolean;
 }
 
 const InvitationForm: React.FC<InvitationFormProps> = ({
   onUpdate,
+  onChange,
   initialData,
   isEditing = false,
 }) => {
@@ -25,23 +28,60 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     openingText: initialData.openingText || 'Bersama keluarga mereka',
     invitationText: initialData.invitationText || 'Mengundang kehadiran Anda',
   });
+
   const [isSaving, setIsSaving] = useState(false);
-  const [savedUrl, setSavedUrl] = useState<string>('');
   const [customSlug, setCustomSlug] = useState(initialData.customSlug || '');
   const [slugError, setSlugError] = useState('');
+  const [savedUrl, setSavedUrl] = useState('');
   const [showSocialLinks, setShowSocialLinks] = useState(false);
   const [showBankAccounts, setShowBankAccounts] = useState(false);
 
   const defaultSlug = generateSlug(formData.brideNames, formData.groomNames);
-  const currentSlug = customSlug || defaultSlug;
 
   useEffect(() => {
-    if (!customSlug && (formData.brideNames || formData.groomNames)) {
-      const newSlug = generateSlug(formData.brideNames, formData.groomNames);
+    if (!customSlug && formData.brideNames && formData.groomNames) {
       setCustomSlug('');
       setSlugError('');
     }
   }, [formData.brideNames, formData.groomNames]);
+
+  useEffect(() => {
+    onChange?.(formData);
+  }, [formData, onChange]);
+
+  const handleUpdate = async (data: InvitationData) => {
+    try {
+      setIsSaving(true);
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        throw new Error('Authentication error: ' + userError.message);
+      }
+
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
+
+      const { error: updateError } = await supabase
+        .from('invitations')
+        .upsert({
+          ...data,
+          user_id: user.id,
+          updated_at: new Date().toISOString()
+        });
+
+      if (updateError) {
+        throw new Error('Error updating invitation: ' + updateError.message);
+      }
+
+      setIsSaving(false);
+      onUpdate(data);
+    } catch (error) {
+      setIsSaving(false);
+      console.error('Error saving invitation:', error);
+      alert('Gagal menyimpan undangan. Silakan coba lagi.');
+    }
+  };
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSlug = sanitizeSlug(e.target.value);
@@ -60,7 +100,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       [e.target.name]: e.target.value,
     };
     setFormData(newData);
-    onUpdate(newData);
   };
 
   const handleGoogleMapsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +122,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         }
       } else if (url.includes('g.co/') || url.includes('goo.gl/')) {
         // For short URLs, use the venue name
-        query = formData.venue;
+        query = formData.venue || '';
       }
 
       // Create a simple embed URL
@@ -95,19 +134,9 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     const newData = {
       ...formData,
       googleMapsUrl: url,
-      googleMapsEmbed: embedUrl || `https://maps.google.com/maps?q=${encodeURIComponent(formData.venue)}&output=embed`,
+      googleMapsEmbed: embedUrl
     };
     setFormData(newData);
-    onUpdate(newData);
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    const newData = {
-      ...formData,
-      [field]: value,
-    };
-    setFormData(newData);
-    onUpdate(newData);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,45 +151,25 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       ...formData,
       id: isEditing ? formData.id : crypto.randomUUID(),
       customSlug: customSlug || undefined,
-      createdAt: isEditing ? formData.createdAt : new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
-    // Get existing invitations
-    const existingInvitations = JSON.parse(localStorage.getItem('invitations') || '[]');
-
-    let updatedInvitations;
-    if (isEditing) {
-      // Update existing invitation
-      updatedInvitations = existingInvitations.map((inv: InvitationData) =>
-        inv.id === invitationData.id ? invitationData : inv
-      );
-    } else {
-      // Add new invitation
-      updatedInvitations = [...existingInvitations, invitationData];
-    }
-
-    // Save to localStorage
-    localStorage.setItem('invitations', JSON.stringify(updatedInvitations));
+    await handleUpdate(invitationData);
 
     // Update URL
-    const finalSlug = generateSlug(invitationData.brideNames, invitationData.groomNames, invitationData.customSlug);
+    const finalSlug = customSlug || defaultSlug;
     const invitationUrl = `${window.location.origin}/${finalSlug}`;
     setSavedUrl(invitationUrl);
 
-    // Show success message
-    alert(isEditing ? 'Undangan berhasil diperbarui!' : 'Undangan berhasil disimpan!');
-
-    // Reset form if not editing
     if (!isEditing) {
       setFormData({
         brideNames: '',
         groomNames: '',
-        date: '',
-        time: '',
-        venue: '',
-        message: '',
         openingText: 'Bersama keluarga mereka',
         invitationText: 'Mengundang kehadiran Anda',
+        gallery: [],
+        socialLinks: [],
+        bankAccounts: []
       });
       setCustomSlug('');
     }
@@ -182,12 +191,10 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         onChange={(base64) => {
           const newData = { ...formData, coverPhoto: base64 };
           setFormData(newData);
-          onUpdate(newData);
         }}
         onClear={() => {
           const newData = { ...formData, coverPhoto: undefined };
           setFormData(newData);
-          onUpdate(newData);
         }}
       />
 
@@ -199,12 +206,10 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           onChange={(base64) => {
             const newData = { ...formData, bridePhoto: base64 };
             setFormData(newData);
-            onUpdate(newData);
           }}
           onClear={() => {
             const newData = { ...formData, bridePhoto: undefined };
             setFormData(newData);
-            onUpdate(newData);
           }}
         />
         <ImageUpload
@@ -213,12 +218,10 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           onChange={(base64) => {
             const newData = { ...formData, groomPhoto: base64 };
             setFormData(newData);
-            onUpdate(newData);
           }}
           onClear={() => {
             const newData = { ...formData, groomPhoto: undefined };
             setFormData(newData);
-            onUpdate(newData);
           }}
         />
       </div>
@@ -290,7 +293,10 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <RichTextEditor
           label="Teks Pembuka"
           value={formData.openingText || ''}
-          onChange={(value) => handleInputChange('openingText', value)}
+          onChange={(value) => {
+            const newData = { ...formData, openingText: value };
+            setFormData(newData);
+          }}
           height={150}
         />
       </div>
@@ -300,7 +306,10 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <RichTextEditor
           label="Teks Undangan"
           value={formData.invitationText || ''}
-          onChange={(value) => handleInputChange('invitationText', value)}
+          onChange={(value) => {
+            const newData = { ...formData, invitationText: value };
+            setFormData(newData);
+          }}
           height={150}
         />
       </div>
@@ -373,7 +382,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         onChange={(gallery) => {
           const newData = { ...formData, gallery };
           setFormData(newData);
-          onUpdate(newData);
         }}
         label="Galeri Foto"
       />
@@ -407,7 +415,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               onChange={(socialLinks) => {
                 const newData = { ...formData, socialLinks };
                 setFormData(newData);
-                onUpdate(newData);
               }}
             />
           </div>
@@ -443,7 +450,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               onChange={(bankAccounts) => {
                 const newData = { ...formData, bankAccounts };
                 setFormData(newData);
-                onUpdate(newData);
               }}
             />
           </div>
@@ -455,7 +461,10 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <RichTextEditor
           label="Pesan Pribadi"
           value={formData.message || ''}
-          onChange={(value) => handleInputChange('message', value)}
+          onChange={(value) => {
+            const newData = { ...formData, message: value };
+            setFormData(newData);
+          }}
           height={200}
         />
       </div>
