@@ -10,7 +10,6 @@ import AdminDashboard from './pages/AdminDashboard'
 import InvitationPage from './pages/InvitationPage'
 import InvitationForm from './pages/InvitationForm'
 import MusicLibrary from './pages/MusicLibrary'
-import AuthCallback from './pages/auth/AuthCallback'
 import PrivateRoute from './components/PrivateRoute'
 
 function App() {
@@ -23,7 +22,6 @@ function App() {
           <Route path="/auth/register" element={<Register />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
           <Route path="/auth/reset-password" element={<ResetPassword />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
           
           {/* Protected Dashboard Routes */}
           <Route path="/" element={

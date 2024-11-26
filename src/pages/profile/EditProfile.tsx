@@ -85,34 +85,38 @@ export default function EditProfile() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    
+    if (!user) {
+      setError('No user session found')
+      return
+    }
+
     setLoading(true)
     setError(null)
     setSuccess(false)
 
     try {
-      if (!user) throw new Error('No user')
-
       let newAvatarUrl = avatarUrl
       if (avatar) {
         newAvatarUrl = await uploadAvatar(avatar)
       }
 
       const updates = {
-        id: user.id,
-        email: user.email,
         username,
         full_name: fullName,
         avatar_url: newAvatarUrl,
         updated_at: new Date().toISOString(),
       }
 
-      const { error } = await supabase
+      const { error: upsertError } = await supabase
         .from('profiles')
-        .upsert(updates)
+        .update(updates)
+        .eq('id', user.id)
 
-      if (error) throw error
+      if (upsertError) throw upsertError
 
       setSuccess(true)
+      await getProfile() // Refresh profile data
     } catch (error: any) {
       console.error('Error updating profile:', error.message)
       setError(error.message)
