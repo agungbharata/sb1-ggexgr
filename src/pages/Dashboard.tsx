@@ -218,15 +218,20 @@ export default function Dashboard() {
 
           {/* Quick Actions */}
           <div className="mb-8">
-            <Link
-              to="/invitation/new"
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
-            >
-              <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Create New Invitation
-            </Link>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-serif font-semibold text-gray-900">Quick Actions</h2>
+            </div>
+            <div className="grid gap-4 sm:flex sm:gap-6">
+              <Link
+                to="/invitation/new"
+                className="flex-1 inline-flex justify-center items-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Create New Invitation
+              </Link>
+            </div>
           </div>
 
           {/* Invitations List */}
