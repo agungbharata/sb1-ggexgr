@@ -36,6 +36,8 @@ export interface InvitationData {
   isPublished?: boolean;
   rsvpEnabled?: boolean;
   commentsEnabled?: boolean;
+  showMusicLibrary?: boolean;
+  backgroundMusic?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -83,16 +85,37 @@ export interface BankAccount {
   account_holder: string;
 }
 
+export interface MusicLibrary {
+  id: string;
+  title: string;
+  artist: string;
+  url: string;
+  created_at?: string;
+}
+
 export const defaultFormData: InvitationData = {
   brideNames: '',
   groomNames: '',
   brideParents: '',
   groomParents: '',
-  openingText: 'Bersama keluarga mereka',
-  invitationText: 'Mengundang kehadiran Anda',
+  showAkad: false,
+  akadDate: '',
+  akadTime: '',
+  akadVenue: '',
+  akadMapsUrl: '',
+  akadMapsEmbed: '',
+  showResepsi: false,
+  resepsiDate: '',
+  resepsiTime: '',
+  resepsiVenue: '',
+  resepsiMapsUrl: '',
+  resepsiMapsEmbed: '',
+  openingText: '',
+  invitationText: '',
   gallery: [],
   socialLinks: [],
   bankAccounts: [],
+  template: 'default',
   theme: 'default',
   fontFamily: 'default',
   primaryColor: '#000000',
@@ -100,7 +123,9 @@ export const defaultFormData: InvitationData = {
   status: 'draft',
   isPublished: false,
   rsvpEnabled: true,
-  commentsEnabled: true
+  commentsEnabled: true,
+  showMusicLibrary: false,
+  backgroundMusic: ''
 };
 
 import { TemplateType } from '../components/TemplateSelector';

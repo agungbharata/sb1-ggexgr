@@ -4,7 +4,7 @@ import InvitationForm from '../../components/InvitationForm';
 import TemplateSelector from '../../components/TemplateSelector';
 import type { InvitationData } from '../../types/invitation';
 
-const initialData: InvitationData = {
+const defaultFormData: InvitationData = {
   brideNames: '',
   groomNames: '',
   brideParents: '',
@@ -26,6 +26,12 @@ const initialData: InvitationData = {
   socialLinks: [],
   bankAccounts: [],
   theme: 'default'
+};
+
+const initialData: InvitationData = {
+  ...defaultFormData,
+  showMusicLibrary: false,
+  backgroundMusic: ''
 };
 
 const NewInvitation: React.FC = () => {

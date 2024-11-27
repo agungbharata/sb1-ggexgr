@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { Calendar, Clock, MapPin, Save, Link, Plus, Minus } from 'lucide-react';
+import { Calendar, Clock, MapPin, Save, Link, Plus, Minus, Music } from 'lucide-react';
 import type { InvitationData } from '../types/invitation';
 import { supabase } from '../lib/supabase';
 import ImageUpload from './ImageUpload';
@@ -12,6 +12,7 @@ import { TemplateType } from './TemplateSelector';
 import { generateSlug, isSlugUnique, sanitizeSlug } from '../utils/slug';
 import CopyLinkButton from './CopyLinkButton';
 import { useParams, useNavigate } from 'react-router-dom';
+import { MusicLibrary } from './MusicLibrary';
 
 interface InvitationFormProps {
   onUpdate: (data: InvitationData) => void;
@@ -505,7 +506,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
                 value={formData.brideNames}
                 onChange={handleFieldChange}
                 placeholder="Nama Mempelai Wanita"
-                className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="px-4 py-2 w-full rounded-md border border-gray-300 focus:border-transparent"
               />
               <input
                 type="text"
@@ -513,7 +514,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
                 value={formData.groomNames}
                 onChange={handleFieldChange}
                 placeholder="Nama Mempelai Pria"
-                className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+                className="px-4 py-2 w-full rounded-md border border-gray-300 focus:border-transparent"
               />
             </div>
           </div>
@@ -528,16 +529,16 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       value={formData.brideParents}
       onChange={handleFieldChange}
       placeholder="Nama Orang Tua Mempelai Wanita"
-      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-    />
+      className="px-4 py-2 w-full rounded-md border border-gray-300 focus:border-transparent"
+      />
     <input
       type="text"
       name="groomParents"
       value={formData.groomParents}
       onChange={handleFieldChange}
       placeholder="Nama Orang Tua Mempelai Pria"
-      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-    />
+      className="px-4 py-2 w-full rounded-md border border-gray-300 focus:border-transparent"
+      />
   </div>
 </div>
           {/* Tautan Khusus */}
@@ -563,7 +564,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
                   value={customSlug}
                   onChange={handleSlugChange}
                   placeholder={defaultSlug}
-                  className={`flex-1 px-4 py-2 border rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent ${
+                  className={`flex-1 px-4 py-2 border rounded-md  focus:border-transparent ${
                     slugError ? 'border-red-300' : 'border-gray-300'
                   }`}
                 />
@@ -628,7 +629,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               name="akadDate"
               value={formData.akadDate}
               onChange={handleFieldChange}
-              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block px-4 py-2 pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
             <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
               <Calendar className="w-5 h-5 text-gray-400" />
@@ -644,7 +645,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               name="akadTime"
               value={formData.akadTime}
               onChange={handleFieldChange}
-              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block px-4 py-2 pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
             <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
               <Clock className="w-5 h-5 text-gray-400" />
@@ -661,7 +662,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               value={formData.akadVenue}
               onChange={handleFieldChange}
               placeholder="Masukkan lokasi akad nikah"
-              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block px-4 py-2 pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
             <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
               <MapPin className="w-5 h-5 text-gray-400" />
@@ -684,7 +685,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         handleGoogleMapsChange('akad', e.target.value);
       }}
       placeholder="Tempel tautan Google Maps untuk lokasi akad"
-      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+      className="block px-4 py-2 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
     />
   </div>
   {formData.akadMapsEmbed && (
@@ -712,7 +713,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         onChange={(e) => handleFieldChange({
           target: { name: 'showResepsi', value: e.target.checked }
         } as any)}
-        className="text-indigo-600 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+        className="px-4 py-2 text-indigo-600 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
       />
       <label className="font-medium">Tampilkan Acara Resepsi</label>
     </div>
@@ -727,7 +728,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               name="resepsiDate"
               value={formData.resepsiDate}
               onChange={handleFieldChange}
-              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block px-4 py-2 pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
             <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
               <Calendar className="w-5 h-5 text-gray-400" />
@@ -743,7 +744,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               name="resepsiTime"
               value={formData.resepsiTime}
               onChange={handleFieldChange}
-              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block px-4 py-2 pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
             <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
               <Clock className="w-5 h-5 text-gray-400" />
@@ -760,7 +761,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               value={formData.resepsiVenue}
               onChange={handleFieldChange}
               placeholder="Masukkan lokasi resepsi"
-              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="block px-4 py-2 pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
             <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
               <MapPin className="w-5 h-5 text-gray-400" />
@@ -783,7 +784,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         handleGoogleMapsChange('resepsi', e.target.value);
       }}
       placeholder="Tempel tautan Google Maps untuk lokasi resepsi"
-      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+      className="block px-4 py-2 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
     />
   </div>
   {formData.resepsiMapsEmbed && (
@@ -802,7 +803,37 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
   </div>
 </div>
 
-        
+        {/* Music Library Section */}
+<div className="space-y-4">
+  <div className="flex justify-between items-center">
+    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700">
+      <Music className="w-4 h-4" />
+      <span>Musik Latar</span>
+    </label>
+    <div className="flex items-center">
+      <label className="mr-2 text-sm text-gray-500">Tampilkan Music Library</label>
+      <input
+        type="checkbox"
+        checked={formData.showMusicLibrary}
+        onChange={(e) => handleFieldChange({
+          target: { name: 'showMusicLibrary', value: e.target.checked }
+        } as any)}
+        className="text-indigo-600 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+      />
+    </div>
+  </div>
+
+  {formData.showMusicLibrary && (
+    <div className="mt-4">
+      <MusicLibrary
+        selectedMusic={formData.backgroundMusic}
+        onSelect={(url) => handleFieldChange({
+          target: { name: 'backgroundMusic', value: url }
+        } as any)}
+      />
+    </div>
+  )}
+</div>
 
           {/* Galeri Foto */}
           <GalleryUpload
