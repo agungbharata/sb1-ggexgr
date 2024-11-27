@@ -1,6 +1,7 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Save, Link, Plus, Minus } from 'lucide-react';
-import type { InvitationData } from '../types';
+import type { InvitationData } from '../types/invitation';
+import { supabase } from '../lib/supabase';
 import ImageUpload from './ImageUpload';
 import GalleryUpload from './GalleryUpload';
 import BankAccounts from './BankAccounts';
@@ -11,24 +12,28 @@ import CopyLinkButton from './CopyLinkButton';
 
 interface InvitationFormProps {
   onUpdate: (data: InvitationData) => void;
+  onChange?: (data: InvitationData) => void;
   initialData: InvitationData;
   isEditing?: boolean;
 }
 
 const InvitationForm: React.FC<InvitationFormProps> = ({
   onUpdate,
+  onChange,
   initialData,
   isEditing = false,
 }) => {
-  const [formData, setFormData] = useState<InvitationData>(() => ({
-    ...initialData,
-    openingText: initialData.openingText || 'Bersama keluarga mereka',
-    invitationText: initialData.invitationText || 'Mengundang kehadiran Anda',
-  }));
+  const [formData, setFormData] = useState<InvitationData>(() => {
+    const mergedData = { ...initialData };
+    if (!mergedData.openingText) mergedData.openingText = 'Bersama keluarga mereka';
+    if (!mergedData.invitationText) mergedData.invitationText = 'Mengundang kehadiran Anda';
+    return mergedData;
+  });
+
   const [isSaving, setIsSaving] = useState(false);
-  const [savedUrl, setSavedUrl] = useState<string>('');
   const [customSlug, setCustomSlug] = useState(initialData.customSlug || '');
   const [slugError, setSlugError] = useState('');
+  const [savedUrl, setSavedUrl] = useState('');
   const [showSocialLinks, setShowSocialLinks] = useState(false);
   const [showBankAccounts, setShowBankAccounts] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -52,77 +57,14 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     }
   }, [fieldErrors]);
 
-  const defaultSlug = generateSlug(formData.brideNames, formData.groomNames);
-  const currentSlug = customSlug || defaultSlug;
-
-  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSlug = sanitizeSlug(e.target.value);
-    setCustomSlug(newSlug);
-
-    if (newSlug && !isSlugUnique(newSlug) && newSlug !== initialData.customSlug) {
-      setSlugError('URL ini sudah digunakan. Silakan pilih yang lain.');
-    } else {
-      setSlugError('');
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
-    setFieldErrors({});
-
-    try {
-      if (slugError) {
-        throw new Error('Silakan perbaiki kesalahan URL sebelum menyimpan.');
-      }
-
-      const requiredFields = {
-        brideNames: 'Nama Mempelai Wanita',
-        groomNames: 'Nama Mempelai Pria',
-        date: 'Tanggal Pernikahan',
-        time: 'Waktu Acara',
-        venue: 'Lokasi Acara'
-      };
-      
-      const missingFields = Object.entries(requiredFields)
-        .filter(([field]) => !formData[field])
-        .map(([_, label]) => label);
-
-      if (missingFields.length > 0) {
-        throw new Error(`Mohon lengkapi field berikut: ${missingFields.join(', ')}`);
-      }
-
-      // Deep clone data sebelum menyimpan
-      const dataToSave = JSON.parse(JSON.stringify(formData));
-      
-      // Update customSlug jika ada
-      if (customSlug) {
-        dataToSave.customSlug = customSlug;
-      }
-
-      await onUpdate(dataToSave);
-      setIsSaving(false);
-      setSavedUrl(`/wedding/${currentSlug}`);
-      alert('Data berhasil disimpan!');
-    } catch (error: any) {
-      console.error('Error saving invitation:', error);
-      setIsSaving(false);
-      setFieldErrors(prev => ({
-        ...prev,
-        submit: error.message || 'Error saving invitation. Please try again.'
-      }));
-      alert(error.message || 'Gagal menyimpan undangan. Silakan coba lagi.');
-    }
-  };
-
-  const handleImageUpload = useCallback((field: string, value: string) => {
+  const handleImageUpload = useCallback((field: string, value: string | undefined) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   }, []);
 
-  const handleGoogleMapsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGoogleMapsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     let embedUrl = '';
 
@@ -138,7 +80,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           query = `${match[1]},${match[2]}`;
         }
       } else if (url.includes('g.co/') || url.includes('goo.gl/')) {
-        query = formData.venue;
+        query = formData.venue || '';
       }
 
       if (query) {
@@ -149,15 +91,279 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     setFormData(prev => ({
       ...prev,
       googleMapsUrl: url,
-      googleMapsEmbed: embedUrl || `https://maps.google.com/maps?q=${encodeURIComponent(formData.venue)}&output=embed`,
+      googleMapsEmbed: embedUrl
     }));
-  };
+  }, [formData.venue]);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleSocialLinksChange = useCallback((socialLinks: any[]) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value,
+      socialLinks: socialLinks
     }));
+  }, []);
+
+  const handleBankAccountsChange = useCallback((bankAccounts: any[]) => {
+    setFormData(prev => ({
+      ...prev,
+      bankAccounts: bankAccounts
+    }));
+  }, []);
+
+  const handleRichTextChange = useCallback((field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  const generateSlug = (brideNames: string, groomNames: string): string => {
+    if (!brideNames || !groomNames) {
+      return '';
+    }
+
+    // Remove any special characters and convert to lowercase
+    const sanitizedBride = brideNames.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '') // Keep only letters, numbers, and spaces
+      .trim()
+      .replace(/\s+/g, '-'); // Replace spaces with hyphens
+
+    const sanitizedGroom = groomNames.toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '')
+      .trim()
+      .replace(/\s+/g, '-');
+
+    // Create the slug
+    const baseSlug = `${sanitizedBride}-${sanitizedGroom}`;
+    console.log('Generated slug:', baseSlug);
+
+    return baseSlug;
+  };
+
+  const defaultSlug = generateSlug(formData.brideNames, formData.groomNames);
+
+  useEffect(() => {
+    if (!customSlug && formData.brideNames && formData.groomNames) {
+      setCustomSlug('');
+      setSlugError('');
+    }
+  }, [formData.brideNames, formData.groomNames]);
+
+  useEffect(() => {
+    onChange?.(formData);
+  }, [formData, onChange]);
+
+  const validateForm = () => {
+    const errors: Record<string, string> = {};
+    const requiredFields = {
+      brideNames: 'Nama Mempelai Wanita',
+      groomNames: 'Nama Mempelai Pria',
+      date: 'Tanggal Pernikahan',
+      time: 'Waktu Acara',
+      venue: 'Lokasi Acara'
+    };
+
+    Object.entries(requiredFields).forEach(([field, label]) => {
+      if (!formData[field]) {
+        errors[field] = `${label} harus diisi`;
+      }
+    });
+
+    // Validate date format
+    if (formData.date && !isValidDate(formData.date)) {
+      errors.date = 'Format tanggal tidak valid';
+    }
+
+    // Validate time format
+    if (formData.time && !isValidTime(formData.time)) {
+      errors.time = 'Format waktu tidak valid';
+    }
+
+    return errors;
+  };
+
+  const isValidDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date.getTime());
+  };
+
+  const isValidTime = (timeString: string) => {
+    return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(timeString);
+  };
+
+  const checkSlugAvailability = async (slug: string): Promise<boolean> => {
+    try {
+      if (!slug || slug.trim() === '') {
+        return false;
+      }
+
+      const { data, error } = await supabase
+        .from('invitations')
+        .select('id')
+        .eq('slug', slug)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      return !data;
+    } catch (error) {
+      console.error('Error checking slug:', error);
+      throw new Error('Gagal memeriksa ketersediaan URL. Silakan coba lagi.');
+    }
+  };
+
+  const handleUpdate = async (data: InvitationData) => {
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError) {
+        throw new Error('Sesi login Anda telah berakhir. Silakan login kembali.');
+      }
+
+      if (!user) {
+        throw new Error('Anda harus login terlebih dahulu untuk menyimpan undangan.');
+      }
+
+      const errors = validateForm();
+      if (Object.keys(errors).length > 0) {
+        const errorMessages = Object.values(errors).join('\n');
+        throw new Error(`Mohon lengkapi data berikut:\n${errorMessages}`);
+      }
+
+      let customUrl = data.customSlug || generateSlug(data.brideNames, data.groomNames);
+
+      if (!isEditing || (isEditing && customUrl !== initialData.customSlug)) {
+        try {
+          const isAvailable = await checkSlugAvailability(customUrl);
+          if (!isAvailable) {
+            const timestamp = new Date().getTime().toString().slice(-4);
+            customUrl = `${customUrl}-${timestamp}`;
+          }
+        } catch (error) {
+          console.error('Error checking slug:', error);
+        }
+      }
+
+      // Convert the data to match the database schema
+      const invitationData = {
+        id: data.id || crypto.randomUUID(),
+        user_id: user.id,
+        slug: customUrl,
+        custom_slug: customUrl,
+        bride_names: data.brideNames,
+        groom_names: data.groomNames,
+        date: data.date,
+        time: data.time,
+        venue: data.venue,
+        opening_text: data.openingText,
+        invitation_text: data.invitationText,
+        cover_photo: data.coverPhoto,
+        bride_photo: data.bridePhoto,
+        groom_photo: data.groomPhoto,
+        gallery: data.gallery || [],
+        social_links: data.socialLinks || [],
+        bank_accounts: data.bankAccounts || [],
+        message: data.message,
+        google_maps_url: data.googleMapsUrl,
+        google_maps_embed: data.googleMapsEmbed,
+        created_at: data.createdAt || new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('Saving invitation data:', invitationData);
+
+      const { data: savedData, error: updateError } = await supabase
+        .from('invitations')
+        .upsert(invitationData, {
+          onConflict: 'id',
+          returning: 'minimal'
+        });
+
+      if (updateError) {
+        console.error('Supabase error:', updateError);
+        if (updateError.code === '23505') {
+          throw new Error('URL undangan sudah digunakan. Sistem akan membuat URL alternatif.');
+        }
+        throw new Error(`Gagal menyimpan undangan: ${updateError.message}`);
+      }
+
+      // Convert back to frontend format
+      const updatedData: InvitationData = {
+        ...data,
+        id: invitationData.id,
+        customSlug: invitationData.slug,
+        createdAt: invitationData.created_at,
+        updatedAt: invitationData.updated_at
+      };
+
+      onUpdate(updatedData);
+      return true;
+    } catch (error) {
+      console.error('Error saving invitation:', error);
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert('Terjadi kesalahan saat menyimpan undangan. Silakan coba lagi.');
+      }
+      throw error;
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      setIsSaving(true);
+      
+      const invitationData = {
+        ...formData,
+        id: isEditing ? formData.id : crypto.randomUUID(),
+        customSlug: customSlug || undefined,
+        updatedAt: new Date().toISOString(),
+      };
+
+      await handleUpdate(invitationData);
+
+      const finalSlug = customSlug || defaultSlug;
+      const invitationUrl = `${window.location.origin}/${finalSlug}`;
+      setSavedUrl(invitationUrl);
+
+      if (!isEditing) {
+        setFormData({
+          brideNames: '',
+          groomNames: '',
+          openingText: 'Bersama keluarga mereka',
+          invitationText: 'Mengundang kehadiran Anda',
+          gallery: [],
+          socialLinks: [],
+          bankAccounts: []
+        });
+        setCustomSlug('');
+      }
+
+      alert('Undangan berhasil disimpan!');
+    } catch (error) {
+      console.error('Submit error:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSlugChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSlug = sanitizeSlug(e.target.value);
+    setCustomSlug(newSlug);
+
+    if (newSlug && newSlug !== initialData.customSlug) {
+      const isAvailable = await checkSlugAvailability(newSlug);
+      if (!isAvailable) {
+        setSlugError('URL ini sudah digunakan. Silakan pilih yang lain.');
+      } else {
+        setSlugError('');
+      }
+    } else {
+      setSlugError('');
+    }
   };
 
   return (
@@ -173,8 +379,12 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       <ImageUpload
         label="Foto Sampul"
         value={formData.coverPhoto}
-        onChange={(base64) => handleImageUpload('coverPhoto', base64)}
-        onClear={() => handleImageUpload('coverPhoto', undefined)}
+        onChange={(base64) => {
+          handleImageUpload('coverPhoto', base64);
+        }}
+        onClear={() => {
+          handleImageUpload('coverPhoto', undefined);
+        }}
       />
 
       {/* Foto Mempelai */}
@@ -182,14 +392,22 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <ImageUpload
           label="Foto Mempelai Wanita"
           value={formData.bridePhoto}
-          onChange={(base64) => handleImageUpload('bridePhoto', base64)}
-          onClear={() => handleImageUpload('bridePhoto', undefined)}
+          onChange={(base64) => {
+            handleImageUpload('bridePhoto', base64);
+          }}
+          onClear={() => {
+            handleImageUpload('bridePhoto', undefined);
+          }}
         />
         <ImageUpload
           label="Foto Mempelai Pria"
           value={formData.groomPhoto}
-          onChange={(base64) => handleImageUpload('groomPhoto', base64)}
-          onClear={() => handleImageUpload('groomPhoto', undefined)}
+          onChange={(base64) => {
+            handleImageUpload('groomPhoto', base64);
+          }}
+          onClear={() => {
+            handleImageUpload('groomPhoto', undefined);
+          }}
         />
       </div>
 
@@ -260,7 +478,9 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <RichTextEditor
           label="Teks Pembuka"
           value={formData.openingText || ''}
-          onChange={(value) => handleInputChange('openingText', value)}
+          onChange={(value) => {
+            handleRichTextChange('openingText', value);
+          }}
           height={150}
         />
       </div>
@@ -270,7 +490,9 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <RichTextEditor
           label="Teks Undangan"
           value={formData.invitationText || ''}
-          onChange={(value) => handleInputChange('invitationText', value)}
+          onChange={(value) => {
+            handleRichTextChange('invitationText', value);
+          }}
           height={150}
         />
       </div>
@@ -349,11 +571,8 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       {/* Galeri Foto */}
       <GalleryUpload
         images={formData.gallery || []}
-        onChange={(urls) => {
-          setFormData(prev => ({
-            ...prev,
-            gallery: urls
-          }));
+        onChange={(gallery) => {
+          handleImageUpload('gallery', gallery);
         }}
         label="Galeri Foto"
       />
@@ -384,10 +603,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           <div className="pt-2">
             <SocialLinks
               links={formData.socialLinks || []}
-              onChange={(socialLinks) => {
-                const newData = { ...formData, socialLinks };
-                setFormData(newData);
-              }}
+              onChange={handleSocialLinksChange}
             />
           </div>
         )}
@@ -419,10 +635,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           <div className="pt-2">
             <BankAccounts
               accounts={formData.bankAccounts || []}
-              onChange={(bankAccounts) => {
-                const newData = { ...formData, bankAccounts };
-                setFormData(newData);
-              }}
+              onChange={handleBankAccountsChange}
             />
           </div>
         )}
@@ -433,7 +646,9 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <RichTextEditor
           label="Pesan Pribadi"
           value={formData.message || ''}
-          onChange={(value) => handleInputChange('message', value)}
+          onChange={(value) => {
+            handleRichTextChange('message', value);
+          }}
           height={200}
         />
       </div>
