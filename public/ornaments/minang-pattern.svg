@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="minang" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse">
+      <path d="M0 0h25v25H0z" fill="#F4E3CF"/>
+      <path d="M12.5 5l5 8.66H7.5l5-8.66z" fill="#C17817" opacity="0.2"/>
+      <path d="M12.5 20l-5-8.66h10l-5 8.66z" fill="#C17817" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <rect width="100" height="100" fill="url(#minang)"/>
+</svg>

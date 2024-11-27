@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="600" fill="#FCF5E5"/>
+  
+  <!-- Background Pattern -->
+  <defs>
+    <pattern id="bali-preview" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M0 0h30v30H0z" fill="#FCF5E5"/>
+      <circle cx="15" cy="15" r="10" fill="none" stroke="#BA8C63" stroke-width="0.5" opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="600" fill="url(#bali-preview)"/>
+  
+  <!-- Content -->
+  <g transform="translate(50, 50)">
+    <!-- Top Ornament -->
+    <circle cx="150" cy="40" r="35" fill="none" stroke="#BA8C63" stroke-width="2"/>
+    <circle cx="150" cy="40" r="20" fill="none" stroke="#BA8C63" stroke-width="1.5"/>
+    
+    <!-- Names -->
+    <text x="150" y="150" text-anchor="middle" font-family="serif" font-size="24" fill="#4A3933">
+      Pawiwahan
+    </text>
+    
+    <!-- Details -->
+    <rect x="25" y="200" width="250" height="100" fill="white" opacity="0.8" rx="5"/>
+    <text x="150" y="250" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#4A3933">
+      Upacara Mekala-kalaan
+    </text>
+    
+    <!-- Bottom Ornament -->
+    <path d="M25 350h250" stroke="#BA8C63" stroke-width="1.5"/>
+    <circle cx="150" cy="370" r="15" fill="none" stroke="#BA8C63" stroke-width="1"/>
+  </g>
+</svg>

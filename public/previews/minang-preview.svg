@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="600" fill="#F4E3CF"/>
+  
+  <!-- Background Pattern -->
+  <defs>
+    <pattern id="minang-preview" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse">
+      <path d="M0 0h25v25H0z" fill="#F4E3CF"/>
+      <path d="M12.5 5l5 8.66H7.5l5-8.66z" fill="#C17817" opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="600" fill="url(#minang-preview)"/>
+  
+  <!-- Content -->
+  <g transform="translate(50, 50)">
+    <!-- Top Ornament -->
+    <path d="M20 50c40-40 170-40 210 0" stroke="#C17817" stroke-width="2" fill="none"/>
+    
+    <!-- Names -->
+    <text x="150" y="150" text-anchor="middle" font-family="serif" font-size="24" fill="#3D2B1F">
+      Anak Daro &amp; Marapulai
+    </text>
+    
+    <!-- Details -->
+    <rect x="25" y="200" width="250" height="100" fill="white" opacity="0.8" rx="5"/>
+    <text x="150" y="250" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#3D2B1F">
+      Akad Nikah &amp; Baralek
+    </text>
+    
+    <!-- Bottom Ornament -->
+    <path d="M20 350c40 40 170 40 210 0" stroke="#C17817" stroke-width="2" fill="none"/>
+  </g>
+</svg>

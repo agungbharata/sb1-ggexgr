@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="bali" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M0 0h30v30H0z" fill="#FCF5E5"/>
+      <path d="M15 5c5.523 0 10 4.477 10 10s-4.477 10-10 10S5 20.523 5 15 9.477 5 15 5z" fill="none" stroke="#BA8C63" stroke-width="0.5" opacity="0.2"/>
+      <path d="M15 8c3.866 0 7 3.134 7 7s-3.134 7-7 7-7-3.134-7-7 3.134-7 7-7z" fill="none" stroke="#BA8C63" stroke-width="0.5" opacity="0.2"/>
+      <circle cx="15" cy="15" r="2" fill="#BA8C63" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <rect width="100" height="100" fill="url(#bali)"/>
+</svg>

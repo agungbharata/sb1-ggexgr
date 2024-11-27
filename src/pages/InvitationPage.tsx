@@ -41,6 +41,7 @@ export default function InvitationPage() {
             customSlug: data.slug,
             googleMapsUrl: data.google_maps_url,
             googleMapsEmbed: data.google_maps_embed,
+            template: data.template || 'javanese',
             message: data.message,
             createdAt: data.created_at,
             updatedAt: data.updated_at
@@ -51,50 +52,41 @@ export default function InvitationPage() {
         }
       } catch (err) {
         console.error('Error loading invitation:', err);
-        setError('Gagal memuat undangan');
+        setError('Terjadi kesalahan saat memuat undangan');
       } finally {
         setLoading(false);
       }
     };
 
-    if (invitationSlug) {
-      loadInvitation();
-    }
+    loadInvitation();
   }, [invitationSlug]);
 
+  // Return the template directly without any layout
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
       </div>
     );
   }
 
-  if (error || !invitation) {
+  if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-rose-50 flex items-center justify-center">
-        <div className="text-pink-500">{error || 'Undangan tidak ditemukan'}</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-red-500">{error}</div>
       </div>
     );
+  }
+
+  if (!invitation) {
+    return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {loading ? (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-        </div>
-      ) : error ? (
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-red-500">{error}</div>
-        </div>
-      ) : invitation ? (
-        <TemplateSelector
-          invitation={invitation}
-          onUpdate={(data) => setInvitation(data)}
-          isViewOnly={true}
-        />
-      ) : null}
-    </div>
+    <TemplateSelector
+      templateId={invitation.template || 'javanese'}
+      data={invitation}
+      isViewOnly={true}
+    />
   );
 }

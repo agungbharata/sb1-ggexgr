@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="modern-bg" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M0 0h80v80H0z" fill="#FFFFFF"/>
+      <path d="M20 40h40M40 20v40" stroke="#E67E22" stroke-width="0.5" opacity="0.1"/>
+      <circle cx="40" cy="40" r="2" fill="#E67E22" opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#modern-bg)"/>
+  <rect width="1920" height="1080" fill="white" opacity="0.7"/>
+</svg>

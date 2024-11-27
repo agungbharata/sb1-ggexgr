@@ -114,7 +114,7 @@ export default function AdminInvitations() {
                     <div className="mt-1 flex items-center space-x-4 text-sm text-gray-500">
                       <span className="flex items-center">
                         <Calendar className="w-4 h-4 mr-1" />
-                        {format(new Date(invitation.date), 'MMMM d, yyyy')}
+                        {invitation.date ? format(new Date(invitation.date), 'MMMM d, yyyy') : '-'}
                       </span>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(

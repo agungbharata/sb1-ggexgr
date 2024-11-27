@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import InvitationPreview from '../components/InvitationPreview';
+import TemplateSelector from '../components/TemplateSelector';
 import SplashScreen from '../components/SplashScreen';
 import { InvitationData } from '../types';
 import { generateSlug } from '../utils/slug';
@@ -74,10 +74,12 @@ const Invitation: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-pink-50 py-8 px-4">
-      <div className="container mx-auto flex justify-center">
-        <InvitationPreview invitation={invitation} />
-      </div>
+    <div className="min-h-screen">
+      <TemplateSelector
+        templateId={invitation.theme || 'javanese'}
+        data={invitation}
+        isViewOnly={true}
+      />
     </div>
   );
 };

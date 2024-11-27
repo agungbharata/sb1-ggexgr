@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="600" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="600" fill="#F5E6E8"/>
+  
+  <!-- Background Pattern -->
+  <defs>
+    <pattern id="sundanese-preview" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M0 0h20v20H0z" fill="#F5E6E8"/>
+      <circle cx="10" cy="10" r="3" fill="#A27B5C" opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="400" height="600" fill="url(#sundanese-preview)"/>
+  
+  <!-- Content -->
+  <g transform="translate(50, 50)">
+    <!-- Top Ornament -->
+    <path d="M150 0c30 0 50 20 50 40s-20 40-50 40-50-20-50-40 20-40 50-40z" 
+          fill="none" stroke="#A27B5C" stroke-width="2"/>
+    
+    <!-- Names -->
+    <text x="150" y="150" text-anchor="middle" font-family="serif" font-size="24" fill="#2C3639">
+      Nama Panganten
+    </text>
+    
+    <!-- Details -->
+    <rect x="25" y="200" width="250" height="100" fill="white" opacity="0.8" rx="5"/>
+    <text x="150" y="250" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#2C3639">
+      Akad Nikah &amp; Resepsi
+    </text>
+    
+    <!-- Bottom Ornament -->
+    <path d="M25 350h250" stroke="#A27B5C" stroke-width="2"/>
+    <path d="M150 370l20 40h-40l20-40z" fill="none" stroke="#A27B5C" stroke-width="1.5"/>
+  </g>
+</svg>
