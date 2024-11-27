@@ -97,8 +97,10 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                 </div>
               )}
             </div>
-            <h2 className="font-serif text-2xl text-[#2D1810] mb-2">{data?.brideNames}</h2>
-            <p className="text-[#2D1810]/80">Putri dari Bapak/Ibu ...</p>
+            <div className="text-center mb-8">
+              <h3 className="font-serif text-2xl text-[#2D1810] mb-4">{data?.brideNames}</h3>
+              <p className="text-[#2D1810]/80">Putri dari {data?.brideParents || 'Bapak/Ibu ...'}</p>
+            </div>
           </div>
 
           {/* Groom */}
@@ -117,8 +119,15 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                 </div>
               )}
             </div>
-            <h2 className="font-serif text-2xl text-[#2D1810] mb-2">{data?.groomNames}</h2>
-            <p className="text-[#2D1810]/80">Putra dari Bapak/Ibu ...</p>
+            <div className="flex justify-center mb-8">
+              <div className="w-32">
+                <img src="/ornaments/javanese-separator.png" alt="separator" className="w-full" />
+              </div>
+            </div>
+            <div className="text-center mb-16">
+              <h3 className="font-serif text-2xl text-[#2D1810] mb-4">{data?.groomNames}</h3>
+              <p className="text-[#2D1810]/80">Putra dari {data?.groomParents || 'Bapak/Ibu ...'}</p>
+            </div>
           </div>
         </div>
 

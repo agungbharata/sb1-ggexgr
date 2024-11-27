@@ -2,48 +2,38 @@ export interface InvitationData {
   id?: string;
   brideNames: string;
   groomNames: string;
-  date?: string;
-  time?: string;
-  venue?: string;
-  // Akad fields
-  showAkad?: boolean;
-  akadDate?: string;
-  akadTime?: string;
-  akadVenue?: string;
-  // Resepsi fields
-  showResepsi?: boolean;
-  resepsiDate?: string;
-  resepsiTime?: string;
-  resepsiVenue?: string;
-  // Other fields
-  openingText?: string;
-  invitationText?: string;
-  message?: string;
-  slug?: string;
-  customSlug?: string;
+  brideParents: string;
+  groomParents: string;
+  showAkad: boolean;
+  akadDate: string;
+  akadTime: string;
+  akadVenue: string;
+  showResepsi: boolean;
+  resepsiDate: string;
+  resepsiTime: string;
+  resepsiVenue: string;
+  openingText: string;
+  invitationText: string;
   coverPhoto?: string;
   bridePhoto?: string;
   groomPhoto?: string;
-  gallery?: string[];
+  gallery: string[];
+  socialLinks: any[];
+  bankAccounts: any[];
+  customSlug?: string;
   googleMapsUrl?: string;
   googleMapsEmbed?: string;
-  socialLinks?: SocialLink[];
-  bankAccounts?: BankAccount[];
+  template?: string;
   theme?: string;
   fontFamily?: string;
   primaryColor?: string;
   secondaryColor?: string;
-  backgroundMusic?: string;
-  backgroundImage?: string;
-  status?: 'draft' | 'published';
+  status?: string;
   isPublished?: boolean;
-  viewCount?: number;
-  maxGuests?: number;
   rsvpEnabled?: boolean;
   commentsEnabled?: boolean;
   createdAt?: string;
   updatedAt?: string;
-  template?: TemplateType;
 }
 
 export interface DatabaseInvitation {
@@ -92,6 +82,8 @@ export interface BankAccount {
 export const defaultFormData: InvitationData = {
   brideNames: '',
   groomNames: '',
+  brideParents: '',
+  groomParents: '',
   openingText: 'Bersama keluarga mereka',
   invitationText: 'Mengundang kehadiran Anda',
   gallery: [],

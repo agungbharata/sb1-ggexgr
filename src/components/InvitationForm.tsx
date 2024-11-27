@@ -303,6 +303,16 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         custom_slug: customUrl,
         bride_names: data.brideNames,
         groom_names: data.groomNames,
+        bride_parents: data.brideParents,
+        groom_parents: data.groomParents,
+        show_akad: data.showAkad,
+        akad_date: data.akadDate,
+        akad_time: data.akadTime,
+        akad_venue: data.akadVenue,
+        show_resepsi: data.showResepsi,
+        resepsi_date: data.resepsiDate,
+        resepsi_time: data.resepsiTime,
+        resepsi_venue: data.resepsiVenue,
         date: data.date,
         time: data.time,
         venue: data.venue,
@@ -418,15 +428,15 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-12 h-12 rounded-full border-t-2 border-b-2 border-emerald-500 animate-spin"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-red-500 text-center p-4">
+      <div className="p-4 text-center text-red-500">
         {error}
       </div>
     );
@@ -445,7 +455,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           {/* Template Selection */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-700">Pilih Template Undangan</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {(['javanese', 'sundanese', 'minang', 'bali', 'modern'] as TemplateType[]).map((templateId) => (
                 <TemplatePreview
                   key={templateId}
@@ -507,6 +517,28 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
             </div>
           </div>
 
+{/* Nama Orang Tua */}
+<div className="space-y-2">
+  <label className="block text-sm font-medium text-gray-700">Nama Orang Tua</label>
+  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <input
+      type="text"
+      name="brideParents"
+      value={formData.brideParents}
+      onChange={handleFieldChange}
+      placeholder="Nama Orang Tua Mempelai Wanita"
+      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+    />
+    <input
+      type="text"
+      name="groomParents"
+      value={formData.groomParents}
+      onChange={handleFieldChange}
+      placeholder="Nama Orang Tua Mempelai Pria"
+      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+    />
+  </div>
+</div>
           {/* Tautan Khusus */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
@@ -566,42 +598,148 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
             />
           </div>
 
-          {/* Tanggal dan Waktu Pernikahan */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                <Calendar className="inline-block mr-2 w-4 h-4" />
-                Tanggal Pernikahan
-              </label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleFieldChange}
-                className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              />
-              {fieldErrors.date && (
-                <p className="text-sm text-red-500">{fieldErrors.date}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
-                <Clock className="inline-block mr-2 w-4 h-4" />
-                Waktu Akad/Resepsi
-              </label>
-              <input
-                type="time"
-                name="time"
-                value={formData.time}
-                onChange={handleFieldChange}
-                className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              />
-              {fieldErrors.time && (
-                <p className="text-sm text-red-500">{fieldErrors.time}</p>
-              )}
+{/* Detail Acara */}
+<div className="space-y-6">
+  <h3 className="text-lg font-medium text-gray-700">Detail Acara</h3>
+  
+  {/* Akad Section */}
+  <div className="p-4 space-y-4 rounded-md border">
+    <div className="flex items-center space-x-2">
+      <input
+        type="checkbox"
+        name="showAkad"
+        checked={formData.showAkad}
+        onChange={(e) => handleFieldChange({
+          target: { name: 'showAkad', value: e.target.checked }
+        } as any)}
+        className="text-indigo-600 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+      />
+      <label className="font-medium">Tampilkan Acara Akad</label>
+    </div>
+    
+    {formData.showAkad && (
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Tanggal Akad</label>
+          <div className="relative mt-1 rounded-md shadow-sm">
+            <input
+              type="date"
+              name="akadDate"
+              value={formData.akadDate}
+              onChange={handleFieldChange}
+              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+            <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+              <Calendar className="w-5 h-5 text-gray-400" />
             </div>
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Waktu Akad</label>
+          <div className="relative mt-1 rounded-md shadow-sm">
+            <input
+              type="time"
+              name="akadTime"
+              value={formData.akadTime}
+              onChange={handleFieldChange}
+              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+            <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+              <Clock className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700">Lokasi Akad</label>
+          <div className="relative mt-1 rounded-md shadow-sm">
+            <input
+              type="text"
+              name="akadVenue"
+              value={formData.akadVenue}
+              onChange={handleFieldChange}
+              placeholder="Masukkan lokasi akad nikah"
+              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+            <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+              <MapPin className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+
+  {/* Resepsi Section */}
+  <div className="p-4 space-y-4 rounded-md border">
+    <div className="flex items-center space-x-2">
+      <input
+        type="checkbox"
+        name="showResepsi"
+        checked={formData.showResepsi}
+        onChange={(e) => handleFieldChange({
+          target: { name: 'showResepsi', value: e.target.checked }
+        } as any)}
+        className="text-indigo-600 rounded border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+      />
+      <label className="font-medium">Tampilkan Acara Resepsi</label>
+    </div>
+    
+    {formData.showResepsi && (
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Tanggal Resepsi</label>
+          <div className="relative mt-1 rounded-md shadow-sm">
+            <input
+              type="date"
+              name="resepsiDate"
+              value={formData.resepsiDate}
+              onChange={handleFieldChange}
+              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+            <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+              <Calendar className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Waktu Resepsi</label>
+          <div className="relative mt-1 rounded-md shadow-sm">
+            <input
+              type="time"
+              name="resepsiTime"
+              value={formData.resepsiTime}
+              onChange={handleFieldChange}
+              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+            <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+              <Clock className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700">Lokasi Resepsi</label>
+          <div className="relative mt-1 rounded-md shadow-sm">
+            <input
+              type="text"
+              name="resepsiVenue"
+              value={formData.resepsiVenue}
+              onChange={handleFieldChange}
+              placeholder="Masukkan lokasi resepsi"
+              className="block pl-10 w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
+            <div className="flex absolute inset-y-0 left-0 items-center pl-3 pointer-events-none">
+              <MapPin className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</div>
 
           {/* Lokasi Acara */}
           <div className="space-y-2">

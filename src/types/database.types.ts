@@ -52,6 +52,22 @@ export interface Database {
           is_published: boolean
           created_at: string
           updated_at: string
+          bride_names: string
+          groom_names: string
+          bride_parents: string | null
+          groom_parents: string | null
+          date: string | null
+          time: string | null
+          show_akad: boolean
+          akad_date: string | null
+          akad_time: string | null
+          akad_venue: string | null
+          show_resepsi: boolean
+          resepsi_date: string | null
+          resepsi_time: string | null
+          resepsi_venue: string | null
+          opening_text: string | null
+          invitation_text: string | null
         }
         Insert: {
           id?: string
@@ -66,6 +82,22 @@ export interface Database {
           is_published?: boolean
           created_at?: string
           updated_at?: string
+          bride_names?: string
+          groom_names?: string
+          bride_parents?: string | null
+          groom_parents?: string | null
+          date?: string | null
+          time?: string | null
+          show_akad?: boolean
+          akad_date?: string | null
+          akad_time?: string | null
+          akad_venue?: string | null
+          show_resepsi?: boolean
+          resepsi_date?: string | null
+          resepsi_time?: string | null
+          resepsi_venue?: string | null
+          opening_text?: string | null
+          invitation_text?: string | null
         }
         Update: {
           id?: string
@@ -80,6 +112,22 @@ export interface Database {
           is_published?: boolean
           created_at?: string
           updated_at?: string
+          bride_names?: string
+          groom_names?: string
+          bride_parents?: string | null
+          groom_parents?: string | null
+          date?: string | null
+          time?: string | null
+          show_akad?: boolean
+          akad_date?: string | null
+          akad_time?: string | null
+          akad_venue?: string | null
+          show_resepsi?: boolean
+          resepsi_date?: string | null
+          resepsi_time?: string | null
+          resepsi_venue?: string | null
+          opening_text?: string | null
+          invitation_text?: string | null
         }
       }
     }
