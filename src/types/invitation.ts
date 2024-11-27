@@ -1,24 +1,62 @@
 export interface InvitationData {
   id?: string;
-  brideNames: string;
-  groomNames: string;
+  bride_names: string;
+  groom_names: string;
   date?: string;
   time?: string;
   venue?: string;
-  coverPhoto?: string;
-  bridePhoto?: string;
-  groomPhoto?: string;
-  gallery?: string[];
-  googleMapsUrl?: string;
-  googleMapsEmbed?: string;
-  openingText?: string;
-  invitationText?: string;
+  opening_text?: string;
+  invitation_text?: string;
   message?: string;
-  backgroundMusic?: string;
-  socialLinks?: SocialLink[];
-  bankAccounts?: BankAccount[];
-  customSlug?: string;
-  updatedAt?: string;
+  slug?: string;
+  custom_slug?: string;
+  cover_photo?: string;
+  bride_photo?: string;
+  groom_photo?: string;
+  gallery?: string[];
+  google_maps_url?: string;
+  google_maps_embed?: string;
+  social_links?: SocialLink[];
+  bank_accounts?: BankAccount[];
+  theme?: string;
+  font_family?: string;
+  primary_color?: string;
+  secondary_color?: string;
+  background_music?: string;
+  background_image?: string;
+  status?: 'draft' | 'published';
+  is_published?: boolean;
+  view_count?: number;
+  max_guests?: number;
+  rsvp_enabled?: boolean;
+  comments_enabled?: boolean;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface DatabaseInvitation {
+  id: string;
+  user_id: string;
+  url_slug: string;
+  bride_names: string;
+  groom_names: string;
+  date?: string;
+  time?: string;
+  venue?: string;
+  opening_text?: string;
+  invitation_text?: string;
+  cover_photo?: string;
+  bride_photo?: string;
+  groom_photo?: string;
+  gallery?: string[];
+  social_links?: SocialLink[];
+  bank_accounts?: BankAccount[];
+  message?: string;
+  custom_slug?: string;
+  google_maps_url?: string;
+  google_maps_embed?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface SocialLink {
@@ -28,17 +66,25 @@ export interface SocialLink {
 }
 
 export interface BankAccount {
-  bank: string;
-  accountNumber: string;
-  accountName: string;
+  bank_name: string;
+  account_number: string;
+  account_holder: string;
 }
 
 export const defaultFormData: InvitationData = {
-  brideNames: '',
-  groomNames: '',
-  openingText: 'Bersama keluarga mereka',
-  invitationText: 'Mengundang kehadiran Anda',
+  bride_names: '',
+  groom_names: '',
+  opening_text: 'Bersama keluarga mereka',
+  invitation_text: 'Mengundang kehadiran Anda',
   gallery: [],
-  socialLinks: [],
-  bankAccounts: []
+  social_links: [],
+  bank_accounts: [],
+  theme: 'default',
+  font_family: 'default',
+  primary_color: '#000000',
+  secondary_color: '#ffffff',
+  status: 'draft',
+  is_published: false,
+  rsvp_enabled: true,
+  comments_enabled: true
 };

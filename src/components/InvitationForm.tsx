@@ -9,6 +9,7 @@ import SocialLinks from './SocialLinks';
 import RichTextEditor from './RichTextEditor';
 import { generateSlug, isSlugUnique, sanitizeSlug } from '../utils/slug';
 import CopyLinkButton from './CopyLinkButton';
+import { useParams, useNavigate } from 'react-router-dom';
 
 interface InvitationFormProps {
   onUpdate: (data: InvitationData) => void;
@@ -23,13 +24,16 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
   initialData,
   isEditing = false,
 }) => {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<InvitationData>(() => {
     const mergedData = { ...initialData };
     if (!mergedData.openingText) mergedData.openingText = 'Bersama keluarga mereka';
     if (!mergedData.invitationText) mergedData.invitationText = 'Mengundang kehadiran Anda';
     return mergedData;
   });
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [customSlug, setCustomSlug] = useState(initialData.customSlug || '');
   const [slugError, setSlugError] = useState('');
@@ -39,6 +43,72 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    const loadInvitation = async () => {
+      if (!id) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('invitations')
+          .select('*')
+          .eq('id', id)
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          setFormData({
+            id: data.id,
+            brideNames: data.bride_names,
+            groomNames: data.groom_names,
+            date: data.date,
+            time: data.time,
+            venue: data.venue,
+            openingText: data.opening_text,
+            invitationText: data.invitation_text,
+            coverPhoto: data.cover_photo,
+            bridePhoto: data.bride_photo,
+            groomPhoto: data.groom_photo,
+            gallery: data.gallery || [],
+            socialLinks: data.social_links || [],
+            bankAccounts: data.bank_accounts || [],
+            customSlug: data.slug,
+            googleMapsUrl: data.google_maps_url,
+            googleMapsEmbed: data.google_maps_embed,
+            createdAt: data.created_at,
+            updatedAt: data.updated_at
+          });
+        }
+      } catch (err) {
+        console.error('Error loading invitation:', err);
+        setError('Failed to load invitation');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInvitation();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500 text-center p-4">
+        {error}
+      </div>
+    );
+  }
 
   const handleFieldChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;

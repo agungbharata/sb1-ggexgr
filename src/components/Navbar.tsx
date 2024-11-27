@@ -52,7 +52,7 @@ export default function Navbar() {
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
-            <div className="flex items-center flex-shrink-0">
+            <div className="flex flex-shrink-0 items-center">
               <Link to="/dashboard" className="text-xl font-bold text-gray-800">
                 WeddingGas
               </Link>
