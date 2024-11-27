@@ -150,7 +150,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelect, selectedMu
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4 bg-[#F9F6F0] rounded-lg">
       <audio ref={audioRef} className="hidden" />
       
       {loading ? (
@@ -162,41 +162,39 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelect, selectedMu
           {musicList.map((music) => (
             <div
               key={music.id}
-              className={`p-4 rounded-lg border ${
+              className={`flex items-center justify-between p-3 bg-white rounded-md hover:bg-[#F2D4B7] transition-colors ${
                 selectedMusic === music.url
-                  ? 'border-indigo-500 bg-indigo-50'
+                  ? 'border-indigo-500'
                   : 'border-gray-200 hover:border-gray-300'
               }`}
             >
-              <div className="flex justify-between items-center">
-                <div className="flex-1">
-                  <h3 className="text-sm font-medium text-gray-900">{music.title}</h3>
-                  <p className="text-sm text-gray-500">{music.artist}</p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <button
-                    type="button"
-                    onClick={() => handlePlay(music.url)}
-                    className="p-2 text-gray-400 rounded-full hover:text-gray-500 hover:bg-gray-100"
-                  >
-                    {currentlyPlaying === music.url ? (
-                      <Pause className="w-5 h-5" />
-                    ) : (
-                      <Play className="w-5 h-5" />
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSelect(music.url)}
-                    className={`px-3 py-1 text-sm font-medium rounded-md ${
-                      selectedMusic === music.url
-                        ? 'bg-indigo-100 text-indigo-700'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                  >
-                    {selectedMusic === music.url ? 'Terpilih' : 'Pilih'}
-                  </button>
-                </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-medium text-gray-900">{music.title}</h3>
+                <p className="text-sm text-gray-500">{music.artist}</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => handlePlay(music.url)}
+                  className="p-2 rounded-full hover:bg-[#C8A4A4] hover:text-white transition-colors"
+                >
+                  {currentlyPlaying === music.url ? (
+                    <Pause className="w-5 h-5" />
+                  ) : (
+                    <Play className="w-5 h-5" />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelect(music.url)}
+                  className={`px-3 py-1 text-sm rounded-md ${
+                    selectedMusic === music.url
+                      ? 'bg-[#C8A4A4] text-white'
+                      : 'text-gray-700 hover:bg-[#B69090] transition-colors'
+                  }`}
+                >
+                  {selectedMusic === music.url ? 'Terpilih' : 'Pilih'}
+                </button>
               </div>
             </div>
           ))}

@@ -2,6 +2,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../config/supabase'
 import { useState, useEffect } from 'react'
+import { colors } from '../styles/colors'
 
 interface Profile {
   username: string
@@ -48,38 +49,38 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-white shadow">
+    <nav className="bg-gradient-to-r from-[#FAF3E0] to-white shadow">
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <div className="flex flex-shrink-0 items-center">
-              <Link to="/dashboard" className="text-xl font-bold text-gray-800">
+              <Link to="/dashboard" className="text-xl font-bold text-[#8B7355] hover:text-[#D4B996] transition-colors duration-200">
                 WeddingGas
               </Link>
             </div>
           </div>
           <div className="flex items-center">
             <div className="relative ml-3">
-              <div className="flex items-center">
+              <div className="flex items-center space-x-4">
                 {profile?.avatar_url && (
                   <img
-                    className="w-8 h-8 rounded-full"
+                    className="w-8 h-8 rounded-full ring-2 ring-[#D4B996]"
                     src={profile.avatar_url}
                     alt="Profile"
                   />
                 )}
-                <span className="mx-2 text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-[#8B7355]">
                   {profile?.username || user?.email}
                 </span>
                 <Link
                   to="/profile/edit"
-                  className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="px-3 py-2 text-sm font-medium text-[#8B7355] hover:text-[#D4B996] hover:bg-[#F5E9E2] rounded-md transition-colors duration-200"
                 >
                   Edit Profile
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+                  className="px-3 py-2 text-sm font-medium text-[#8B7355] hover:text-[#D4B996] hover:bg-[#F5E9E2] rounded-md transition-colors duration-200"
                 >
                   Sign Out
                 </button>

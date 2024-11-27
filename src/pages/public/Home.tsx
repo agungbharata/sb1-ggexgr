@@ -1,25 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { colors } from '../../styles/colors';
 
 const Home: React.FC = () => {
   return (
-    <div>
+    <div className="bg-[#FAF3E0]"> 
       {/* Hero Section */}
-      <section className="bg-white">
+      <section className="bg-gradient-to-b from-[#F5E9E2] to-[#FAF3E0]"> 
         <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+            <h1 className="text-4xl tracking-tight font-extrabold text-[#8B7355] sm:text-5xl md:text-6xl"> 
               <span className="block">Create Beautiful</span>
-              <span className="block text-emerald-600">Digital Wedding Invitations</span>
+              <span className="block text-[#D4B996]">Digital Wedding Invitations</span> 
             </h1>
-            <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+            <p className="mt-3 max-w-md mx-auto text-base text-[#6B5B4E] sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
               Design and share your perfect wedding invitation. Easy to customize, beautiful to share.
             </p>
             <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
               <div className="rounded-md shadow">
                 <Link
                   to="/auth/register"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700 md:py-4 md:text-lg md:px-10"
+                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-[#FAF3E0] bg-[#D4B996] hover:bg-[#C4A576] transition-colors duration-200 md:py-4 md:text-lg md:px-10"
                 >
                   Get Started
                 </Link>
@@ -27,7 +28,7 @@ const Home: React.FC = () => {
               <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
                 <Link
                   to="/features"
-                  className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-emerald-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
+                  className="w-full flex items-center justify-center px-8 py-3 border border-[#D4B996] text-base font-medium rounded-md text-[#8B7355] bg-white hover:bg-[#F5E9E2] transition-colors duration-200 md:py-4 md:text-lg md:px-10"
                 >
                   Learn More
                 </Link>
@@ -38,11 +39,11 @@ const Home: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 bg-gray-50">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:text-center">
-            <h2 className="text-base text-emerald-600 font-semibold tracking-wide uppercase">Features</h2>
-            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+            <h2 className="text-base text-[#D4B996] font-semibold tracking-wide uppercase">Features</h2>
+            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-[#8B7355] sm:text-4xl">
               Everything you need for your digital invitation
             </p>
           </div>
@@ -71,12 +72,12 @@ const Home: React.FC = () => {
                     'Share your invitation via link, email, or social media.',
                 },
               ].map((feature) => (
-                <div key={feature.title} className="relative">
+                <div key={feature.title} className="relative p-6 bg-[#F5E9E2] rounded-lg hover:bg-[#E5D4B7] transition-colors duration-200">
                   <div className="relative">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    <h3 className="text-lg leading-6 font-medium text-[#8B7355]">
                       {feature.title}
                     </h3>
-                    <p className="mt-2 text-base text-gray-500">
+                    <p className="mt-2 text-base text-[#6B5B4E]">
                       {feature.description}
                     </p>
                   </div>
@@ -88,17 +89,17 @@ const Home: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-emerald-700">
+      <section className="bg-gradient-to-b from-[#D4B996] to-[#C4A576]"> 
         <div className="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
           <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
             <span className="block">Ready to create your invitation?</span>
           </h2>
-          <p className="mt-4 text-lg leading-6 text-emerald-200">
+          <p className="mt-4 text-lg leading-6 text-[#FAF3E0]">
             Start creating your perfect wedding invitation today.
           </p>
           <Link
             to="/auth/register"
-            className="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-emerald-600 bg-white hover:bg-emerald-50 sm:w-auto"
+            className="mt-8 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-[#8B7355] bg-white hover:bg-[#F5E9E2] transition-colors duration-200 sm:w-auto"
           >
             Get Started
           </Link>
