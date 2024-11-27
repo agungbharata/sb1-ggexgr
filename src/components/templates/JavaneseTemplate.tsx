@@ -60,6 +60,17 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
       {/* Content Section */}
       <div className="max-w-4xl mx-auto px-4 py-16 bg-[#F6E6D9]">
+        {/* Cover Photo */}
+        {data?.coverPhoto && (
+          <div className="mb-16">
+            <img
+              src={data.coverPhoto}
+              alt="Cover"
+              className="w-full h-[400px] object-cover rounded-lg shadow-lg"
+            />
+          </div>
+        )}
+
         {/* Opening */}
         <div className="text-center mb-16">
           <div 
@@ -109,14 +120,6 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
             <h2 className="font-serif text-2xl text-[#2D1810] mb-2">{data?.groomNames}</h2>
             <p className="text-[#2D1810]/80">Putra dari Bapak/Ibu ...</p>
           </div>
-        </div>
-
-        {/* Invitation Text */}
-        <div className="text-center mb-16">
-          <div 
-            className="prose prose-lg mx-auto text-[#2D1810]"
-            dangerouslySetInnerHTML={{ __html: data?.invitationText || 'Mengundang kehadiran Anda' }}
-          />
         </div>
 
         {/* Date & Venue */}
@@ -169,16 +172,6 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           </div>
         )}
 
-        {/* Message */}
-        {data?.message && (
-          <div className="text-center mb-16">
-            <div 
-              className="prose prose-lg mx-auto text-[#2D1810]"
-              dangerouslySetInnerHTML={{ __html: data.message }}
-            />
-          </div>
-        )}
-
         {/* Bank Accounts */}
         {data?.bankAccounts && data.bankAccounts.length > 0 && (
           <div className="text-center mb-16">
@@ -186,13 +179,9 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
             <div className="space-y-6">
               {data.bankAccounts.map((account, index) => (
                 <div key={index} className="bg-white/50 p-6 rounded-lg shadow-lg">
-                  <img
-                    src={`/bank-logos/${account.bank.toLowerCase()}.png`}
-                    alt={account.bank}
-                    className="h-8 mx-auto mb-4"
-                  />
-                  <p className="text-lg text-[#2D1810] mb-2">{account.number}</p>
-                  <p className="text-[#2D1810]/80">a.n {account.holder}</p>
+                  <p className="text-lg text-[#2D1810] mb-2">{account.bankName}</p>
+                  <p className="text-lg text-[#2D1810] mb-2">{account.accountNumber}</p>
+                  <p className="text-[#2D1810]/80">a.n {account.accountHolder}</p>
                 </div>
               ))}
             </div>
@@ -201,22 +190,18 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
         {/* Social Links */}
         {data?.socialLinks && data.socialLinks.length > 0 && (
-          <div className="text-center">
+          <div className="text-center mb-16">
             <h3 className="font-serif text-2xl text-[#2D1810] mb-8">Media Sosial</h3>
             <div className="flex justify-center space-x-6">
               {data.socialLinks.map((link, index) => (
                 <a
                   key={index}
-                  href={`https://${link.platform}.com/${link.username}`}
+                  href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-[#2D1810] hover:text-[#2D1810]/80 transition-colors"
                 >
-                  <img
-                    src={`/social-icons/${link.platform}.svg`}
-                    alt={link.platform}
-                    className="w-8 h-8"
-                  />
+                  {link.platform}
                 </a>
               ))}
             </div>
