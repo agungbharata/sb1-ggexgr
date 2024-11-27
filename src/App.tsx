@@ -15,7 +15,8 @@ import AdminDashboard from './pages/admin/Dashboard';
 import AdminInvitations from './pages/admin/Invitations';
 import AdminSettings from './pages/admin/Settings';
 import AdminProfile from './pages/admin/Profile';
-import InvitationForm from './pages/admin/InvitationForm';
+import NewInvitation from './pages/admin/NewInvitation';
+import EditInvitation from './pages/admin/EditInvitation';
 import Gallery from './pages/admin/Gallery';
 import Music from './pages/admin/Music';
 
@@ -46,8 +47,8 @@ function App() {
             <Route path="/dashboard" element={<PrivateRoute><AdminLayout /></PrivateRoute>}>
               <Route index element={<AdminDashboard />} />
               <Route path="invitations" element={<AdminInvitations />} />
-              <Route path="invitations/new" element={<InvitationForm />} />
-              <Route path="invitations/edit/:id" element={<InvitationForm />} />
+              <Route path="invitations/new" element={<NewInvitation />} />
+              <Route path="invitations/edit/:id" element={<EditInvitation />} />
               <Route path="gallery" element={<Gallery />} />
               <Route path="music" element={<Music />} />
               <Route path="settings" element={<AdminSettings />} />

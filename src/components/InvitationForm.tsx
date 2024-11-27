@@ -41,8 +41,79 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
   const [showSocialLinks, setShowSocialLinks] = useState(false);
   const [showBankAccounts, setShowBankAccounts] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-
   const isInitialMount = useRef(true);
+
+  const handleFieldChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  }, [fieldErrors]);
+
+  const handleImageUpload = useCallback((field: string, value: string | undefined | string[]) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  const handleGoogleMapsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    let embedUrl = '';
+
+    if (url) {
+      let query = '';
+      if (url.includes('place/')) {
+        const placePath = url.split('place/')[1];
+        query = placePath.split('/')[0].split('?')[0];
+      } else if (url.includes('@')) {
+        const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
+        if (match) {
+          query = `${match[1]},${match[2]}`;
+        }
+      }
+
+      if (query) {
+        embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
+      }
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      googleMapsUrl: url,
+      googleMapsEmbed: embedUrl
+    }));
+  }, []);
+
+  const handleSocialLinksChange = useCallback((socialLinks: any[]) => {
+    setFormData(prev => ({
+      ...prev,
+      socialLinks
+    }));
+  }, []);
+
+  const handleBankAccountsChange = useCallback((bankAccounts: any[]) => {
+    setFormData(prev => ({
+      ...prev,
+      bankAccounts
+    }));
+  }, []);
+
+  const handleRichTextChange = useCallback((field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
 
   useEffect(() => {
     const loadInvitation = async () => {
@@ -94,115 +165,25 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     loadInvitation();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-red-500 text-center p-4">
-        {error}
-      </div>
-    );
-  }
-
-  const handleFieldChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Clear error for this field if any
-    if (fieldErrors[name]) {
-      setFieldErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
-    }
-  }, [fieldErrors]);
-
-  const handleImageUpload = useCallback((field: string, value: string | undefined) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }, []);
-
-  const handleGoogleMapsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const url = e.target.value;
-    let embedUrl = '';
-
-    if (url) {
-      let query = '';
-
-      if (url.includes('place/')) {
-        const placePath = url.split('place/')[1];
-        query = placePath.split('/')[0].split('?')[0];
-      } else if (url.includes('@')) {
-        const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
-        if (match) {
-          query = `${match[1]},${match[2]}`;
-        }
-      } else if (url.includes('g.co/') || url.includes('goo.gl/')) {
-        query = formData.venue || '';
-      }
-
-      if (query) {
-        embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
-      }
-    }
-
-    setFormData(prev => ({
-      ...prev,
-      googleMapsUrl: url,
-      googleMapsEmbed: embedUrl
-    }));
-  }, [formData.venue]);
-
-  const handleSocialLinksChange = useCallback((socialLinks: any[]) => {
-    setFormData(prev => ({
-      ...prev,
-      socialLinks: socialLinks
-    }));
-  }, []);
-
-  const handleBankAccountsChange = useCallback((bankAccounts: any[]) => {
-    setFormData(prev => ({
-      ...prev,
-      bankAccounts: bankAccounts
-    }));
-  }, []);
-
-  const handleRichTextChange = useCallback((field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  }, []);
+  useEffect(() => {
+    onChange?.(formData);
+  }, [formData, onChange]);
 
   const generateSlug = (brideNames: string, groomNames: string): string => {
     if (!brideNames || !groomNames) {
       return '';
     }
 
-    // Remove any special characters and convert to lowercase
     const sanitizedBride = brideNames.toLowerCase()
-      .replace(/[^a-z0-9\s]/g, '') // Keep only letters, numbers, and spaces
+      .replace(/[^a-z0-9\s]/g, '')
       .trim()
-      .replace(/\s+/g, '-'); // Replace spaces with hyphens
+      .replace(/\s+/g, '-');
 
     const sanitizedGroom = groomNames.toLowerCase()
       .replace(/[^a-z0-9\s]/g, '')
       .trim()
       .replace(/\s+/g, '-');
 
-    // Create the slug
     const baseSlug = `${sanitizedBride}-${sanitizedGroom}`;
     console.log('Generated slug:', baseSlug);
 
@@ -217,10 +198,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       setSlugError('');
     }
   }, [formData.brideNames, formData.groomNames]);
-
-  useEffect(() => {
-    onChange?.(formData);
-  }, [formData, onChange]);
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -238,12 +215,10 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       }
     });
 
-    // Validate date format
     if (formData.date && !isValidDate(formData.date)) {
       errors.date = 'Format tanggal tidak valid';
     }
 
-    // Validate time format
     if (formData.time && !isValidTime(formData.time)) {
       errors.time = 'Format waktu tidak valid';
     }
@@ -315,7 +290,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         }
       }
 
-      // Convert the data to match the database schema
       const invitationData = {
         id: data.id || crypto.randomUUID(),
         user_id: user.id,
@@ -358,7 +332,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         throw new Error(`Gagal menyimpan undangan: ${updateError.message}`);
       }
 
-      // Convert back to frontend format
       const updatedData: InvitationData = {
         ...data,
         id: invitationData.id,
@@ -436,6 +409,22 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500 text-center p-4">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {savedUrl && (
@@ -449,12 +438,8 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       <ImageUpload
         label="Foto Sampul"
         value={formData.coverPhoto}
-        onChange={(base64) => {
-          handleImageUpload('coverPhoto', base64);
-        }}
-        onClear={() => {
-          handleImageUpload('coverPhoto', undefined);
-        }}
+        onChange={(base64) => handleImageUpload('coverPhoto', base64)}
+        onClear={() => handleImageUpload('coverPhoto', undefined)}
       />
 
       {/* Foto Mempelai */}
@@ -462,22 +447,14 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <ImageUpload
           label="Foto Mempelai Wanita"
           value={formData.bridePhoto}
-          onChange={(base64) => {
-            handleImageUpload('bridePhoto', base64);
-          }}
-          onClear={() => {
-            handleImageUpload('bridePhoto', undefined);
-          }}
+          onChange={(base64) => handleImageUpload('bridePhoto', base64)}
+          onClear={() => handleImageUpload('bridePhoto', undefined)}
         />
         <ImageUpload
           label="Foto Mempelai Pria"
           value={formData.groomPhoto}
-          onChange={(base64) => {
-            handleImageUpload('groomPhoto', base64);
-          }}
-          onClear={() => {
-            handleImageUpload('groomPhoto', undefined);
-          }}
+          onChange={(base64) => handleImageUpload('groomPhoto', base64)}
+          onClear={() => handleImageUpload('groomPhoto', undefined)}
         />
       </div>
 
@@ -548,9 +525,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <RichTextEditor
           label="Teks Pembuka"
           value={formData.openingText || ''}
-          onChange={(value) => {
-            handleRichTextChange('openingText', value);
-          }}
+          onChange={(value) => handleRichTextChange('openingText', value)}
           height={150}
         />
       </div>
@@ -560,9 +535,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <RichTextEditor
           label="Teks Undangan"
           value={formData.invitationText || ''}
-          onChange={(value) => {
-            handleRichTextChange('invitationText', value);
-          }}
+          onChange={(value) => handleRichTextChange('invitationText', value)}
           height={150}
         />
       </div>
@@ -641,9 +614,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       {/* Galeri Foto */}
       <GalleryUpload
         images={formData.gallery || []}
-        onChange={(gallery) => {
-          handleImageUpload('gallery', gallery);
-        }}
+        onChange={(gallery) => handleImageUpload('gallery', gallery)}
         label="Galeri Foto"
       />
 
@@ -716,9 +687,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <RichTextEditor
           label="Pesan Pribadi"
           value={formData.message || ''}
-          onChange={(value) => {
-            handleRichTextChange('message', value);
-          }}
+          onChange={(value) => handleRichTextChange('message', value)}
           height={200}
         />
       </div>

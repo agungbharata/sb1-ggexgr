@@ -1,201 +1,188 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
-import { supabase } from '../../config/supabase'
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../utils/supabaseClient';
+import { Plus, Edit2, Trash2, Eye, Calendar } from 'react-feather';
+import { toast } from 'react-hot-toast';
+import { format } from 'date-fns';
 
 interface Invitation {
-  id: string
-  title: string
-  slug: string
-  user_id: string
-  created_at: string
-  status: string
+  id: string;
+  bride_names: string;
+  groom_names: string;
+  date: string;
+  slug: string;
+  created_at: string;
+  status: string;
 }
 
 export default function AdminInvitations() {
-  const { isAdmin } = useAuth()
-  const navigate = useNavigate()
-  const [invitations, setInvitations] = useState<Invitation[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!isAdmin) {
-      navigate('/')
-      return
-    }
-
-    fetchInvitations()
-  }, [isAdmin, navigate])
+    fetchInvitations();
+  }, []);
 
   const fetchInvitations = async () => {
     try {
+      setLoading(true);
       const { data, error } = await supabase
         .from('invitations')
         .select('*')
-        .order('created_at', { ascending: false })
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
 
-      if (error) throw error
-
-      setInvitations(data)
-    } catch (err: any) {
-      setError(err.message)
+      if (error) throw error;
+      setInvitations(data || []);
+    } catch (error: any) {
+      toast.error('Error loading invitations: ' + error.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleStatusChange = async (invitationId: string, newStatus: string) => {
+  const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('invitations')
-        .update({ status: newStatus })
-        .eq('id', invitationId)
+      const confirmed = window.confirm('Are you sure you want to delete this invitation?');
+      if (!confirmed) return;
 
-      if (error) throw error
-
-      setInvitations(invitations.map(inv => 
-        inv.id === invitationId ? { ...inv, status: newStatus } : inv
-      ))
-    } catch (err: any) {
-      setError(err.message)
-    }
-  }
-
-  const handleDeleteInvitation = async (invitationId: string) => {
-    if (!window.confirm('Apakah Anda yakin ingin menghapus undangan ini?')) return
-
-    try {
       const { error } = await supabase
         .from('invitations')
         .delete()
-        .eq('id', invitationId)
+        .eq('id', id)
+        .eq('user_id', user?.id);
 
-      if (error) throw error
+      if (error) throw error;
 
-      setInvitations(invitations.filter(inv => inv.id !== invitationId))
-    } catch (err: any) {
-      setError(err.message)
+      toast.success('Invitation deleted successfully');
+      setInvitations(invitations.filter(inv => inv.id !== id));
+    } catch (error: any) {
+      toast.error('Error deleting invitation: ' + error.message);
     }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'draft':
+        return 'bg-gray-100 text-gray-800';
+      case 'published':
+        return 'bg-green-100 text-green-800';
+      case 'archived':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+      </div>
+    );
   }
 
-  if (!isAdmin) return null
-
   return (
-    <div className="min-h-screen bg-gray-100 py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow-sm rounded-lg">
-          {/* Header */}
-          <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-medium text-gray-900">Kelola Undangan</h2>
-              <button
-                onClick={() => navigate('/admin/dashboard')}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700"
+    <div className="p-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold text-gray-800">My Invitations</h1>
+        <button
+          onClick={() => navigate('/dashboard/invitations/new')}
+          className="flex items-center px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700"
+        >
+          <Plus className="w-4 h-4 mr-2" />
+          Create New Invitation
+        </button>
+      </div>
+
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        {invitations.length > 0 ? (
+          <div className="min-w-full divide-y divide-gray-200">
+            {invitations.map((invitation) => (
+              <div
+                key={invitation.id}
+                className="p-4 hover:bg-gray-50 transition-colors duration-150"
               >
-                Kembali ke Dashboard
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {invitation.bride_names} & {invitation.groom_names}
+                    </h3>
+                    <div className="mt-1 flex items-center space-x-4 text-sm text-gray-500">
+                      <span className="flex items-center">
+                        <Calendar className="w-4 h-4 mr-1" />
+                        {format(new Date(invitation.date), 'MMMM d, yyyy')}
+                      </span>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                          invitation.status
+                        )}`}
+                      >
+                        {invitation.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => window.open(`/${invitation.slug}`, '_blank')}
+                      className="p-2 text-gray-400 hover:text-emerald-600"
+                      title="Preview"
+                    >
+                      <Eye className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => navigate(`/dashboard/invitations/edit/${invitation.id}`)}
+                      className="p-2 text-gray-400 hover:text-blue-600"
+                      title="Edit"
+                    >
+                      <Edit2 className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(invitation.id)}
+                      className="p-2 text-gray-400 hover:text-red-600"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No invitations</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Get started by creating a new invitation.
+            </p>
+            <div className="mt-6">
+              <button
+                onClick={() => navigate('/dashboard/invitations/new')}
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create New Invitation
               </button>
             </div>
           </div>
-
-          {/* Main Content */}
-          <div className="px-4 py-5 sm:p-6">
-            {error && (
-              <div className="mb-4 bg-red-50 border-l-4 border-red-400 p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700">{error}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {loading ? (
-              <div className="flex justify-center items-center py-12">
-                <svg className="animate-spin h-8 w-8 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                  <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                    <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                      <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Judul
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Slug
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Status
-                            </th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                              Tanggal Dibuat
-                            </th>
-                            <th scope="col" className="relative px-6 py-3">
-                              <span className="sr-only">Actions</span>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                          {invitations.map((invitation) => (
-                            <tr key={invitation.id}>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{invitation.title}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{invitation.slug}</div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <select
-                                  value={invitation.status}
-                                  onChange={(e) => handleStatusChange(invitation.id, e.target.value)}
-                                  className="text-sm border-gray-300 rounded-md"
-                                >
-                                  <option value="draft">Draft</option>
-                                  <option value="published">Published</option>
-                                  <option value="archived">Archived</option>
-                                </select>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {new Date(invitation.created_at).toLocaleDateString('id-ID')}
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <button
-                                  onClick={() => handleDeleteInvitation(invitation.id)}
-                                  className="text-red-600 hover:text-red-900 mr-4"
-                                >
-                                  Hapus
-                                </button>
-                                <button
-                                  onClick={() => window.open(`/invitation/${invitation.slug}`, '_blank')}
-                                  className="text-emerald-600 hover:text-emerald-900"
-                                >
-                                  Lihat
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
