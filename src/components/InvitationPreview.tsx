@@ -19,7 +19,12 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
       return format(date, 'EEEE, d MMMM yyyy', { locale: id });
     } catch (error) {
       return dateStr;
-    }
+    }c:/laragon/www/weddinggas/public/previews/
+    ├── javanese.jpg  (Template Jawa)
+    ├── sundanese.jpg (Template Sunda)
+    ├── minang.jpg    (Template Minang)
+    ├── bali.jpg      (Template Bali)
+    └── modern.jpg    (Template Modern)
   };
 
   const getThemeStyles = () => {
@@ -70,9 +75,9 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
   const theme = getThemeStyles();
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="mx-auto w-full max-w-2xl">
       <div 
-        className="relative p-8 rounded-lg shadow-lg overflow-hidden"
+        className="overflow-hidden relative p-8 rounded-lg shadow-lg"
         style={{
           backgroundColor: theme.backgroundColor,
           color: theme.textColor,
@@ -97,7 +102,7 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
               <img
                 src={data.coverPhoto}
                 alt="Cover"
-                className="w-full h-64 object-cover rounded-lg"
+                className="object-cover w-full h-64 rounded-lg"
               />
             </div>
           )}
@@ -105,7 +110,7 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
           {/* Opening */}
           <div className="mb-8">
             <div 
-              className="text-lg mb-4"
+              className="mb-4 text-lg"
               dangerouslySetInnerHTML={{ __html: data?.openingText || 'Bersama keluarga mereka' }}
             />
           </div>
@@ -118,7 +123,7 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
                 <img
                   src={data.bridePhoto}
                   alt="Bride"
-                  className="w-40 h-40 mx-auto rounded-full object-cover mb-4"
+                  className="object-cover mx-auto mb-4 w-40 h-40 rounded-full"
                 />
               )}
               <h2 className="text-2xl font-semibold" style={{ color: theme.accentColor }}>
@@ -132,7 +137,7 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
                 <img
                   src={data.groomPhoto}
                   alt="Groom"
-                  className="w-40 h-40 mx-auto rounded-full object-cover mb-4"
+                  className="object-cover mx-auto mb-4 w-40 h-40 rounded-full"
                 />
               )}
               <h2 className="text-2xl font-semibold" style={{ color: theme.accentColor }}>
@@ -143,17 +148,17 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
 
           {/* Invitation Text */}
           <div 
-            className="text-lg mb-8"
+            className="mb-8 text-lg"
             dangerouslySetInnerHTML={{ __html: data?.invitationText || 'Mengundang kehadiran Anda' }}
           />
 
           {/* Date & Time */}
           <div className="mb-8">
-            <h3 className="text-xl font-semibold mb-2" style={{ color: theme.accentColor }}>
+            <h3 className="mb-2 text-xl font-semibold" style={{ color: theme.accentColor }}>
               Waktu & Tempat
             </h3>
-            <p className="text-lg mb-2">{formatDate(data?.date)}</p>
-            <p className="text-lg mb-4">{data?.time || 'Waktu akan ditentukan'}</p>
+            <p className="mb-2 text-lg">{formatDate(data?.date)}</p>
+            <p className="mb-4 text-lg">{data?.time || 'Waktu akan ditentukan'}</p>
             <p className="text-lg">{data?.venue || 'Lokasi akan ditentukan'}</p>
           </div>
 
@@ -176,16 +181,16 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
           {/* Gallery */}
           {data?.gallery && data.gallery.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-4" style={{ color: theme.accentColor }}>
+              <h3 className="mb-4 text-xl font-semibold" style={{ color: theme.accentColor }}>
                 Galeri Foto
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
                 {data.gallery.map((photo, index) => (
                   <img
                     key={index}
                     src={photo}
                     alt={`Gallery ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-lg"
+                    className="object-cover w-full h-32 rounded-lg"
                   />
                 ))}
               </div>
@@ -205,7 +210,7 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
           {/* Social Links */}
           {data?.socialLinks && data.socialLinks.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-4" style={{ color: theme.accentColor }}>
+              <h3 className="mb-4 text-xl font-semibold" style={{ color: theme.accentColor }}>
                 Media Sosial
               </h3>
               <div className="flex justify-center space-x-4">
@@ -228,7 +233,7 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
           {/* Bank Accounts */}
           {data?.bankAccounts && data.bankAccounts.length > 0 && (
             <div className="mb-8">
-              <h3 className="text-xl font-semibold mb-4" style={{ color: theme.accentColor }}>
+              <h3 className="mb-4 text-xl font-semibold" style={{ color: theme.accentColor }}>
                 Rekening
               </h3>
               <div className="space-y-4">

@@ -32,12 +32,14 @@ export interface InvitationData {
   comments_enabled?: boolean;
   created_at?: string;
   updated_at?: string;
+  template?: TemplateType;
 }
 
 export interface DatabaseInvitation {
   id: string;
   user_id: string;
-  url_slug: string;
+  slug: string;
+  custom_slug?: string;
   bride_names: string;
   groom_names: string;
   date?: string;
@@ -52,11 +54,16 @@ export interface DatabaseInvitation {
   social_links?: SocialLink[];
   bank_accounts?: BankAccount[];
   message?: string;
-  custom_slug?: string;
   google_maps_url?: string;
   google_maps_embed?: string;
-  created_at: string;
-  updated_at: string;
+  template?: TemplateType;
+  created_at?: string;
+  updated_at?: string;
+  status?: 'draft' | 'published';
+  is_published?: boolean;
+  max_guests?: number;
+  rsvp_enabled?: boolean;
+  comments_enabled?: boolean;
 }
 
 export interface SocialLink {
@@ -88,3 +95,5 @@ export const defaultFormData: InvitationData = {
   rsvp_enabled: true,
   comments_enabled: true
 };
+
+import { TemplateType } from '../components/TemplateSelector';
