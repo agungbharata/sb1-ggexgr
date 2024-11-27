@@ -16,6 +16,8 @@ import AdminInvitations from './pages/admin/Invitations';
 import AdminSettings from './pages/admin/Settings';
 import AdminProfile from './pages/admin/Profile';
 import InvitationForm from './pages/admin/InvitationForm';
+import Gallery from './pages/admin/Gallery';
+import Music from './pages/admin/Music';
 
 // Layouts
 import AdminLayout from './layouts/AdminLayout';
@@ -46,6 +48,8 @@ function App() {
               <Route path="invitations" element={<AdminInvitations />} />
               <Route path="invitations/new" element={<InvitationForm />} />
               <Route path="invitations/edit/:id" element={<InvitationForm />} />
+              <Route path="gallery" element={<Gallery />} />
+              <Route path="music" element={<Music />} />
               <Route path="settings" element={<AdminSettings />} />
               <Route path="profile" element={<AdminProfile />} />
             </Route>
