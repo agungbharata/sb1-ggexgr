@@ -8,10 +8,14 @@ export interface InvitationData {
   akadDate: string;
   akadTime: string;
   akadVenue: string;
+  akadMapsUrl?: string;
+  akadMapsEmbed?: string;
   showResepsi: boolean;
   resepsiDate: string;
   resepsiTime: string;
   resepsiVenue: string;
+  resepsiMapsUrl?: string;
+  resepsiMapsEmbed?: string;
   openingText: string;
   invitationText: string;
   coverPhoto?: string;

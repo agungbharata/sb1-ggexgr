@@ -71,10 +71,9 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     }));
   }, []);
 
-  const handleGoogleMapsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const url = e.target.value;
+  const handleGoogleMapsChange = useCallback((type: 'akad' | 'resepsi', url: string) => {
     let embedUrl = '';
-
+  
     if (url) {
       let query = '';
       if (url.includes('place/')) {
@@ -86,18 +85,20 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           query = `${match[1]},${match[2]}`;
         }
       }
-
+  
       if (query) {
         embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
       }
     }
-
+  
     setFormData(prev => ({
       ...prev,
-      googleMapsUrl: url,
-      googleMapsEmbed: embedUrl
+      [`${type}MapsUrl`]: url,
+      [`${type}MapsEmbed`]: embedUrl
     }));
   }, []);
+
+
 
   const handleSocialLinksChange = useCallback((socialLinks: any[]) => {
     setFormData(prev => ({
@@ -667,6 +668,36 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
             </div>
           </div>
         </div>
+
+        <div className="md:col-span-2">
+  <label className="block text-sm font-medium text-gray-700">
+    <Link className="inline-block mr-2 w-4 h-4" />
+    Tautan Google Maps Akad
+  </label>
+  <div className="mt-1">
+    <input
+      type="text"
+      name="akadMapsUrl"
+      value={formData.akadMapsUrl}
+      onChange={(e) => {
+        handleFieldChange(e);
+        handleGoogleMapsChange('akad', e.target.value);
+      }}
+      placeholder="Tempel tautan Google Maps untuk lokasi akad"
+      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+    />
+  </div>
+  {formData.akadMapsEmbed && (
+    <div className="mt-2 aspect-video">
+      <iframe
+        src={formData.akadMapsEmbed}
+        className="w-full h-full rounded-md"
+        frameBorder="0"
+        allowFullScreen
+      />
+    </div>
+  )}
+</div>
       </div>
     )}
   </div>
@@ -736,44 +767,42 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
             </div>
           </div>
         </div>
+
+        <div className="md:col-span-2">
+  <label className="block text-sm font-medium text-gray-700">
+    <Link className="inline-block mr-2 w-4 h-4" />
+    Tautan Google Maps Resepsi
+  </label>
+  <div className="mt-1">
+    <input
+      type="text"
+      name="resepsiMapsUrl"
+      value={formData.resepsiMapsUrl}
+      onChange={(e) => {
+        handleFieldChange(e);
+        handleGoogleMapsChange('resepsi', e.target.value);
+      }}
+      placeholder="Tempel tautan Google Maps untuk lokasi resepsi"
+      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+    />
+  </div>
+  {formData.resepsiMapsEmbed && (
+    <div className="mt-2 aspect-video">
+      <iframe
+        src={formData.resepsiMapsEmbed}
+        className="w-full h-full rounded-md"
+        frameBorder="0"
+        allowFullScreen
+      />
+    </div>
+  )}
+</div>
       </div>
     )}
   </div>
 </div>
 
-          {/* Lokasi Acara */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              <MapPin className="inline-block mr-2 w-4 h-4" />
-              Lokasi Acara
-            </label>
-            <input
-              type="text"
-              name="venue"
-              value={formData.venue}
-              onChange={handleFieldChange}
-              placeholder="Masukkan lokasi acara pernikahan"
-              className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            />
-            {fieldErrors.venue && (
-              <p className="text-sm text-red-500">{fieldErrors.venue}</p>
-            )}
-          </div>
-
-          {/* Tautan Google Maps */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              <MapPin className="inline-block mr-2 w-4 h-4" />
-              Tautan Google Maps
-            </label>
-            <input
-              type="text"
-              value={formData.googleMapsUrl || ''}
-              onChange={handleGoogleMapsChange}
-              placeholder="Tempel tautan Google Maps (g.co/...)"
-              className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            />
-          </div>
+        
 
           {/* Galeri Foto */}
           <GalleryUpload
