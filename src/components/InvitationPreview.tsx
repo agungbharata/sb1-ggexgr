@@ -13,7 +13,7 @@ const InvitationPreview: React.FC<InvitationPreviewProps> = ({
   selectedTheme = 'javanese' 
 }) => {
   return (
-    <div className="w-full h-full overflow-auto">
+    <div className="overflow-auto w-full h-full">
       <TemplateSelector
         templateId={selectedTheme}
         data={data}

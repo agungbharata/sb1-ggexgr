@@ -1,37 +1,48 @@
 export interface InvitationData {
   id?: string;
-  bride_names: string;
-  groom_names: string;
+  brideNames: string;
+  groomNames: string;
   date?: string;
   time?: string;
   venue?: string;
-  opening_text?: string;
-  invitation_text?: string;
+  // Akad fields
+  showAkad?: boolean;
+  akadDate?: string;
+  akadTime?: string;
+  akadVenue?: string;
+  // Resepsi fields
+  showResepsi?: boolean;
+  resepsiDate?: string;
+  resepsiTime?: string;
+  resepsiVenue?: string;
+  // Other fields
+  openingText?: string;
+  invitationText?: string;
   message?: string;
   slug?: string;
-  custom_slug?: string;
-  cover_photo?: string;
-  bride_photo?: string;
-  groom_photo?: string;
+  customSlug?: string;
+  coverPhoto?: string;
+  bridePhoto?: string;
+  groomPhoto?: string;
   gallery?: string[];
-  google_maps_url?: string;
-  google_maps_embed?: string;
-  social_links?: SocialLink[];
-  bank_accounts?: BankAccount[];
+  googleMapsUrl?: string;
+  googleMapsEmbed?: string;
+  socialLinks?: SocialLink[];
+  bankAccounts?: BankAccount[];
   theme?: string;
-  font_family?: string;
-  primary_color?: string;
-  secondary_color?: string;
-  background_music?: string;
-  background_image?: string;
+  fontFamily?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
+  backgroundMusic?: string;
+  backgroundImage?: string;
   status?: 'draft' | 'published';
-  is_published?: boolean;
-  view_count?: number;
-  max_guests?: number;
-  rsvp_enabled?: boolean;
-  comments_enabled?: boolean;
-  created_at?: string;
-  updated_at?: string;
+  isPublished?: boolean;
+  viewCount?: number;
+  maxGuests?: number;
+  rsvpEnabled?: boolean;
+  commentsEnabled?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   template?: TemplateType;
 }
 
@@ -79,21 +90,21 @@ export interface BankAccount {
 }
 
 export const defaultFormData: InvitationData = {
-  bride_names: '',
-  groom_names: '',
-  opening_text: 'Bersama keluarga mereka',
-  invitation_text: 'Mengundang kehadiran Anda',
+  brideNames: '',
+  groomNames: '',
+  openingText: 'Bersama keluarga mereka',
+  invitationText: 'Mengundang kehadiran Anda',
   gallery: [],
-  social_links: [],
-  bank_accounts: [],
+  socialLinks: [],
+  bankAccounts: [],
   theme: 'default',
-  font_family: 'default',
-  primary_color: '#000000',
-  secondary_color: '#ffffff',
+  fontFamily: 'default',
+  primaryColor: '#000000',
+  secondaryColor: '#ffffff',
   status: 'draft',
-  is_published: false,
-  rsvp_enabled: true,
-  comments_enabled: true
+  isPublished: false,
+  rsvpEnabled: true,
+  commentsEnabled: true
 };
 
 import { TemplateType } from '../components/TemplateSelector';

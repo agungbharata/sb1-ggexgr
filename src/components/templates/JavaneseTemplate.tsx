@@ -122,34 +122,57 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           </div>
         </div>
 
-        {/* Date & Venue */}
-        <div className="text-center mb-16">
-          <div className="inline-block">
-            <img src="/ornaments/javanese-divider.png" alt="divider" className="w-48 mb-8" />
-          </div>
-          
-          <div className="space-y-4 text-[#2D1810]">
-            <h3 className="font-serif text-2xl mb-4">Akad Nikah & Resepsi</h3>
-            <p className="text-xl">{formatDate(data?.date)}</p>
-            <p className="text-xl">{data?.time || 'Waktu akan ditentukan'}</p>
-            <p className="text-xl">{data?.venue || 'Lokasi akan ditentukan'}</p>
-          </div>
+        {/* Akad Nikah */}
+        {(data?.showAkad !== false) && (
+          <div className="text-center mb-16">
+            <div className="inline-block">
+              <img src="/ornaments/javanese-divider.png" alt="divider" className="w-48 mb-8" />
+            </div>
+            
+            <div className="space-y-4 text-[#2D1810]">
+              <h3 className="font-serif text-2xl mb-4">Akad Nikah</h3>
+              <p className="text-xl">{formatDate(data?.akadDate || data?.date)}</p>
+              <p className="text-xl">{data?.akadTime || data?.time || 'Waktu akan ditentukan'}</p>
+              <p className="text-xl">{data?.akadVenue || data?.venue || 'Lokasi akan ditentukan'}</p>
+            </div>
 
-          <div className="inline-block mt-8">
-            <img src="/ornaments/javanese-divider.png" alt="divider" className="w-48 transform rotate-180" />
+            <div className="inline-block mt-8">
+              <img src="/ornaments/javanese-divider.png" alt="divider" className="w-48 transform rotate-180" />
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Resepsi */}
+        {(data?.showResepsi !== false) && (
+          <div className="text-center mb-16">
+            <div className="inline-block">
+              <img src="/ornaments/javanese-divider.png" alt="divider" className="w-48 mb-8" />
+            </div>
+            
+            <div className="space-y-4 text-[#2D1810]">
+              <h3 className="font-serif text-2xl mb-4">Resepsi</h3>
+              <p className="text-xl">{formatDate(data?.resepsiDate || data?.date)}</p>
+              <p className="text-xl">{data?.resepsiTime || data?.time || 'Waktu akan ditentukan'}</p>
+              <p className="text-xl">{data?.resepsiVenue || data?.venue || 'Lokasi akan ditentukan'}</p>
+            </div>
+
+            <div className="inline-block mt-8">
+              <img src="/ornaments/javanese-divider.png" alt="divider" className="w-48 transform rotate-180" />
+            </div>
+          </div>
+        )}
 
         {/* Google Maps */}
-        {data?.googleMapsEmbed && (
+        {(data?.googleMapsEmbed || data?.googleMapsUrl) && (
           <div className="mb-16">
             <div className="aspect-w-16 aspect-h-9">
               <iframe
-                src={data.googleMapsEmbed}
+                src={data.googleMapsEmbed || `https://maps.google.com/maps?q=${encodeURIComponent(data.googleMapsUrl || '')}&output=embed`}
                 className="w-full rounded-lg shadow-lg"
                 frameBorder="0"
                 allowFullScreen
                 loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
           </div>
@@ -190,19 +213,27 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
         {/* Social Links */}
         {data?.socialLinks && data.socialLinks.length > 0 && (
-          <div className="text-center mb-16">
-            <h3 className="font-serif text-2xl text-[#2D1810] mb-8">Media Sosial</h3>
-            <div className="flex justify-center space-x-6">
+          <div className="mb-16">
+            <h3 className="font-serif text-2xl text-[#2D1810] mb-8 text-center">Media Sosial</h3>
+            <div className="grid grid-cols-1 gap-4">
               {data.socialLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#2D1810] hover:text-[#2D1810]/80 transition-colors"
-                >
-                  {link.platform}
-                </a>
+                <div key={index} className="w-full">
+                  {link.embedCode ? (
+                    <div 
+                      className="w-full overflow-hidden rounded-lg shadow-lg"
+                      dangerouslySetInnerHTML={{ __html: link.embedCode }}
+                    />
+                  ) : (
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full text-center bg-white/50 py-3 rounded-lg shadow-md hover:bg-white/70 transition-colors text-[#2D1810]"
+                    >
+                      {link.platform}
+                    </a>
+                  )}
+                </div>
               ))}
             </div>
           </div>
