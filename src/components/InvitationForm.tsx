@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Calendar, Clock, MapPin, Save, Link, Plus, Minus } from 'lucide-react';
 import type { InvitationData } from '../types';
 import ImageUpload from './ImageUpload';
@@ -20,28 +20,40 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
   initialData,
   isEditing = false,
 }) => {
-  const [formData, setFormData] = useState<InvitationData>({
+  const [formData, setFormData] = useState<InvitationData>(() => ({
     ...initialData,
     openingText: initialData.openingText || 'Bersama keluarga mereka',
     invitationText: initialData.invitationText || 'Mengundang kehadiran Anda',
-  });
+  }));
   const [isSaving, setIsSaving] = useState(false);
   const [savedUrl, setSavedUrl] = useState<string>('');
   const [customSlug, setCustomSlug] = useState(initialData.customSlug || '');
   const [slugError, setSlugError] = useState('');
   const [showSocialLinks, setShowSocialLinks] = useState(false);
   const [showBankAccounts, setShowBankAccounts] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const isInitialMount = useRef(true);
+
+  const handleFieldChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error for this field if any
+    if (fieldErrors[name]) {
+      setFieldErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  }, [fieldErrors]);
 
   const defaultSlug = generateSlug(formData.brideNames, formData.groomNames);
   const currentSlug = customSlug || defaultSlug;
-
-  useEffect(() => {
-    if (!customSlug && (formData.brideNames || formData.groomNames)) {
-      const newSlug = generateSlug(formData.brideNames, formData.groomNames);
-      setCustomSlug('');
-      setSlugError('');
-    }
-  }, [formData.brideNames, formData.groomNames]);
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newSlug = sanitizeSlug(e.target.value);
@@ -54,116 +66,98 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const newData = {
-      ...formData,
-      [e.target.name]: e.target.value,
-    };
-    setFormData(newData);
-    onUpdate(newData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSaving(true);
+    setFieldErrors({});
+
+    try {
+      if (slugError) {
+        throw new Error('Silakan perbaiki kesalahan URL sebelum menyimpan.');
+      }
+
+      const requiredFields = {
+        brideNames: 'Nama Mempelai Wanita',
+        groomNames: 'Nama Mempelai Pria',
+        date: 'Tanggal Pernikahan',
+        time: 'Waktu Acara',
+        venue: 'Lokasi Acara'
+      };
+      
+      const missingFields = Object.entries(requiredFields)
+        .filter(([field]) => !formData[field])
+        .map(([_, label]) => label);
+
+      if (missingFields.length > 0) {
+        throw new Error(`Mohon lengkapi field berikut: ${missingFields.join(', ')}`);
+      }
+
+      // Deep clone data sebelum menyimpan
+      const dataToSave = JSON.parse(JSON.stringify(formData));
+      
+      // Update customSlug jika ada
+      if (customSlug) {
+        dataToSave.customSlug = customSlug;
+      }
+
+      await onUpdate(dataToSave);
+      setIsSaving(false);
+      setSavedUrl(`/wedding/${currentSlug}`);
+      alert('Data berhasil disimpan!');
+    } catch (error: any) {
+      console.error('Error saving invitation:', error);
+      setIsSaving(false);
+      setFieldErrors(prev => ({
+        ...prev,
+        submit: error.message || 'Error saving invitation. Please try again.'
+      }));
+      alert(error.message || 'Gagal menyimpan undangan. Silakan coba lagi.');
+    }
   };
+
+  const handleImageUpload = useCallback((field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
 
   const handleGoogleMapsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const url = e.target.value;
     let embedUrl = '';
 
     if (url) {
-      // Extract the location query from the URL
       let query = '';
-      
+
       if (url.includes('place/')) {
-        // Get location name from place URL
         const placePath = url.split('place/')[1];
         query = placePath.split('/')[0].split('?')[0];
       } else if (url.includes('@')) {
-        // Get coordinates from URL
         const match = url.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
         if (match) {
           query = `${match[1]},${match[2]}`;
         }
       } else if (url.includes('g.co/') || url.includes('goo.gl/')) {
-        // For short URLs, use the venue name
         query = formData.venue;
       }
 
-      // Create a simple embed URL
       if (query) {
         embedUrl = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&output=embed`;
       }
     }
 
-    const newData = {
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       googleMapsUrl: url,
       googleMapsEmbed: embedUrl || `https://maps.google.com/maps?q=${encodeURIComponent(formData.venue)}&output=embed`,
-    };
-    setFormData(newData);
-    onUpdate(newData);
+    }));
   };
 
   const handleInputChange = (field: string, value: string) => {
-    const newData = {
-      ...formData,
+    setFormData(prev => ({
+      ...prev,
       [field]: value,
-    };
-    setFormData(newData);
-    onUpdate(newData);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (slugError) {
-      alert('Silakan perbaiki kesalahan URL sebelum menyimpan.');
-      return;
-    }
-
-    const invitationData = {
-      ...formData,
-      id: isEditing ? formData.id : crypto.randomUUID(),
-      customSlug: customSlug || undefined,
-      createdAt: isEditing ? formData.createdAt : new Date().toISOString(),
-    };
-
-    // Get existing invitations
-    const existingInvitations = JSON.parse(localStorage.getItem('invitations') || '[]');
-
-    let updatedInvitations;
-    if (isEditing) {
-      // Update existing invitation
-      updatedInvitations = existingInvitations.map((inv: InvitationData) =>
-        inv.id === invitationData.id ? invitationData : inv
-      );
-    } else {
-      // Add new invitation
-      updatedInvitations = [...existingInvitations, invitationData];
-    }
-
-    // Save to localStorage
-    localStorage.setItem('invitations', JSON.stringify(updatedInvitations));
-
-    // Update URL
-    const finalSlug = generateSlug(invitationData.brideNames, invitationData.groomNames, invitationData.customSlug);
-    const invitationUrl = `${window.location.origin}/${finalSlug}`;
-    setSavedUrl(invitationUrl);
-
-    // Show success message
-    alert(isEditing ? 'Undangan berhasil diperbarui!' : 'Undangan berhasil disimpan!');
-
-    // Reset form if not editing
-    if (!isEditing) {
-      setFormData({
-        brideNames: '',
-        groomNames: '',
-        date: '',
-        time: '',
-        venue: '',
-        message: '',
-        openingText: 'Bersama keluarga mereka',
-        invitationText: 'Mengundang kehadiran Anda',
-      });
-      setCustomSlug('');
-    }
+    }));
   };
 
   return (
@@ -179,16 +173,8 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       <ImageUpload
         label="Foto Sampul"
         value={formData.coverPhoto}
-        onChange={(base64) => {
-          const newData = { ...formData, coverPhoto: base64 };
-          setFormData(newData);
-          onUpdate(newData);
-        }}
-        onClear={() => {
-          const newData = { ...formData, coverPhoto: undefined };
-          setFormData(newData);
-          onUpdate(newData);
-        }}
+        onChange={(base64) => handleImageUpload('coverPhoto', base64)}
+        onClear={() => handleImageUpload('coverPhoto', undefined)}
       />
 
       {/* Foto Mempelai */}
@@ -196,30 +182,14 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <ImageUpload
           label="Foto Mempelai Wanita"
           value={formData.bridePhoto}
-          onChange={(base64) => {
-            const newData = { ...formData, bridePhoto: base64 };
-            setFormData(newData);
-            onUpdate(newData);
-          }}
-          onClear={() => {
-            const newData = { ...formData, bridePhoto: undefined };
-            setFormData(newData);
-            onUpdate(newData);
-          }}
+          onChange={(base64) => handleImageUpload('bridePhoto', base64)}
+          onClear={() => handleImageUpload('bridePhoto', undefined)}
         />
         <ImageUpload
           label="Foto Mempelai Pria"
           value={formData.groomPhoto}
-          onChange={(base64) => {
-            const newData = { ...formData, groomPhoto: base64 };
-            setFormData(newData);
-            onUpdate(newData);
-          }}
-          onClear={() => {
-            const newData = { ...formData, groomPhoto: undefined };
-            setFormData(newData);
-            onUpdate(newData);
-          }}
+          onChange={(base64) => handleImageUpload('groomPhoto', base64)}
+          onClear={() => handleImageUpload('groomPhoto', undefined)}
         />
       </div>
 
@@ -231,7 +201,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
             type="text"
             name="brideNames"
             value={formData.brideNames}
-            onChange={handleChange}
+            onChange={handleFieldChange}
             placeholder="Nama Mempelai Wanita"
             className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
           />
@@ -239,7 +209,7 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
             type="text"
             name="groomNames"
             value={formData.groomNames}
-            onChange={handleChange}
+            onChange={handleFieldChange}
             placeholder="Nama Mempelai Pria"
             className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
           />
@@ -316,9 +286,12 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
             type="date"
             name="date"
             value={formData.date}
-            onChange={handleChange}
+            onChange={handleFieldChange}
             className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
           />
+          {fieldErrors.date && (
+            <p className="text-sm text-red-500">{fieldErrors.date}</p>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -330,9 +303,12 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
             type="time"
             name="time"
             value={formData.time}
-            onChange={handleChange}
+            onChange={handleFieldChange}
             className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
           />
+          {fieldErrors.time && (
+            <p className="text-sm text-red-500">{fieldErrors.time}</p>
+          )}
         </div>
       </div>
 
@@ -346,10 +322,13 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           type="text"
           name="venue"
           value={formData.venue}
-          onChange={handleChange}
+          onChange={handleFieldChange}
           placeholder="Masukkan lokasi acara pernikahan"
           className="px-4 py-2 w-full rounded-md border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:border-transparent"
         />
+        {fieldErrors.venue && (
+          <p className="text-sm text-red-500">{fieldErrors.venue}</p>
+        )}
       </div>
 
       {/* Tautan Google Maps */}
@@ -370,10 +349,11 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
       {/* Galeri Foto */}
       <GalleryUpload
         images={formData.gallery || []}
-        onChange={(gallery) => {
-          const newData = { ...formData, gallery };
-          setFormData(newData);
-          onUpdate(newData);
+        onChange={(urls) => {
+          setFormData(prev => ({
+            ...prev,
+            gallery: urls
+          }));
         }}
         label="Galeri Foto"
       />
@@ -407,7 +387,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               onChange={(socialLinks) => {
                 const newData = { ...formData, socialLinks };
                 setFormData(newData);
-                onUpdate(newData);
               }}
             />
           </div>
@@ -443,7 +422,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
               onChange={(bankAccounts) => {
                 const newData = { ...formData, bankAccounts };
                 setFormData(newData);
-                onUpdate(newData);
               }}
             />
           </div>

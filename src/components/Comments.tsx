@@ -7,10 +7,14 @@ interface CommentsProps {
 }
 
 const COMMENTS_PER_PAGE = 5;
+const MAX_NAME_LENGTH = 50;
+const MAX_MESSAGE_LENGTH = 500;
+const MAX_COMMENTS = 100;
 
 export default function Comments({ invitationId }: CommentsProps) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [error, setError] = useState<string>('');
   const [newComment, setNewComment] = useState({
     name: '',
     message: '',
@@ -18,30 +22,69 @@ export default function Comments({ invitationId }: CommentsProps) {
   });
 
   useEffect(() => {
-    const savedComments = JSON.parse(localStorage.getItem(`comments_${invitationId}`) || '[]');
-    // Sort comments by date, newest first
-    const sortedComments = savedComments.sort((a: Comment, b: Comment) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
-    setComments(sortedComments);
+    try {
+      const savedComments = JSON.parse(localStorage.getItem(`comments_${invitationId}`) || '[]');
+      const sortedComments = savedComments.sort((a: Comment, b: Comment) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setComments(sortedComments);
+    } catch (err) {
+      console.error('Error loading comments:', err);
+      setError('Terjadi kesalahan saat memuat komentar');
+    }
   }, [invitationId]);
+
+  const validateComment = () => {
+    if (comments.length >= MAX_COMMENTS) {
+      setError('Maaf, jumlah komentar sudah mencapai batas maksimum');
+      return false;
+    }
+    if (newComment.name.trim().length === 0) {
+      setError('Nama tidak boleh kosong');
+      return false;
+    }
+    if (newComment.name.length > MAX_NAME_LENGTH) {
+      setError(`Nama tidak boleh lebih dari ${MAX_NAME_LENGTH} karakter`);
+      return false;
+    }
+    if (newComment.message.trim().length === 0) {
+      setError('Pesan tidak boleh kosong');
+      return false;
+    }
+    if (newComment.message.length > MAX_MESSAGE_LENGTH) {
+      setError(`Pesan tidak boleh lebih dari ${MAX_MESSAGE_LENGTH} karakter`);
+      return false;
+    }
+    return true;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const comment: Comment = {
-      id: crypto.randomUUID(),
-      invitationId,
-      name: newComment.name,
-      message: newComment.message,
-      attendance: newComment.attendance,
-      createdAt: new Date().toISOString()
-    };
+    setError('');
 
-    const updatedComments = [comment, ...comments];
-    localStorage.setItem(`comments_${invitationId}`, JSON.stringify(updatedComments));
-    setComments(updatedComments);
-    setNewComment({ name: '', message: '', attendance: 'yes' });
-    setCurrentPage(1); // Return to first page after new comment
+    if (!validateComment()) {
+      return;
+    }
+
+    try {
+      const comment: Comment = {
+        id: crypto.randomUUID(),
+        invitationId,
+        name: newComment.name.trim(),
+        message: newComment.message.trim(),
+        attendance: newComment.attendance,
+        createdAt: new Date().toISOString()
+      };
+
+      const updatedComments = [comment, ...comments];
+      localStorage.setItem(`comments_${invitationId}`, JSON.stringify(updatedComments));
+      setComments(updatedComments);
+      setNewComment({ name: '', message: '', attendance: 'yes' });
+      setCurrentPage(1);
+    } catch (err) {
+      console.error('Error saving comment:', err);
+      setError('Terjadi kesalahan saat menyimpan komentar');
+    }
   };
 
   // Pagination calculations
@@ -64,24 +107,48 @@ export default function Comments({ invitationId }: CommentsProps) {
           Wishes & RSVP
         </h3>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="text"
-            value={newComment.name}
-            onChange={(e) => setNewComment({ ...newComment, name: e.target.value })}
-            placeholder="Your Name"
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            required
-          />
+          <div className="space-y-1">
+            <input
+              type="text"
+              value={newComment.name}
+              onChange={(e) => {
+                setError('');
+                setNewComment({ ...newComment, name: e.target.value });
+              }}
+              placeholder="Your Name"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              maxLength={MAX_NAME_LENGTH}
+              required
+            />
+            <small className="text-gray-500">
+              {newComment.name.length}/{MAX_NAME_LENGTH} karakter
+            </small>
+          </div>
           
-          <textarea
-            value={newComment.message}
-            onChange={(e) => setNewComment({ ...newComment, message: e.target.value })}
-            placeholder="Write your wishes..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            rows={3}
-            required
-          />
+          <div className="space-y-1">
+            <textarea
+              value={newComment.message}
+              onChange={(e) => {
+                setError('');
+                setNewComment({ ...newComment, message: e.target.value });
+              }}
+              placeholder="Write your wishes..."
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              rows={3}
+              maxLength={MAX_MESSAGE_LENGTH}
+              required
+            />
+            <small className="text-gray-500">
+              {newComment.message.length}/{MAX_MESSAGE_LENGTH} karakter
+            </small>
+          </div>
 
           <div className="flex items-center space-x-4">
             <select

@@ -13,19 +13,47 @@ export default function GalleryUpload({ images, onChange }: GalleryUploadProps) 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     try {
       const files = Array.from(e.target.files || []);
+      if (files.length === 0) return;
+
       setUploading(true);
 
-      // Upload each file
-      const uploadPromises = files.map(file => uploadImage(file, 'gallery'));
-      const uploadedUrls = await Promise.all(uploadPromises);
+      // Validate total size
+      const totalSize = files.reduce((sum, file) => sum + file.size, 0);
+      const maxTotalSize = 20 * 1024 * 1024; // 20MB total
+      if (totalSize > maxTotalSize) {
+        throw new Error('Total ukuran gambar tidak boleh lebih dari 20MB');
+      }
+
+      // Upload each file with progress tracking
+      const uploadedUrls: string[] = [];
+      
+      for (const file of files) {
+        try {
+          const url = await uploadImage(file, 'gallery');
+          uploadedUrls.push(url);
+        } catch (error: any) {
+          console.error(`Error uploading file ${file.name}:`, error);
+          // Continue with other files even if one fails
+        }
+      }
+
+      if (uploadedUrls.length === 0) {
+        throw new Error('Gagal mengupload gambar. Silakan coba lagi.');
+      }
+
+      if (uploadedUrls.length < files.length) {
+        alert(`Berhasil mengupload ${uploadedUrls.length} dari ${files.length} gambar.`);
+      }
 
       // Add new URLs to existing images
       onChange([...images, ...uploadedUrls]);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading images:', error);
-      alert('Failed to upload images. Please try again.');
+      alert(error.message || 'Gagal mengupload gambar. Silakan coba lagi.');
     } finally {
       setUploading(false);
+      // Reset input
+      e.target.value = '';
     }
   };
 

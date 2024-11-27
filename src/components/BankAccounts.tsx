@@ -9,21 +9,66 @@ interface BankAccountsProps {
 
 export default function BankAccounts({ accounts, onChange }: BankAccountsProps) {
   const addAccount = () => {
-    onChange([...accounts, { bank: '', accountName: '', accountNumber: '' }]);
+    try {
+      // Validasi jumlah maksimum akun bank
+      if (accounts.length >= 5) {
+        throw new Error('Maksimum 5 akun bank yang dapat ditambahkan');
+      }
+
+      const newAccounts = [...accounts, { bank: '', accountName: '', accountNumber: '' }];
+      onChange(newAccounts);
+    } catch (error: any) {
+      console.error('Error adding bank account:', error);
+      alert(error.message || 'Gagal menambahkan akun bank');
+    }
   };
 
   const removeAccount = (index: number) => {
-    onChange(accounts.filter((_, i) => i !== index));
+    try {
+      const newAccounts = accounts.filter((_, i) => i !== index);
+      onChange(newAccounts);
+    } catch (error: any) {
+      console.error('Error removing bank account:', error);
+      alert('Gagal menghapus akun bank');
+    }
   };
 
   const updateAccount = (index: number, field: keyof BankAccount, value: string) => {
-    const newAccounts = accounts.map((account, i) => {
-      if (i === index) {
-        return { ...account, [field]: value };
+    try {
+      // Validasi panjang input
+      if (value.length > 100) {
+        throw new Error('Input terlalu panjang (maksimum 100 karakter)');
       }
-      return account;
-    });
-    onChange(newAccounts);
+
+      // Validasi khusus untuk nomor rekening
+      if (field === 'accountNumber') {
+        if (!/^\d*$/.test(value)) {
+          throw new Error('Nomor rekening hanya boleh berisi angka');
+        }
+        if (value.length > 20) {
+          throw new Error('Nomor rekening terlalu panjang (maksimum 20 digit)');
+        }
+      }
+
+      // Validasi nama pemilik rekening
+      if (field === 'accountName') {
+        if (!/^[a-zA-Z\s]*$/.test(value)) {
+          throw new Error('Nama pemilik rekening hanya boleh berisi huruf dan spasi');
+        }
+      }
+
+      const newAccounts = accounts.map((account, i) => {
+        if (i === index) {
+          return { ...account, [field]: value };
+        }
+        return account;
+      });
+
+      onChange(newAccounts);
+    } catch (error: any) {
+      console.error('Error updating bank account:', error);
+      alert(error.message || 'Gagal mengupdate akun bank');
+    }
   };
 
   return (

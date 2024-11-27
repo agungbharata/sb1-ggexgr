@@ -9,28 +9,70 @@ interface SocialLinksProps {
 
 export default function SocialLinks({ links, onChange }: SocialLinksProps) {
   const addLink = () => {
-    onChange([...links, { platform: '', title: '', url: '', embedCode: '' }]);
+    try {
+      // Validasi jumlah maksimum social media
+      if (links.length >= 10) {
+        throw new Error('Maksimum 10 social media yang dapat ditambahkan');
+      }
+
+      const newLinks = [...links, { platform: '', title: '', url: '', embedCode: '' }];
+      onChange(newLinks);
+    } catch (error: any) {
+      console.error('Error adding social link:', error);
+      alert(error.message || 'Gagal menambahkan social media');
+    }
   };
 
   const removeLink = (index: number) => {
-    onChange(links.filter((_, i) => i !== index));
+    try {
+      const newLinks = links.filter((_, i) => i !== index);
+      onChange(newLinks);
+    } catch (error: any) {
+      console.error('Error removing social link:', error);
+      alert('Gagal menghapus social media');
+    }
   };
 
   const updateLink = (index: number, field: keyof SocialLink, value: string) => {
-    const newLinks = links.map((link, i) => {
-      if (i === index) {
-        let updatedLink = { ...link, [field]: value };
-        
-        // If platform or URL changes, try to generate embed code
-        if (field === 'platform' || field === 'url') {
-          updatedLink.embedCode = generateEmbedCode(updatedLink.url, updatedLink.platform);
+    try {
+      // Validasi URL jika field adalah url
+      if (field === 'url' && value) {
+        try {
+          new URL(value);
+        } catch {
+          throw new Error('URL tidak valid');
         }
-        
-        return updatedLink;
       }
-      return link;
-    });
-    onChange(newLinks);
+
+      // Validasi panjang input
+      if (value.length > 500) {
+        throw new Error('Input terlalu panjang (maksimum 500 karakter)');
+      }
+
+      const newLinks = links.map((link, i) => {
+        if (i === index) {
+          let updatedLink = { ...link, [field]: value };
+          
+          // Generate embed code hanya jika URL valid
+          if ((field === 'platform' || field === 'url') && updatedLink.url) {
+            try {
+              updatedLink.embedCode = generateEmbedCode(updatedLink.url, updatedLink.platform);
+            } catch (embedError) {
+              console.warn('Failed to generate embed code:', embedError);
+              updatedLink.embedCode = '';
+            }
+          }
+          
+          return updatedLink;
+        }
+        return link;
+      });
+
+      onChange(newLinks);
+    } catch (error: any) {
+      console.error('Error updating social link:', error);
+      alert(error.message || 'Gagal mengupdate social media');
+    }
   };
 
   const generateEmbedCode = (url: string, platform: string): string => {
