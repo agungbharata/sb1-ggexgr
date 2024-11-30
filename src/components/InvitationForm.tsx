@@ -13,6 +13,8 @@ import { generateSlug, isSlugUnique, sanitizeSlug } from '../utils/slug';
 import CopyLinkButton from './CopyLinkButton';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MusicLibrary } from './MusicLibrary';
+import { colors } from '../styles/colors';
+
 
 interface InvitationFormProps {
   onUpdate: (data: InvitationData) => void;

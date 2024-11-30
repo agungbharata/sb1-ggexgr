@@ -1,106 +1,53 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  Home, 
-  Settings, 
-  Users, 
-  Layout,
-  Image,
-  MessageSquare,
-  Gift,
-  Calendar
-} from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const Sidebar = () => {
   const location = useLocation();
-  const currentPath = location.pathname;
+  const { userRole } = useAuth();
+
+  const isActive = (path: string) => location.pathname === path;
 
   const menuItems = [
-    {
-      name: 'Dashboard',
-      icon: <Home className="w-5 h-5" />,
-      path: '/dashboard'
-    },
-    {
-      name: 'Template',
-      icon: <Layout className="w-5 h-5" />,
-      path: '/dashboard/templates'
-    },
-    {
-      name: 'Galeri',
-      icon: <Image className="w-5 h-5" />,
-      path: '/dashboard/gallery'
-    },
-    {
-      name: 'Tamu',
-      icon: <Users className="w-5 h-5" />,
-      path: '/dashboard/guests'
-    },
-    {
-      name: 'Ucapan',
-      icon: <MessageSquare className="w-5 h-5" />,
-      path: '/dashboard/wishes'
-    },
-    {
-      name: 'Hadiah',
-      icon: <Gift className="w-5 h-5" />,
-      path: '/dashboard/gifts'
-    },
-    {
-      name: 'Acara',
-      icon: <Calendar className="w-5 h-5" />,
-      path: '/dashboard/events'
-    },
-    {
-      name: 'Pengaturan',
-      icon: <Settings className="w-5 h-5" />,
-      path: '/dashboard/settings'
-    }
+    { path: '/dashboard', label: 'Dashboard', icon: '📊' },
+    { path: '/invitations', label: 'Invitations', icon: '💌' },
+    { path: '/music', label: 'Music', icon: '🎵' },
+    { path: '/gallery', label: 'Gallery', icon: '🖼️' },
+    { path: '/guests', label: 'Guests', icon: '👥' },
+    { path: '/settings', label: 'Settings', icon: '⚙️' },
   ];
 
+  if (userRole === 'admin') {
+    menuItems.push({ path: '/admin', label: 'Admin', icon: '🔑' });
+  }
+
   return (
-    <div className="w-64 h-screen bg-white border-r border-gray-200 fixed left-0 top-0">
-      <div className="flex flex-col h-full">
-        {/* Logo */}
-        <div className="p-6 border-b border-gray-200">
-          <Link to="/dashboard" className="flex items-center">
-            <span className="text-xl font-bold text-primary">WalimahMe</span>
-          </Link>
+    <aside className="w-64 h-screen bg-white/80 backdrop-blur-sm shadow-lg transition-all duration-200">
+      <nav className="h-full px-4 py-6">
+        <div className="space-y-4">
+          {menuItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center px-4 py-3 rounded-lg transition-all duration-200 group
+                ${
+                  isActive(item.path)
+                    ? 'bg-[#D4B996] text-white shadow-md'
+                    : 'text-[#8B7355] hover:bg-[#F5E9E2] hover:text-[#D4B996]'
+                }`}
+            >
+              <span className="mr-3 text-xl group-hover:scale-110 transition-transform duration-200">
+                {item.icon}
+              </span>
+              <span className="font-medium">{item.label}</span>
+              {isActive(item.path) && (
+                <span className="ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              )}
+            </Link>
+          ))}
         </div>
-
-        {/* Menu Items */}
-        <nav className="flex-1 overflow-y-auto p-4">
-          <ul className="space-y-2">
-            {menuItems.map((item) => (
-              <li key={item.path}>
-                <Link
-                  to={item.path}
-                  className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors
-                    ${currentPath === item.path
-                      ? 'bg-primary text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* User Profile */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gray-200"></div>
-            <div>
-              <p className="font-medium">Admin</p>
-              <p className="text-sm text-gray-500">admin@walimahme.com</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </nav>
+    </aside>
   );
 };
 

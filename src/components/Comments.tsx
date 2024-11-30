@@ -101,8 +101,8 @@ export default function Comments({ invitationId }: CommentsProps) {
 
   return (
     <div className="space-y-6" id="comments-section">
-      <div className="bg-white rounded-lg shadow-lg p-6">
-        <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+      <div className="bg-[#F5E9E2] rounded-lg shadow-lg p-6">
+        <h3 className="text-2xl font-bold text-[#8B7355] mb-6 flex items-center">
           <MessageCircle className="w-5 h-5 mr-2" />
           Wishes & RSVP
         </h3>
@@ -113,7 +113,7 @@ export default function Comments({ invitationId }: CommentsProps) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-1">
             <input
               type="text"
@@ -150,7 +150,7 @@ export default function Comments({ invitationId }: CommentsProps) {
             </small>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             <select
               value={newComment.attendance}
               onChange={(e) => setNewComment({ ...newComment, attendance: e.target.value as any })}
@@ -172,7 +172,7 @@ export default function Comments({ invitationId }: CommentsProps) {
         </form>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {comments.length > 0 && (
           <div className="text-sm text-gray-500 text-center">
             Showing {startIndex + 1}-{Math.min(endIndex, comments.length)} of {comments.length} comments
@@ -180,11 +180,11 @@ export default function Comments({ invitationId }: CommentsProps) {
         )}
 
         {currentComments.map((comment) => (
-          <div key={comment.id} className="bg-white rounded-lg shadow p-4">
+          <div key={comment.id} className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-all duration-200">
             <div className="flex justify-between items-start">
               <div>
-                <h4 className="font-medium text-gray-900">{comment.name}</h4>
-                <p className="text-sm text-gray-500">
+                <h4 className="font-medium text-[#8B7355]">{comment.name}</h4>
+                <p className="text-sm text-[#6B5B4E]">
                   {new Date(comment.createdAt).toLocaleDateString()}
                 </p>
               </div>
@@ -202,7 +202,7 @@ export default function Comments({ invitationId }: CommentsProps) {
                   : 'Maybe'}
               </span>
             </div>
-            <p className="mt-2 text-gray-600">{comment.message}</p>
+            <p className="mt-2 text-[#6B5B4E]">{comment.message}</p>
           </div>
         ))}
 

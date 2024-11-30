@@ -52,26 +52,27 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ weddingDate, weddingTim
     return () => clearInterval(timer);
   }, [weddingDate, weddingTime]);
 
+  const TimeUnit: React.FC<{ value: number; label: string }> = ({ value, label }) => (
+    <div className="flex flex-col items-center p-4 bg-gradient-to-b from-[#D4B996] to-[#DABDAD]/20 rounded-lg shadow-lg backdrop-blur-sm">
+      <span className="text-3xl md:text-4xl font-bold text-[#D4B996]">
+        {value.toString().padStart(2, '0')}
+      </span>
+      <span className="text-sm md:text-base text-gray-600 mt-1 font-medium">
+        {label}
+      </span>
+    </div>
+  );
+
   return (
-    <div className="w-full">
-      <h3 className="text-center text-lg font-medium text-gray-900 mb-4">Counting down to the big day</h3>
-      <div className="grid grid-cols-4 gap-2 md:gap-4">
-        <div className="flex flex-col items-center p-2 md:p-4 bg-pink-50 rounded-lg">
-          <span className="text-2xl md:text-4xl font-bold text-pink-600">{timeLeft.days}</span>
-          <span className="text-sm md:text-base text-gray-600">Days</span>
-        </div>
-        <div className="flex flex-col items-center p-2 md:p-4 bg-pink-50 rounded-lg">
-          <span className="text-2xl md:text-4xl font-bold text-pink-600">{timeLeft.hours}</span>
-          <span className="text-sm md:text-base text-gray-600">Hours</span>
-        </div>
-        <div className="flex flex-col items-center p-2 md:p-4 bg-pink-50 rounded-lg">
-          <span className="text-2xl md:text-4xl font-bold text-pink-600">{timeLeft.minutes}</span>
-          <span className="text-sm md:text-base text-gray-600">Minutes</span>
-        </div>
-        <div className="flex flex-col items-center p-2 md:p-4 bg-pink-50 rounded-lg">
-          <span className="text-2xl md:text-4xl font-bold text-pink-600">{timeLeft.seconds}</span>
-          <span className="text-sm md:text-base text-gray-600">Seconds</span>
-        </div>
+    <div className="w-full p-6 rounded-xl bg-white/80 shadow-xl backdrop-blur-sm">
+      <h2 className="text-2xl font-serif text-center mb-6 text-[#D4B996]">
+        Counting Down to Our Special Day
+      </h2>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <TimeUnit value={timeLeft.days} label="Days" />
+        <TimeUnit value={timeLeft.hours} label="Hours" />
+        <TimeUnit value={timeLeft.minutes} label="Minutes" />
+        <TimeUnit value={timeLeft.seconds} label="Seconds" />
       </div>
     </div>
   );

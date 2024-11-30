@@ -17,6 +17,7 @@ export default function InvitationPage() {
           .from('invitations')
           .select('*')
           .eq('slug', invitationSlug)
+          .eq('status', 'published')
           .single();
 
         if (error) throw error;
@@ -43,12 +44,13 @@ export default function InvitationPage() {
             googleMapsEmbed: data.google_maps_embed,
             template: data.template || 'javanese',
             message: data.message,
+            status: data.status,
             createdAt: data.created_at,
             updatedAt: data.updated_at
           };
           setInvitation(invitationData);
         } else {
-          setError('Undangan tidak ditemukan');
+          setError('Undangan tidak ditemukan atau belum dipublikasikan');
         }
       } catch (err) {
         console.error('Error loading invitation:', err);

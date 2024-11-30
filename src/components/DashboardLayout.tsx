@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { ReactNode } from 'react';
+import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,7 +8,7 @@ import ErrorBoundary from './ErrorBoundary';
 import DebugPanel from './DebugPanel';
 
 interface DashboardLayoutProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 const DashboardLayout = ({ children }: DashboardLayoutProps) => {
@@ -45,13 +47,20 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
 
   console.log('DashboardLayout rendering main content');
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Sidebar />
-      <main className="ml-64 p-8">
-        <ErrorBoundary>
-          {children}
-        </ErrorBoundary>
-      </main>
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF3E0] via-white to-[#F5E9E2]">
+      <Navbar />
+      <div className="flex">
+        <Sidebar />
+        <main className="flex-1 p-6 transition-all duration-200 ease-in-out">
+          <div className="mx-auto max-w-7xl">
+            <div className="bg-white/80 backdrop-blur-sm shadow-lg rounded-xl p-6 transition-all duration-200 hover:shadow-xl">
+              <ErrorBoundary>
+                {children}
+              </ErrorBoundary>
+            </div>
+          </div>
+        </main>
+      </div>
       <DebugPanel />
     </div>
   );

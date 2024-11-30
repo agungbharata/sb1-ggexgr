@@ -150,7 +150,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelect, selectedMu
   };
 
   return (
-    <div className="space-y-4 p-4 bg-[#F9F6F0] rounded-lg">
+    <div className="bg-[#F5E9E2] rounded-lg shadow-lg p-6">
       <audio ref={audioRef} className="hidden" />
       
       {loading ? (
@@ -158,25 +158,19 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelect, selectedMu
           <div className="w-6 h-6 rounded-full border-2 border-indigo-500 animate-spin border-t-transparent"></div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {musicList.map((music) => (
             <div
               key={music.id}
-              className={`flex items-center justify-between p-3 bg-white rounded-md hover:bg-[#F2D4B7] transition-colors ${
-                selectedMusic === music.url
-                  ? 'border-indigo-500'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
+              className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-all duration-200"
             >
-              <div className="flex-1">
-                <h3 className="text-sm font-medium text-gray-900">{music.title}</h3>
-                <p className="text-sm text-gray-500">{music.artist}</p>
-              </div>
-              <div className="flex items-center space-x-2">
+              <h3 className="text-lg font-medium text-[#8B7355] mb-2">{music.title}</h3>
+              <p className="text-sm text-[#6B5B4E] mb-4">{music.artist}</p>
+              <div className="flex items-center justify-between space-x-4">
                 <button
                   type="button"
                   onClick={() => handlePlay(music.url)}
-                  className="p-2 rounded-full hover:bg-[#C8A4A4] hover:text-white transition-colors"
+                  className="px-4 py-2 bg-[#D4B996] text-white rounded-md hover:bg-[#C4A576] transition-colors duration-200"
                 >
                   {currentlyPlaying === music.url ? (
                     <Pause className="w-5 h-5" />
@@ -187,10 +181,10 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelect, selectedMu
                 <button
                   type="button"
                   onClick={() => handleSelect(music.url)}
-                  className={`px-3 py-1 text-sm rounded-md ${
+                  className={`px-4 py-2 border border-[#D4B996] text-[#8B7355] rounded-md hover:bg-[#F5E9E2] transition-colors duration-200 ${
                     selectedMusic === music.url
-                      ? 'bg-[#C8A4A4] text-white'
-                      : 'text-gray-700 hover:bg-[#B69090] transition-colors'
+                      ? 'bg-[#D4B996] text-white'
+                      : ''
                   }`}
                 >
                   {selectedMusic === music.url ? 'Terpilih' : 'Pilih'}

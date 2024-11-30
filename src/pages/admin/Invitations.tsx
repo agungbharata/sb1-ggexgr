@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../utils/supabaseClient';
-import { Plus, Edit2, Trash2, Eye, Calendar } from 'react-feather';
+import { Plus, Edit2, Trash2, Eye, Calendar, Globe, EyeOff } from 'react-feather';
 import { toast } from 'react-hot-toast';
 import { format } from 'date-fns';
 
@@ -61,6 +61,25 @@ export default function AdminInvitations() {
       setInvitations(invitations.filter(inv => inv.id !== id));
     } catch (error: any) {
       toast.error('Error deleting invitation: ' + error.message);
+    }
+  };
+
+  const handleStatusChange = async (id: string, newStatus: 'draft' | 'published') => {
+    try {
+      const { error } = await supabase
+        .from('invitations')
+        .update({ status: newStatus })
+        .eq('id', id)
+        .eq('user_id', user?.id);
+
+      if (error) throw error;
+
+      toast.success(`Invitation ${newStatus === 'published' ? 'published' : 'unpublished'} successfully`);
+      setInvitations(invitations.map(inv => 
+        inv.id === id ? { ...inv, status: newStatus } : inv
+      ));
+    } catch (error: any) {
+      toast.error('Error updating invitation status: ' + error.message);
     }
   };
 
@@ -132,6 +151,17 @@ export default function AdminInvitations() {
                       title="Preview"
                     >
                       <Eye className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleStatusChange(invitation.id, invitation.status === 'published' ? 'draft' : 'published')}
+                      className={`p-2 ${invitation.status === 'published' ? 'text-emerald-600 hover:text-emerald-700' : 'text-gray-400 hover:text-emerald-600'}`}
+                      title={invitation.status === 'published' ? 'Unpublish' : 'Publish'}
+                    >
+                      {invitation.status === 'published' ? (
+                        <Globe className="w-5 h-5" />
+                      ) : (
+                        <EyeOff className="w-5 h-5" />
+                      )}
                     </button>
                     <button
                       onClick={() => navigate(`/dashboard/invitations/edit/${invitation.id}`)}

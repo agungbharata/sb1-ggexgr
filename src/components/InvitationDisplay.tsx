@@ -23,7 +23,7 @@ const ErrorFallback: React.FC<ErrorFallbackProps> = ({ error, resetErrorBoundary
       </div>
       <button
         onClick={resetErrorBoundary}
-        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
+        className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-[#D4B996] hover:bg-[#DABDAD] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#D4B996]"
       >
         Try again
       </button>
@@ -124,26 +124,15 @@ const InvitationDisplay: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#D4B996]"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 text-center">
-          <div>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Invitation Not Found</h2>
-            <p className="mt-2 text-sm text-gray-600">{error}</p>
-          </div>
-          <button
-            onClick={() => navigate('/')}
-            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-          >
-            Return Home
-          </button>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center text-red-600">{error}</div>
       </div>
     );
   }
@@ -152,183 +141,107 @@ const InvitationDisplay: React.FC = () => {
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback} onReset={loadInvitation}>
-      <div className="min-h-screen bg-gray-50">
-        {/* Cover Image */}
-        {invitation.coverPhoto && (
-          <div className="relative h-96">
-            <img
-              src={invitation.coverPhoto}
-              alt="Wedding Cover"
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
-
-        {/* Main Content */}
+      <div className="min-h-screen bg-gradient-to-b from-white to-[#DABDAD]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Header */}
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {invitation.brideNames} & {invitation.groomNames}
-            </h1>
-            <div className="flex justify-center space-x-4">
-              <button
-                onClick={handleShare}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-              >
-                <Share2 className="w-4 h-4 mr-2" />
-                Share
-              </button>
-              {invitation.bankAccounts?.length > 0 && (
-                <button
-                  onClick={() => setShowBankAccounts(!showBankAccounts)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-pink-700 bg-pink-100 hover:bg-pink-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                >
-                  <Gift className="w-4 h-4 mr-2" />
-                  Digital Gift
-                </button>
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
+            {/* Header Section */}
+            <div className="relative h-96">
+              <div className="absolute inset-0">
+                <img
+                  src={invitation.coverPhoto}
+                  alt="Wedding Cover"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              </div>
+              <div className="absolute bottom-0 w-full p-8">
+                <h1 className="text-4xl md:text-5xl font-serif text-white mb-4">
+                  {invitation.brideNames} & {invitation.groomNames}
+                </h1>
+                <p className="text-[#D4B996] text-xl">
+                  {new Date(invitation.date).toLocaleDateString('id-ID', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
+              </div>
+            </div>
+
+            {/* Content Sections */}
+            <div className="p-8">
+              {/* Event Details */}
+              <div className="space-y-8">
+                <div className="flex items-center space-x-4 text-[#D4B996]">
+                  <Calendar className="w-6 h-6" />
+                  <span className="text-lg">{invitation.date}</span>
+                </div>
+                <div className="flex items-center space-x-4 text-[#D4B996]">
+                  <Clock className="w-6 h-6" />
+                  <span className="text-lg">{invitation.time}</span>
+                </div>
+                <div className="flex items-center space-x-4 text-[#D4B996]">
+                  <MapPin className="w-6 h-6" />
+                  <span className="text-lg">{invitation.venue}</span>
+                </div>
+              </div>
+
+              {/* Love Story */}
+              <div className="mt-12">
+                <h2 className="text-3xl font-serif text-[#D4B996] mb-6">Our Love Story</h2>
+                <div className="prose max-w-none">
+                  <RichTextDisplay content={invitation.openingText} />
+                </div>
+              </div>
+
+              {/* Gallery */}
+              {invitation.gallery && invitation.gallery.length > 0 && (
+                <div className="mt-12">
+                  <h2 className="text-3xl font-serif text-[#D4B996] mb-6">Our Moments</h2>
+                  <Gallery images={invitation.gallery} />
+                </div>
               )}
-            </div>
-          </div>
 
-          {/* Countdown Timer */}
-          {timeLeft && (
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-              <h2 className="text-2xl font-semibold text-center mb-4">Countdown to the Big Day</h2>
-              <div className="grid grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-3xl font-bold text-pink-600">{timeLeft.days}</div>
-                  <div className="text-sm text-gray-500">Days</div>
+              {/* Gift Registry */}
+              <div className="mt-12">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-3xl font-serif text-[#D4B996]">Wedding Gift</h2>
+                  <button
+                    onClick={() => setShowBankAccounts(!showBankAccounts)}
+                    className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-[#D4B996] text-white hover:bg-[#DABDAD] transition-colors"
+                  >
+                    <Gift className="w-5 h-5" />
+                    <span>Send Gift</span>
+                  </button>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-pink-600">{timeLeft.hours}</div>
-                  <div className="text-sm text-gray-500">Hours</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-pink-600">{timeLeft.minutes}</div>
-                  <div className="text-sm text-gray-500">Minutes</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-pink-600">{timeLeft.seconds}</div>
-                  <div className="text-sm text-gray-500">Seconds</div>
-                </div>
+                {showBankAccounts && <BankAccounts accounts={invitation.bankAccounts} readOnly />}
+              </div>
+
+              {/* Social Sharing */}
+              <div className="mt-12 flex items-center justify-center space-x-4">
+                <button className="p-2 rounded-full bg-[#D4B996]/10 text-[#D4B996] hover:bg-[#D4B996]/20">
+                  <Heart className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="p-2 rounded-full bg-[#D4B996]/10 text-[#D4B996] hover:bg-[#D4B996]/20"
+                >
+                  <Share2 className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Comments Section */}
+              <div className="mt-12">
+                <h2 className="text-3xl font-serif text-[#D4B996] mb-6">Wishes</h2>
+                <CommentSection invitationId={invitation.id} />
+              </div>
+
+              {/* Social Links */}
+              <div className="mt-12">
+                <SocialLinks links={invitation.socialLinks} readOnly />
               </div>
             </div>
-          )}
-
-          {/* Quote */}
-          {invitation.quote?.showQuote && invitation.quote.text && (
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-              <blockquote className="text-center">
-                <p className="text-xl italic text-gray-900 mb-4">"{invitation.quote.text}"</p>
-                {invitation.quote.source && (
-                  <footer className="text-gray-600">— {invitation.quote.source}</footer>
-                )}
-              </blockquote>
-            </div>
-          )}
-
-          {/* Opening Text */}
-          <div className="prose prose-pink mx-auto mb-8">
-            <RichTextDisplay content={invitation.openingText} />
-          </div>
-
-          {/* Invitation Text */}
-          <div className="prose prose-pink mx-auto mb-8">
-            <RichTextDisplay content={invitation.invitationText} />
-          </div>
-
-          {/* Event Details */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex items-start space-x-3">
-                <Calendar className="w-5 h-5 text-pink-600 flex-shrink-0" />
-                <div>
-                  <h3 className="font-medium text-gray-900">Date</h3>
-                  <p className="text-gray-500">
-                    {new Date(invitation.date).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3">
-                <Clock className="w-5 h-5 text-pink-600 flex-shrink-0" />
-                <div>
-                  <h3 className="font-medium text-gray-900">Time</h3>
-                  <p className="text-gray-500">
-                    {invitation.time && new Date(`2000-01-01T${invitation.time}`).toLocaleTimeString('en-US', {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    })}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start space-x-3 md:col-span-2">
-                <MapPin className="w-5 h-5 text-pink-600 flex-shrink-0" />
-                <div>
-                  <h3 className="font-medium text-gray-900">Venue</h3>
-                  <p className="text-gray-500">{invitation.venue}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Google Maps Embed */}
-            {invitation.googleMapsEmbed && (
-              <div className="mt-6">
-                <div className="aspect-video w-full rounded-lg overflow-hidden">
-                  <iframe
-                    src={invitation.googleMapsEmbed}
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Wedding Venue Location"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Message */}
-          {invitation.message && (
-            <div className="prose prose-pink mx-auto mb-8">
-              <RichTextDisplay content={invitation.message} />
-            </div>
-          )}
-
-          {/* Gallery */}
-          {invitation.gallery && invitation.gallery.length > 0 && (
-            <div className="mb-8">
-              <h2 className="text-2xl font-semibold text-center mb-4">Our Gallery</h2>
-              <Gallery images={invitation.gallery} />
-            </div>
-          )}
-
-          {/* Bank Accounts */}
-          {showBankAccounts && invitation.bankAccounts && (
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-              <h2 className="text-2xl font-semibold text-center mb-4">Digital Gifts</h2>
-              <BankAccounts accounts={invitation.bankAccounts} readOnly />
-            </div>
-          )}
-
-          {/* Social Links */}
-          {invitation.socialLinks && invitation.socialLinks.length > 0 && (
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-              <h2 className="text-2xl font-semibold text-center mb-4">Follow Our Journey</h2>
-              <SocialLinks links={invitation.socialLinks} readOnly />
-            </div>
-          )}
-
-          {/* Comments Section */}
-          <div className="mt-12">
-            <CommentSection invitationId={invitation.id} />
           </div>
         </div>
       </div>

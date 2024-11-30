@@ -32,7 +32,7 @@ export interface InvitationData {
   fontFamily?: string;
   primaryColor?: string;
   secondaryColor?: string;
-  status?: string;
+  status?: 'draft' | 'published';
   isPublished?: boolean;
   rsvpEnabled?: boolean;
   commentsEnabled?: boolean;

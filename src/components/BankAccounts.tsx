@@ -72,22 +72,12 @@ export default function BankAccounts({ accounts, onChange }: BankAccountsProps) 
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-gray-700">Bank Accounts</label>
-        <button
-          type="button"
-          onClick={addAccount}
-          className="flex items-center text-sm text-pink-600 hover:text-pink-700"
-        >
-          <Plus className="w-4 h-4 mr-1" />
-          Add Account
-        </button>
-      </div>
+    <div className="bg-[#F5E9E2] rounded-lg shadow-lg p-6 space-y-6">
+      <div className="text-2xl font-bold text-[#8B7355] mb-6">Bank Accounts</div>
       
       <div className="space-y-4">
         {accounts.map((account, index) => (
-          <div key={index} className="flex gap-4 items-start">
+          <div key={index} className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-all duration-200">
             <div className="flex-1 space-y-4">
               <input
                 type="text"
@@ -120,6 +110,16 @@ export default function BankAccounts({ accounts, onChange }: BankAccountsProps) 
             </button>
           </div>
         ))}
+      </div>
+      <div className="mt-4 flex items-center justify-between space-x-4">
+        <button
+          type="button"
+          onClick={addAccount}
+          className="px-4 py-2 bg-[#D4B996] text-white rounded-md hover:bg-[#C4A576] transition-colors duration-200"
+        >
+          <Plus className="w-4 h-4 mr-1" />
+          Add Account
+        </button>
       </div>
     </div>
   );
