@@ -14,6 +14,8 @@ interface Invitation {
   slug: string;
   created_at: string;
   status: string;
+  published_at: string | null;
+  venue: string;
 }
 
 export default function AdminInvitations() {
@@ -21,6 +23,8 @@ export default function AdminInvitations() {
   const navigate = useNavigate();
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
 
   useEffect(() => {
     fetchInvitations();
@@ -29,11 +33,13 @@ export default function AdminInvitations() {
   const fetchInvitations = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      let query = supabase
         .from('invitations')
         .select('*')
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false });
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setInvitations(data || []);
@@ -68,7 +74,10 @@ export default function AdminInvitations() {
     try {
       const { error } = await supabase
         .from('invitations')
-        .update({ status: newStatus })
+        .update({ 
+          status: newStatus,
+          published_at: newStatus === 'published' ? new Date().toISOString() : null 
+        })
         .eq('id', id)
         .eq('user_id', user?.id);
 
@@ -76,7 +85,11 @@ export default function AdminInvitations() {
 
       toast.success(`Invitation ${newStatus === 'published' ? 'published' : 'unpublished'} successfully`);
       setInvitations(invitations.map(inv => 
-        inv.id === id ? { ...inv, status: newStatus } : inv
+        inv.id === id ? { 
+          ...inv, 
+          status: newStatus,
+          published_at: newStatus === 'published' ? new Date().toISOString() : null
+        } : inv
       ));
     } catch (error: any) {
       toast.error('Error updating invitation status: ' + error.message);
@@ -95,6 +108,18 @@ export default function AdminInvitations() {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  const filteredInvitations = invitations.filter(invitation => {
+    const matchesSearch = (
+      invitation.bride_names.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      invitation.groom_names.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      invitation.venue.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    
+    const matchesStatus = statusFilter === 'all' || invitation.status === statusFilter;
+    
+    return matchesSearch && matchesStatus;
+  });
 
   if (loading) {
     return (
@@ -117,10 +142,33 @@ export default function AdminInvitations() {
         </button>
       </div>
 
+      <div className="mb-6 space-y-4">
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <input
+              type="text"
+              placeholder="Search by names or venue..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+            />
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'draft' | 'published')}
+            className="px-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
+          >
+            <option value="all">All Status</option>
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
+      </div>
+
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        {invitations.length > 0 ? (
+        {filteredInvitations.length > 0 ? (
           <div className="min-w-full divide-y divide-gray-200">
-            {invitations.map((invitation) => (
+            {filteredInvitations.map((invitation) => (
               <div
                 key={invitation.id}
                 className="p-4 hover:bg-gray-50 transition-colors duration-150"
@@ -142,6 +190,14 @@ export default function AdminInvitations() {
                       >
                         {invitation.status}
                       </span>
+                      {invitation.published_at && (
+                        <span className="text-gray-500">
+                          Published: {format(new Date(invitation.published_at), 'MMM d, yyyy HH:mm')}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-1 text-sm text-gray-500">
+                      {invitation.venue}
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -184,32 +240,11 @@ export default function AdminInvitations() {
           </div>
         ) : (
           <div className="text-center py-12">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            <h3 className="mt-2 text-sm font-medium text-gray-900">No invitations</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Get started by creating a new invitation.
+            <p className="text-gray-500">
+              {searchQuery || statusFilter !== 'all'
+                ? 'No invitations found matching your search criteria'
+                : 'No invitations created yet'}
             </p>
-            <div className="mt-6">
-              <button
-                onClick={() => navigate('/dashboard/invitations/new')}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-emerald-600 hover:bg-emerald-700"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create New Invitation
-              </button>
-            </div>
           </div>
         )}
       </div>

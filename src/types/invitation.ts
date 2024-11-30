@@ -40,6 +40,7 @@ export interface InvitationData {
   backgroundMusic?: string;
   createdAt?: string;
   updatedAt?: string;
+  published_at?: string;
 }
 
 export interface DatabaseInvitation {
