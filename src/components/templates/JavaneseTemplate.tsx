@@ -22,6 +22,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
   const [akadCountdown, setAkadCountdown] = useState<CountdownValues | null>(null);
   const [resepsiCountdown, setResepsiCountdown] = useState<CountdownValues | null>(null);
   const [visibleAccounts, setVisibleAccounts] = useState<{ [key: string]: boolean }>({});
+  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
@@ -64,6 +65,16 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
       ...prev,
       [accountId]: !prev[accountId]
     }));
+  };
+
+  const handleCopyAccount = async (accountNumber: string) => {
+    try {
+      await navigator.clipboard.writeText(accountNumber);
+      setCopiedAccount(accountNumber);
+      setTimeout(() => setCopiedAccount(null), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 
   useEffect(() => {
@@ -381,9 +392,21 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                   <div className="space-y-2">
                     {visibleAccounts[account.accountNumber] ? (
                       <>
-                        <p className="text-[#2D1810] font-mono text-lg tracking-wider">
-                          {account.accountNumber}
-                        </p>
+                        <div className="relative group">
+                          <p className="text-[#2D1810] font-mono text-lg tracking-wider">
+                            {account.accountNumber}
+                          </p>
+                          <button
+                            onClick={() => handleCopyAccount(account.accountNumber)}
+                            className={`absolute -right-2 top-1/2 -translate-y-1/2 p-2 text-xs rounded-md transition-all duration-200 ${
+                              copiedAccount === account.accountNumber
+                                ? 'bg-green-500 text-white'
+                                : 'bg-[#2D1810]/10 hover:bg-[#2D1810]/20 text-[#2D1810]'
+                            }`}
+                          >
+                            {copiedAccount === account.accountNumber ? 'Tersalin!' : 'Salin'}
+                          </button>
+                        </div>
                         <p className="text-[#2D1810]/80">
                           a.n {account.accountName}
                         </p>
