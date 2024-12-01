@@ -82,9 +82,9 @@ export interface SocialLink {
 }
 
 export interface BankAccount {
-  bank_name: string;
-  account_number: string;
-  account_holder: string;
+  bank: string;
+  accountNumber: string;
+  accountName: string;
 }
 
 export interface MusicLibrary {

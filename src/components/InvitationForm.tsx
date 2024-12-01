@@ -212,40 +212,10 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
   }, [formData.brideNames, formData.groomNames]);
 
   const validateForm = () => {
-    const errors: Record<string, string> = {};
-    const requiredFields = {
-      brideNames: 'Nama Mempelai Wanita',
-      groomNames: 'Nama Mempelai Pria',
-      date: 'Tanggal Pernikahan',
-      time: 'Waktu Acara',
-      venue: 'Lokasi Acara'
-    };
-
-    Object.entries(requiredFields).forEach(([field, label]) => {
-      if (!formData[field]) {
-        errors[field] = `${label} harus diisi`;
-      }
-    });
-
-    if (formData.date && !isValidDate(formData.date)) {
-      errors.date = 'Format tanggal tidak valid';
-    }
-
-    if (formData.time && !isValidTime(formData.time)) {
-      errors.time = 'Format waktu tidak valid';
-    }
-
-    return errors;
+    return {};
   };
 
-  const isValidDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date instanceof Date && !isNaN(date.getTime());
-  };
-
-  const isValidTime = (timeString: string) => {
-    return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/.test(timeString);
-  };
+    
 
   const checkSlugAvailability = async (slug: string): Promise<boolean> => {
     try {
@@ -287,6 +257,14 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         const errorMessages = Object.values(errors).join('\n');
         throw new Error(`Mohon lengkapi data berikut:\n${errorMessages}`);
       }
+
+      const dataToSend = {
+        ...data,
+        akadDate: data.showAkad ? data.akadDate : null,
+        akadTime: data.showAkad ? data.akadTime : null,
+        resepsiDate: data.showResepsi ? data.resepsiDate : null,
+        resepsiTime: data.showResepsi ? data.resepsiTime : null
+      };
 
       let customUrl = data.customSlug || generateSlug(data.brideNames, data.groomNames);
 
