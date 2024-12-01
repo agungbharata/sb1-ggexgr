@@ -268,7 +268,7 @@ const EditInvitation: React.FC = () => {
             <div className="p-4 bg-gray-50 border-b">
               <h2 className="text-lg font-semibold">Preview</h2>
             </div>
-            <div className="w-full">
+            <div className="w-full max-h-[800px] overflow-y-auto">
               <JavaneseTemplate
                 data={formData}
                 isViewOnly={true}
