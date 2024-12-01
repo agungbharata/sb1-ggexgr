@@ -51,34 +51,36 @@ const SocialLinks: React.FC<SocialLinksProps> = ({
           <div key={index} className="space-y-4 bg-white p-4 rounded-lg shadow-sm">
             {!isViewOnly ? (
               <div className="flex items-start space-x-4">
-                <div className="flex-grow space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Judul
-                    </label>
-                    <input
-                      type="text"
-                      value={link.title}
-                      onChange={(e) => handleLinkChange(index, 'title', e.target.value)}
-                      className="mt-1 block w-full shadow-sm sm:text-sm focus:ring-primary-500 focus:border-primary-500 border-gray-300 rounded-md"
-                      placeholder="Contoh: Instagram Kami"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      URL
-                    </label>
-                    <div className="mt-1 flex rounded-md shadow-sm">
-                      <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
-                        <LinkIcon className="h-4 w-4" />
-                      </span>
+                <div className="flex-grow">
+                  <div className="space-y-4 p-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 ">
+                        Judul
+                      </label>
                       <input
-                        type="url"
-                        value={link.url}
-                        onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
-                        className="flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300 focus:ring-primary-500 focus:border-primary-500"
-                        placeholder="https://..."
+                        type="text"
+                        value={link.title}
+                        onChange={(e) => handleLinkChange(index, 'title', e.target.value)}
+                        className="mt-1 p-2 block w-full shadow-sm sm:text-sm focus:ring-primary-500 focus:border-primary-500 border border-gray-300 rounded-md "
+                        placeholder="Contoh: Instagram Kami"
                       />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        URL
+                      </label>
+                      <div className="mt-1 flex rounded-md shadow-sm border border-gray-300">
+                        <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                          <LinkIcon className="h-4 w-4" />
+                        </span>
+                        <input
+                          type="url"
+                          value={link.url}
+                          onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
+                          className="flex-1 p-2 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300 focus:ring-primary-500 focus:border-primary-500"
+                          placeholder="https://..."
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
