@@ -1,6 +1,7 @@
-import React from 'react';
-import { format } from 'date-fns';
+import React, { useState, useEffect } from 'react';
+import { format, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
 import { id } from 'date-fns/locale';
+import { Calendar, Clock, MapPin } from 'react-feather';
 import type { InvitationData } from '../../types/invitation';
 
 interface JavaneseTemplateProps {
@@ -8,7 +9,17 @@ interface JavaneseTemplateProps {
   isViewOnly?: boolean;
 }
 
+interface CountdownValues {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+}
+
 const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly }) => {
+  const [akadCountdown, setAkadCountdown] = useState<CountdownValues | null>(null);
+  const [resepsiCountdown, setResepsiCountdown] = useState<CountdownValues | null>(null);
+
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
     try {
@@ -17,6 +28,46 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
       return dateStr;
     }
   };
+
+  const calculateCountdown = (dateStr?: string, timeStr?: string): CountdownValues | null => {
+    if (!dateStr || !timeStr) return null;
+
+    try {
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      const eventDate = new Date(dateStr);
+      eventDate.setHours(hours, minutes, 0);
+
+      const now = new Date();
+      if (eventDate <= now) return null;
+
+      const days = differenceInDays(eventDate, now);
+      const remainingHours = differenceInHours(eventDate, now) % 24;
+      const remainingMinutes = differenceInMinutes(eventDate, now) % 60;
+      const remainingSeconds = differenceInSeconds(eventDate, now) % 60;
+
+      return {
+        days,
+        hours: remainingHours,
+        minutes: remainingMinutes,
+        seconds: remainingSeconds
+      };
+    } catch {
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (data?.showAkad && data.akadDate && data.akadTime) {
+        setAkadCountdown(calculateCountdown(data.akadDate, data.akadTime));
+      }
+      if (data?.showResepsi && data.resepsiDate && data.resepsiTime) {
+        setResepsiCountdown(calculateCountdown(data.resepsiDate, data.resepsiTime));
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [data?.akadDate, data?.akadTime, data?.resepsiDate, data?.resepsiTime]);
 
   return (
     <div className="min-h-screen bg-[#F6E6D9]">
@@ -113,24 +164,58 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         <div className="space-y-16">
           {/* Akad */}
           {data?.showAkad && (
-            <div className="bg-white/50 rounded-2xl p-8 space-y-6">
-              <h3 className="font-serif text-3xl text-center text-[#2D1810]">
+            <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 space-y-6 shadow-lg">
+              <h3 className="font-serif text-3xl text-center text-[#2D1810] mb-8">
                 Akad Nikah
               </h3>
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="space-y-4 text-center">
-                  <p className="text-xl text-[#2D1810]">
-                    {formatDate(data.akadDate)}
-                  </p>
-                  <p className="text-lg text-[#2D1810]/80">
-                    {data.akadTime}
-                  </p>
-                  <p className="text-[#2D1810]/80">
-                    {data.akadVenue}
-                  </p>
+              <div className="space-y-6">
+                <div className="flex flex-col items-center space-y-6 w-full">
+                  <div className="flex items-center space-x-3 text-[#2D1810]">
+                    <Calendar className="w-5 h-5" />
+                    <p className="text-xl">
+                      {formatDate(data.akadDate)}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-3 text-[#2D1810]">
+                    <Clock className="w-5 h-5" />
+                    <p className="text-lg">
+                      {data.akadTime} WIB
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-3 text-[#2D1810] text-center">
+                    <MapPin className="w-5 h-5 flex-shrink-0" />
+                    <p className="text-lg">
+                      {data.akadVenue}
+                    </p>
+                  </div>
                 </div>
+                
+                {akadCountdown && (
+                  <div className="w-full p-6 bg-white/70 rounded-xl shadow-sm">
+                    <p className="font-medium text-[#2D1810] mb-4 text-center">Menuju Akad Nikah:</p>
+                    <div className="grid grid-cols-4 gap-4">
+                      <div className="text-center bg-white/50 rounded-lg p-3">
+                        <p className="text-2xl font-bold text-[#2D1810]">{akadCountdown.days}</p>
+                        <p className="text-sm text-[#2D1810]/80">Hari</p>
+                      </div>
+                      <div className="text-center bg-white/50 rounded-lg p-3">
+                        <p className="text-2xl font-bold text-[#2D1810]">{akadCountdown.hours}</p>
+                        <p className="text-sm text-[#2D1810]/80">Jam</p>
+                      </div>
+                      <div className="text-center bg-white/50 rounded-lg p-3">
+                        <p className="text-2xl font-bold text-[#2D1810]">{akadCountdown.minutes}</p>
+                        <p className="text-sm text-[#2D1810]/80">Menit</p>
+                      </div>
+                      <div className="text-center bg-white/50 rounded-lg p-3">
+                        <p className="text-2xl font-bold text-[#2D1810]">{akadCountdown.seconds}</p>
+                        <p className="text-sm text-[#2D1810]/80">Detik</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {data.akadMapsEmbed && (
-                  <div className="aspect-video rounded-lg overflow-hidden">
+                  <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
                     <iframe
                       src={data.akadMapsEmbed}
                       width="100%"
@@ -148,24 +233,58 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
           {/* Resepsi */}
           {data?.showResepsi && (
-            <div className="bg-white/50 rounded-2xl p-8 space-y-6">
-              <h3 className="font-serif text-3xl text-center text-[#2D1810]">
+            <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 space-y-6 shadow-lg">
+              <h3 className="font-serif text-3xl text-center text-[#2D1810] mb-8">
                 Resepsi Pernikahan
               </h3>
-              <div className="grid md:grid-cols-2 gap-8">
-                <div className="space-y-4 text-center">
-                  <p className="text-xl text-[#2D1810]">
-                    {formatDate(data.resepsiDate)}
-                  </p>
-                  <p className="text-lg text-[#2D1810]/80">
-                    {data.resepsiTime}
-                  </p>
-                  <p className="text-[#2D1810]/80">
-                    {data.resepsiVenue}
-                  </p>
+              <div className="space-y-6">
+                <div className="flex flex-col items-center space-y-6 w-full">
+                  <div className="flex items-center space-x-3 text-[#2D1810]">
+                    <Calendar className="w-5 h-5" />
+                    <p className="text-xl">
+                      {formatDate(data.resepsiDate)}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-3 text-[#2D1810]">
+                    <Clock className="w-5 h-5" />
+                    <p className="text-lg">
+                      {data.resepsiTime} WIB
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-3 text-[#2D1810] text-center">
+                    <MapPin className="w-5 h-5 flex-shrink-0" />
+                    <p className="text-lg">
+                      {data.resepsiVenue}
+                    </p>
+                  </div>
                 </div>
+                
+                {resepsiCountdown && (
+                  <div className="w-full p-6 bg-white/70 rounded-xl shadow-sm">
+                    <p className="font-medium text-[#2D1810] mb-4 text-center">Menuju Resepsi Pernikahan:</p>
+                    <div className="grid grid-cols-4 gap-4">
+                      <div className="text-center bg-white/50 rounded-lg p-3">
+                        <p className="text-2xl font-bold text-[#2D1810]">{resepsiCountdown.days}</p>
+                        <p className="text-sm text-[#2D1810]/80">Hari</p>
+                      </div>
+                      <div className="text-center bg-white/50 rounded-lg p-3">
+                        <p className="text-2xl font-bold text-[#2D1810]">{resepsiCountdown.hours}</p>
+                        <p className="text-sm text-[#2D1810]/80">Jam</p>
+                      </div>
+                      <div className="text-center bg-white/50 rounded-lg p-3">
+                        <p className="text-2xl font-bold text-[#2D1810]">{resepsiCountdown.minutes}</p>
+                        <p className="text-sm text-[#2D1810]/80">Menit</p>
+                      </div>
+                      <div className="text-center bg-white/50 rounded-lg p-3">
+                        <p className="text-2xl font-bold text-[#2D1810]">{resepsiCountdown.seconds}</p>
+                        <p className="text-sm text-[#2D1810]/80">Detik</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {data.resepsiMapsEmbed && (
-                  <div className="aspect-video rounded-lg overflow-hidden">
+                  <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
                     <iframe
                       src={data.resepsiMapsEmbed}
                       width="100%"
