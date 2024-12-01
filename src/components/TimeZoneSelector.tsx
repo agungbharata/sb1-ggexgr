@@ -24,10 +24,10 @@ export const TimeZoneSelector: React.FC<TimeZoneSelectorProps> = ({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as TimeZone)}
-        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+        className="block w-full px-4 py-2.5 text-base rounded-md border-gray-300 bg-white shadow-sm focus:border-primary-500 focus:ring-primary-500"
       >
         {timeZones.map((tz) => (
-          <option key={tz.value} value={tz.value}>
+          <option key={tz.value} value={tz.value} className="py-2">
             {tz.label}
           </option>
         ))}
