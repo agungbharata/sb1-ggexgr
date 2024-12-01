@@ -21,6 +21,7 @@ interface CountdownValues {
 const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly }) => {
   const [akadCountdown, setAkadCountdown] = useState<CountdownValues | null>(null);
   const [resepsiCountdown, setResepsiCountdown] = useState<CountdownValues | null>(null);
+  const [visibleAccounts, setVisibleAccounts] = useState<{ [key: string]: boolean }>({});
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
@@ -56,6 +57,13 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
     } catch {
       return null;
     }
+  };
+
+  const toggleAccountVisibility = (accountId: string) => {
+    setVisibleAccounts(prev => ({
+      ...prev,
+      [accountId]: !prev[accountId]
+    }));
   };
 
   useEffect(() => {
@@ -355,26 +363,46 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         {/* Bank Accounts */}
         {data?.bankAccounts && data.bankAccounts.length > 0 && (
           <div className="text-center">
-            <h3 className="font-serif text-3xl text-[#2D1810] mb-8">
+            <h3 className="font-serif text-3xl text-[#2D1810] mb-4">
               Amplop Digital
             </h3>
+            <div className="prose prose-lg mx-auto text-[#2D1810] mb-8">
+              <p>Doa Restu Anda merupakan karunia yang sangat berarti bagi kami. Dan jika memberi adalah ungkapan tanda kasih Anda, Anda dapat memberi kado secara cashless melalui:</p>
+            </div>
             <div className="grid gap-6 max-w-md mx-auto">
               {data.bankAccounts.map((account, index) => (
                 <div 
                   key={index}
-                  className="bg-white/50 p-6 rounded-xl space-y-2"
+                  className="bg-white/50 p-6 rounded-xl space-y-4"
                 >
                   <p className="text-lg font-medium text-[#2D1810]">
                     {account.bank_name}
                   </p>
-                  <p className="text-[#2D1810]">
-                    {account.account_number}
-                  </p>
-                  <p className="text-[#2D1810]/80">
-                    a.n {account.account_holder}
-                  </p>
+                  <div className="space-y-2">
+                    {visibleAccounts[account.account_number] ? (
+                      <>
+                        <p className="text-[#2D1810] font-mono text-lg tracking-wider">
+                          {account.account_number}
+                        </p>
+                        <p className="text-[#2D1810]/80">
+                          a.n {account.account_holder}
+                        </p>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => toggleAccountVisibility(account.account_number)}
+                        className="px-4 py-2 bg-[#2D1810]/10 hover:bg-[#2D1810]/20 rounded-lg text-[#2D1810] transition-colors duration-200"
+                      >
+                        Tampilkan Rekening
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
+            </div>
+            <div className="mt-6 text-center text-[#2D1810]/80 text-sm">
+              <p>Setiap doa dan pemberian Anda akan sangat berarti bagi perjalanan kami ke depan.</p>
+              <p>Terima kasih atas perhatian dan kebaikan hati Anda.</p>
             </div>
           </div>
         )}
