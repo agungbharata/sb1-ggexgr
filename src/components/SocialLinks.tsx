@@ -1,179 +1,124 @@
 import React from 'react';
-import { Link, Plus, Trash2 } from 'lucide-react';
-import type { SocialLink } from '../types';
+import { Plus, Minus, Link as LinkIcon } from 'lucide-react';
+import { SocialLink } from '../types/invitation';
+import SocialMediaPreview, { detectSocialMediaType } from './SocialMediaPreview';
 
 interface SocialLinksProps {
   links: SocialLink[];
   onChange: (links: SocialLink[]) => void;
+  isViewOnly?: boolean;
 }
 
-export default function SocialLinks({ links, onChange }: SocialLinksProps) {
-  const addLink = () => {
-    try {
-      // Validasi jumlah maksimum social media
-      if (links.length >= 10) {
-        throw new Error('Maksimum 10 social media yang dapat ditambahkan');
-      }
-
-      const newLinks = [...links, { platform: '', title: '', url: '', embedCode: '' }];
-      onChange(newLinks);
-    } catch (error: any) {
-      console.error('Error adding social link:', error);
-      alert(error.message || 'Gagal menambahkan social media');
-    }
+const SocialLinks: React.FC<SocialLinksProps> = ({
+  links,
+  onChange,
+  isViewOnly = false,
+}) => {
+  const handleAddLink = () => {
+    onChange([...links, { title: '', url: '' }]);
   };
 
-  const removeLink = (index: number) => {
-    try {
-      const newLinks = links.filter((_, i) => i !== index);
-      onChange(newLinks);
-    } catch (error: any) {
-      console.error('Error removing social link:', error);
-      alert('Gagal menghapus social media');
-    }
+  const handleRemoveLink = (index: number) => {
+    const newLinks = [...links];
+    newLinks.splice(index, 1);
+    onChange(newLinks);
   };
 
-  const updateLink = (index: number, field: keyof SocialLink, value: string) => {
-    try {
-      // Validasi URL jika field adalah url
-      if (field === 'url' && value) {
-        try {
-          new URL(value);
-        } catch {
-          throw new Error('URL tidak valid');
-        }
-      }
-
-      // Validasi panjang input
-      if (value.length > 500) {
-        throw new Error('Input terlalu panjang (maksimum 500 karakter)');
-      }
-
-      const newLinks = links.map((link, i) => {
-        if (i === index) {
-          let updatedLink = { ...link, [field]: value };
-          
-          // Generate embed code hanya jika URL valid
-          if ((field === 'platform' || field === 'url') && updatedLink.url) {
-            try {
-              updatedLink.embedCode = generateEmbedCode(updatedLink.url, updatedLink.platform);
-            } catch (embedError) {
-              console.warn('Failed to generate embed code:', embedError);
-              updatedLink.embedCode = '';
-            }
-          }
-          
-          return updatedLink;
-        }
-        return link;
-      });
-
-      onChange(newLinks);
-    } catch (error: any) {
-      console.error('Error updating social link:', error);
-      alert(error.message || 'Gagal mengupdate social media');
-    }
-  };
-
-  const generateEmbedCode = (url: string, platform: string): string => {
-    if (!url) return '';
-
-    // Convert platform to lowercase for case-insensitive matching
-    const platformLower = platform.toLowerCase();
-
-    // Common video platforms
-    if (url.includes('youtube.com') || url.includes('youtu.be')) {
-      const youtubeId = url.match(/(?:youtu\.be\/|youtube\.com(?:\/embed\/|\/v\/|\/watch\?v=|\/user\/\S+|\/ytscreeningroom\?v=|\/sandalsResorts#\w\/\w\/.*\/))([^\/&\?]{10,12})/);
-      return youtubeId ? `<iframe width="100%" height="315" src="https://www.youtube.com/embed/${youtubeId[1]}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>` : '';
-    }
-
-    if (url.includes('vimeo.com')) {
-      const vimeoId = url.match(/vimeo\.com\/([0-9]+)/);
-      return vimeoId ? `<iframe src="https://player.vimeo.com/video/${vimeoId[1]}" width="100%" height="315" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>` : '';
-    }
-
-    // Social media platforms
-    if (url.includes('instagram.com/p/') || url.includes('instagram.com/reel/')) {
-      const instagramId = url.match(/instagram\.com\/(?:p|reel)\/([^\/]+)/);
-      return instagramId ? `<iframe width="100%" height="600" src="https://www.instagram.com/p/${instagramId[1]}/embed" frameborder="0" scrolling="no" allowtransparency="true"></iframe>` : '';
-    }
-
-    if (url.includes('facebook.com')) {
-      return `<iframe src="https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(url)}&show_text=true&width=500" width="100%" height="600" style="border:none;overflow:hidden" scrolling="no" frameborder="0" allowfullscreen="true" allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"></iframe>`;
-    }
-
-    if (url.includes('tiktok.com')) {
-      const tiktokId = url.match(/tiktok\.com\/(?:@[^\/]+\/video\/|v\/)(\d+)/);
-      return tiktokId ? `<blockquote class="tiktok-embed" cite="${url}" data-video-id="${tiktokId[1]}" style="max-width: 605px;min-width: 325px;"><section></section></blockquote><script async src="https://www.tiktok.com/embed.js"></script>` : '';
-    }
-
-    if (url.includes('twitter.com') || url.includes('x.com')) {
-      return `<div style="min-height: 500px;"><a href="${url}"></a></div><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>`;
-    }
-
-    // For other platforms, return empty string as they might not support embedding
-    return '';
+  const handleLinkChange = (index: number, field: keyof SocialLink, value: string) => {
+    const newLinks = [...links];
+    newLinks[index] = { ...newLinks[index], [field]: value };
+    onChange(newLinks);
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-gray-700">Social Media Links</label>
-        <button
-          type="button"
-          onClick={addLink}
-          className="flex items-center text-sm text-pink-600 hover:text-pink-700"
-        >
-          <Plus className="w-4 h-4 mr-1" />
-          Add Link
-        </button>
-      </div>
-      
-      <div className="space-y-4">
+      {!isViewOnly && (
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-medium text-gray-900">Media Sosial</h3>
+          <button
+            type="button"
+            onClick={handleAddLink}
+            className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-full shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Tambah Link
+          </button>
+        </div>
+      )}
+
+      <div className="space-y-6">
         {links.map((link, index) => (
-          <div key={index} className="flex gap-4 items-start">
-            <div className="flex-1 space-y-4">
-              <input
-                type="text"
-                value={link.platform}
-                onChange={(e) => updateLink(index, 'platform', e.target.value)}
-                placeholder="Platform (e.g., YouTube, Instagram, Facebook, TikTok)"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-
-              <input
-                type="text"
-                value={link.title}
-                onChange={(e) => updateLink(index, 'title', e.target.value)}
-                placeholder="Title (e.g., Our Pre-Wedding Video)"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-
-              <input
-                type="url"
-                value={link.url}
-                onChange={(e) => updateLink(index, 'url', e.target.value)}
-                placeholder="URL"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-
-              {link.embedCode && (
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <div className="text-sm text-gray-500 mb-2">Preview:</div>
-                  <div dangerouslySetInnerHTML={{ __html: link.embedCode }} />
+          <div key={index} className="space-y-4 bg-white p-4 rounded-lg shadow-sm">
+            {!isViewOnly ? (
+              <div className="flex items-start space-x-4">
+                <div className="flex-grow space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Judul
+                    </label>
+                    <input
+                      type="text"
+                      value={link.title}
+                      onChange={(e) => handleLinkChange(index, 'title', e.target.value)}
+                      className="mt-1 block w-full shadow-sm sm:text-sm focus:ring-primary-500 focus:border-primary-500 border-gray-300 rounded-md"
+                      placeholder="Contoh: Instagram Kami"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      URL
+                    </label>
+                    <div className="mt-1 flex rounded-md shadow-sm">
+                      <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                        <LinkIcon className="h-4 w-4" />
+                      </span>
+                      <input
+                        type="url"
+                        value={link.url}
+                        onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
+                        className="flex-1 block w-full rounded-none rounded-r-md sm:text-sm border-gray-300 focus:ring-primary-500 focus:border-primary-500"
+                        placeholder="https://..."
+                      />
+                    </div>
+                  </div>
                 </div>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => removeLink(index)}
-              className="p-2 text-red-500 hover:text-red-600"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveLink(index)}
+                  className="mt-6 inline-flex items-center p-1.5 border border-transparent rounded-full shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2 text-gray-600">
+                <LinkIcon className="w-4 h-4" />
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-600 hover:text-primary-700"
+                >
+                  {link.title || link.url}
+                </a>
+              </div>
+            )}
+
+            {/* Social Media Preview */}
+            {link.url && detectSocialMediaType(link.url) && (
+              <div className="mt-4">
+                <SocialMediaPreview
+                  url={link.url}
+                  width={isViewOnly ? 328 : 400}
+                  className="bg-gray-50"
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>
     </div>
   );
-}
+};
+
+export default SocialLinks;

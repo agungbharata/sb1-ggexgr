@@ -4,6 +4,7 @@ import { id } from 'date-fns/locale';
 import { Calendar, Clock, MapPin } from 'react-feather';
 import type { InvitationData } from '../../types/invitation';
 import { getTimeWithZone } from '../TimeZoneSelector';
+import SocialMediaPreview from '../SocialMediaPreview';
 
 interface JavaneseTemplateProps {
   data: Partial<InvitationData>;
@@ -333,15 +334,19 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
             </h3>
             <div className="flex flex-wrap justify-center gap-4">
               {data.socialLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 bg-white/50 rounded-full text-[#2D1810] hover:bg-white/70 transition-colors"
-                >
-                  {link.platform}
-                </a>
+                <div key={index} className="bg-white/80 backdrop-blur-sm rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[#2D1810] hover:text-[#2D1810]/80"
+                    >
+                      {link.title || link.url}
+                    </a>
+                  </div>
+                  <SocialMediaPreview url={link.url} width={328} className="bg-[#F6E6D9]/50" />
+                </div>
               ))}
             </div>
           </div>
