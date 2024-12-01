@@ -263,18 +263,16 @@ const EditInvitation: React.FC = () => {
         </div>
 
         {/* Preview Section */}
-        <div className="w-full lg:w-1/2 sticky top-4">
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="w-full lg:w-1/2">
+          <div className="bg-white rounded-lg shadow-lg">
             <div className="p-4 bg-gray-50 border-b">
               <h2 className="text-lg font-semibold">Preview</h2>
             </div>
-            <div className="aspect-[9/16] bg-white">
-              <div className="h-full overflow-y-auto">
-                <JavaneseTemplate
-                  data={formData}
-                  isViewOnly={true}
-                />
-              </div>
+            <div className="w-full">
+              <JavaneseTemplate
+                data={formData}
+                isViewOnly={true}
+              />
             </div>
           </div>
         </div>
