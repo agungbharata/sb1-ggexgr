@@ -332,9 +332,9 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
             <h3 className="font-serif text-3xl text-[#2D1810] mb-8">
               Media Sosial
             </h3>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="space-y-4 w-full">
               {data.socialLinks.map((link, index) => (
-                <div key={index} className="bg-white/80 backdrop-blur-sm rounded-lg p-4">
+                <div key={index} className="bg-white/80 backdrop-blur-sm rounded-lg p-4 w-full">
                   <div className="flex items-center justify-between mb-2">
                     <a
                       href={link.url}
@@ -345,7 +345,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                       {link.title || link.url}
                     </a>
                   </div>
-                  <SocialMediaPreview url={link.url} width={328} className="bg-[#F6E6D9]/50" />
+                  <SocialMediaPreview url={link.url} className="bg-[#F6E6D9]/50" />
                 </div>
               ))}
             </div>

@@ -34,7 +34,7 @@ const detectSocialMediaType = (url: string): SocialMediaType | null => {
 
 export const SocialMediaPreview: React.FC<SocialMediaPreviewProps> = ({ 
   url, 
-  width = 328,
+  width = '100%',
   className = ''
 }) => {
   if (!url) return null;
@@ -43,17 +43,23 @@ export const SocialMediaPreview: React.FC<SocialMediaPreviewProps> = ({
   if (!type) return null;
 
   const renderEmbed = () => {
+    const commonProps = {
+      url,
+      width: '100%',
+      style: { width: '100%', maxWidth: '550px', margin: '0 auto' }
+    };
+
     switch (type) {
       case 'instagram':
-        return <InstagramEmbed url={url} width={width} />;
+        return <InstagramEmbed {...commonProps} />;
       case 'youtube':
-        return <YouTubeEmbed url={url} width={width} />;
+        return <YouTubeEmbed {...commonProps} />;
       case 'twitter':
-        return <TwitterEmbed url={url} width={width} />;
+        return <TwitterEmbed {...commonProps} />;
       case 'facebook':
-        return <FacebookEmbed url={url} width={width} />;
+        return <FacebookEmbed {...commonProps} />;
       case 'tiktok':
-        return <TikTokEmbed url={url} width={width} />;
+        return <TikTokEmbed {...commonProps} />;
       default:
         return null;
     }
@@ -61,10 +67,11 @@ export const SocialMediaPreview: React.FC<SocialMediaPreviewProps> = ({
 
   return (
     <div 
-      className={`my-4 rounded-lg overflow-hidden shadow-sm ${className}`}
-      style={{ maxWidth: width }}
+      className={`w-full my-4 rounded-lg overflow-hidden shadow-sm flex justify-center ${className}`}
     >
-      {renderEmbed()}
+      <div className="w-full">
+        {renderEmbed()}
+      </div>
     </div>
   );
 };
