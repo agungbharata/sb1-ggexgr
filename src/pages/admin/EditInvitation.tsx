@@ -85,7 +85,6 @@ const EditInvitation: React.FC = () => {
     <div className="min-h-screen">
       <div className="py-8">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-2xl font-bold mb-6">Edit Invitation</h1>
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Preview Section */}
             <div className="w-full lg:w-1/2 lg:sticky lg:top-8">
