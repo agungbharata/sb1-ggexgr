@@ -100,12 +100,14 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         }}
       >
         <div className="absolute inset-0 bg-black/30" />
-        <div className="relative z-10 text-center text-white px-4">
-          <h1 className="font-serif text-5xl md:text-7xl mb-6">
-            {data?.brideNames} & {data?.groomNames}
+        <div className="relative z-10 text-center text-white px-4 w-full max-w-lg mx-auto">
+          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl mb-4 leading-tight">
+            {data?.brideNames} 
+            <span className="block text-2xl sm:text-3xl md:text-4xl my-2">&</span> 
+            {data?.groomNames}
           </h1>
           {data?.date && (
-            <p className="text-xl md:text-2xl font-light">
+            <p className="text-base sm:text-lg md:text-xl font-light">
               {formatDate(data.date)}
             </p>
           )}
@@ -113,21 +115,21 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
       </section>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-16 space-y-24">
+      <div className="max-w-lg mx-auto px-4 py-8 space-y-12">
         {/* Opening */}
         <div className="text-center">
           <div 
-            className="prose prose-lg mx-auto text-[#2D1810]"
+            className="prose-sm sm:prose max-w-none text-[#2D1810]"
             dangerouslySetInnerHTML={{ __html: data?.openingText || '' }}
           />
         </div>
 
         {/* Couple */}
-        <div className="grid md:grid-cols-2 gap-16">
+        <div className="space-y-12">
           {/* Bride */}
-          <div className="text-center space-y-6">
+          <div className="text-center space-y-4">
             {data?.bridePhoto && (
-              <div className="aspect-square w-64 mx-auto overflow-hidden rounded-full border-4 border-[#2D1810]/20">
+              <div className="aspect-square w-32 sm:w-40 md:w-48 mx-auto overflow-hidden rounded-full border-4 border-[#2D1810]/20">
                 <img 
                   src={data.bridePhoto} 
                   alt={data.brideNames} 
@@ -136,22 +138,22 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
               </div>
             )}
             <div>
-              <h2 className="font-serif text-3xl text-[#2D1810] mb-2">
+              <h2 className="font-serif text-xl sm:text-2xl text-[#2D1810] mb-2">
                 {data?.brideNames}
               </h2>
               {data?.brideParents && (
-                <div className="text-[#2D1810]/80 space-y-1">
-                  <p className="font-medium">Putri dari:</p>
-                  <p className="font-serif">{data.brideParents}</p>
+                <div className="text-[#2D1810]/80">
+                  <p className="text-sm sm:text-base">Putri dari:</p>
+                  <p className="font-serif text-sm sm:text-base">{data.brideParents}</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Groom */}
-          <div className="text-center space-y-6">
+          <div className="text-center space-y-4">
             {data?.groomPhoto && (
-              <div className="aspect-square w-64 mx-auto overflow-hidden rounded-full border-4 border-[#2D1810]/20">
+              <div className="aspect-square w-32 sm:w-40 md:w-48 mx-auto overflow-hidden rounded-full border-4 border-[#2D1810]/20">
                 <img 
                   src={data.groomPhoto} 
                   alt={data.groomNames} 
@@ -160,13 +162,13 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
               </div>
             )}
             <div>
-              <h2 className="font-serif text-3xl text-[#2D1810] mb-2">
+              <h2 className="font-serif text-xl sm:text-2xl text-[#2D1810] mb-2">
                 {data?.groomNames}
               </h2>
               {data?.groomParents && (
-                <div className="text-[#2D1810]/80 space-y-1">
-                  <p className="font-medium">Putra dari:</p>
-                  <p className="font-serif">{data.groomParents}</p>
+                <div className="text-[#2D1810]/80">
+                  <p className="text-sm sm:text-base">Putra dari:</p>
+                  <p className="font-serif text-sm sm:text-base">{data.groomParents}</p>
                 </div>
               )}
             </div>
@@ -176,76 +178,59 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         {/* Invitation Text */}
         <div className="text-center">
           <div 
-            className="prose prose-lg mx-auto text-[#2D1810]"
+            className="prose-sm sm:prose max-w-none text-[#2D1810]"
             dangerouslySetInnerHTML={{ __html: data?.invitationText || '' }}
           />
         </div>
 
         {/* Events */}
-        <div className="space-y-16">
+        <div className="space-y-8">
           {/* Akad */}
           {data?.showAkad && (
-            <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 space-y-6 shadow-lg">
-              <h3 className="font-serif text-3xl text-center text-[#2D1810] mb-8">
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 space-y-4">
+              <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
                 Akad Nikah
               </h3>
-              <div className="space-y-6">
-                <div className="flex flex-col items-center space-y-6 w-full">
-                  <div className="flex items-center space-x-3 text-[#2D1810]">
-                    <Calendar className="w-5 h-5" />
-                    <p className="text-xl">
+              <div className="space-y-3">
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="flex items-center space-x-2 text-[#2D1810]">
+                    <Calendar className="w-4 h-4" />
+                    <p className="text-sm sm:text-base">
                       {formatDate(data.akadDate)}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-3 text-[#2D1810]">
-                    <Clock className="w-5 h-5" />
-                    <p className="text-lg">
-                      {getTimeWithZone(data.akadTime || '', data.timezone)}
+                  <div className="flex items-center space-x-2 text-[#2D1810]">
+                    <Clock className="w-4 h-4" />
+                    <p className="text-sm sm:text-base">
+                      {data.akadTime ? getTimeWithZone(data.akadTime, data.timezone) : ''}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-3 text-[#2D1810] text-center">
-                    <MapPin className="w-5 h-5 flex-shrink-0" />
-                    <p className="text-lg">
-                      {data.akadVenue}
-                    </p>
-                  </div>
-                </div>
-                
-                {akadCountdown && (
-                  <div className="w-full p-6 bg-white/70 rounded-xl shadow-sm">
-                    <p className="font-medium text-[#2D1810] mb-4 text-center">Menuju Akad Nikah:</p>
-                    <div className="grid grid-cols-4 gap-4">
-                      <div className="text-center bg-white/50 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-[#2D1810]">{akadCountdown.days}</p>
-                        <p className="text-sm text-[#2D1810]/80">Hari</p>
-                      </div>
-                      <div className="text-center bg-white/50 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-[#2D1810]">{akadCountdown.hours}</p>
-                        <p className="text-sm text-[#2D1810]/80">Jam</p>
-                      </div>
-                      <div className="text-center bg-white/50 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-[#2D1810]">{akadCountdown.minutes}</p>
-                        <p className="text-sm text-[#2D1810]/80">Menit</p>
-                      </div>
-                      <div className="text-center bg-white/50 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-[#2D1810]">{akadCountdown.seconds}</p>
-                        <p className="text-sm text-[#2D1810]/80">Detik</p>
-                      </div>
+                  {data.akadLocation && (
+                    <div className="flex items-center space-x-2 text-[#2D1810]">
+                      <MapPin className="w-4 h-4" />
+                      <p className="text-sm sm:text-base text-center">{data.akadLocation}</p>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
 
-                {data.akadMapsEmbed && (
-                  <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-                    <iframe
-                      src={data.akadMapsEmbed}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                    />
+                {akadCountdown && (
+                  <div className="grid grid-cols-4 gap-2 text-center mt-4">
+                    <div className="bg-white/80 rounded-lg p-2">
+                      <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.days}</div>
+                      <div className="text-xs text-[#2D1810]/80">Hari</div>
+                    </div>
+                    <div className="bg-white/80 rounded-lg p-2">
+                      <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.hours}</div>
+                      <div className="text-xs text-[#2D1810]/80">Jam</div>
+                    </div>
+                    <div className="bg-white/80 rounded-lg p-2">
+                      <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.minutes}</div>
+                      <div className="text-xs text-[#2D1810]/80">Menit</div>
+                    </div>
+                    <div className="bg-white/80 rounded-lg p-2">
+                      <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.seconds}</div>
+                      <div className="text-xs text-[#2D1810]/80">Detik</div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -254,67 +239,50 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
           {/* Resepsi */}
           {data?.showResepsi && (
-            <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-8 space-y-6 shadow-lg">
-              <h3 className="font-serif text-3xl text-center text-[#2D1810] mb-8">
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 space-y-4">
+              <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
                 Resepsi Pernikahan
               </h3>
-              <div className="space-y-6">
-                <div className="flex flex-col items-center space-y-6 w-full">
-                  <div className="flex items-center space-x-3 text-[#2D1810]">
-                    <Calendar className="w-5 h-5" />
-                    <p className="text-xl">
+              <div className="space-y-3">
+                <div className="flex flex-col items-center space-y-3">
+                  <div className="flex items-center space-x-2 text-[#2D1810]">
+                    <Calendar className="w-4 h-4" />
+                    <p className="text-sm sm:text-base">
                       {formatDate(data.resepsiDate)}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-3 text-[#2D1810]">
-                    <Clock className="w-5 h-5" />
-                    <p className="text-lg">
-                      {getTimeWithZone(data.resepsiTime || '', data.timezone)}
+                  <div className="flex items-center space-x-2 text-[#2D1810]">
+                    <Clock className="w-4 h-4" />
+                    <p className="text-sm sm:text-base">
+                      {data.resepsiTime ? getTimeWithZone(data.resepsiTime, data.timezone) : ''}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-3 text-[#2D1810] text-center">
-                    <MapPin className="w-5 h-5 flex-shrink-0" />
-                    <p className="text-lg">
-                      {data.resepsiVenue}
-                    </p>
-                  </div>
-                </div>
-                
-                {resepsiCountdown && (
-                  <div className="w-full p-6 bg-white/70 rounded-xl shadow-sm">
-                    <p className="font-medium text-[#2D1810] mb-4 text-center">Menuju Resepsi Pernikahan:</p>
-                    <div className="grid grid-cols-4 gap-4">
-                      <div className="text-center bg-white/50 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-[#2D1810]">{resepsiCountdown.days}</p>
-                        <p className="text-sm text-[#2D1810]/80">Hari</p>
-                      </div>
-                      <div className="text-center bg-white/50 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-[#2D1810]">{resepsiCountdown.hours}</p>
-                        <p className="text-sm text-[#2D1810]/80">Jam</p>
-                      </div>
-                      <div className="text-center bg-white/50 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-[#2D1810]">{resepsiCountdown.minutes}</p>
-                        <p className="text-sm text-[#2D1810]/80">Menit</p>
-                      </div>
-                      <div className="text-center bg-white/50 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-[#2D1810]">{resepsiCountdown.seconds}</p>
-                        <p className="text-sm text-[#2D1810]/80">Detik</p>
-                      </div>
+                  {data.resepsiLocation && (
+                    <div className="flex items-center space-x-2 text-[#2D1810]">
+                      <MapPin className="w-4 h-4" />
+                      <p className="text-sm sm:text-base text-center">{data.resepsiLocation}</p>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
 
-                {data.resepsiMapsEmbed && (
-                  <div className="w-full aspect-video rounded-lg overflow-hidden shadow-lg">
-                    <iframe
-                      src={data.resepsiMapsEmbed}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                    />
+                {resepsiCountdown && (
+                  <div className="grid grid-cols-4 gap-2 text-center mt-4">
+                    <div className="bg-white/80 rounded-lg p-2">
+                      <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.days}</div>
+                      <div className="text-xs text-[#2D1810]/80">Hari</div>
+                    </div>
+                    <div className="bg-white/80 rounded-lg p-2">
+                      <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.hours}</div>
+                      <div className="text-xs text-[#2D1810]/80">Jam</div>
+                    </div>
+                    <div className="bg-white/80 rounded-lg p-2">
+                      <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.minutes}</div>
+                      <div className="text-xs text-[#2D1810]/80">Menit</div>
+                    </div>
+                    <div className="bg-white/80 rounded-lg p-2">
+                      <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.seconds}</div>
+                      <div className="text-xs text-[#2D1810]/80">Detik</div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -325,10 +293,10 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         {/* Gallery */}
         {data?.gallery && data.gallery.length > 0 && (
           <div>
-            <h3 className="font-serif text-3xl text-center text-[#2D1810] mb-8">
+            <h3 className="font-serif text-2xl sm:text-3xl text-center text-[#2D1810] mb-4">
               Galeri Foto
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {data.gallery.map((photo, index) => (
                 <div 
                   key={index} 
@@ -345,12 +313,10 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           </div>
         )}
 
-
-
         {/* Social Links */}
         {data?.socialLinks && data.socialLinks.length > 0 && (
           <div className="text-center">
-            <h3 className="font-serif text-3xl text-[#2D1810] mb-8">
+            <h3 className="font-serif text-2xl sm:text-3xl text-center text-[#2D1810] mb-4">
               Media Sosial
             </h3>
             <div className="space-y-4 w-full">
@@ -376,10 +342,10 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         {/* Bank Accounts */}
         {data?.bankAccounts && data.bankAccounts.length > 0 && (
           <div className="text-center">
-            <h3 className="font-serif text-3xl text-[#2D1810] mb-4">
+            <h3 className="font-serif text-2xl sm:text-3xl text-center text-[#2D1810] mb-4">
               Amplop Digital
             </h3>
-            <div className="prose prose-lg mx-auto text-[#2D1810] mb-8">
+            <div className="prose-sm sm:prose max-w-none text-[#2D1810] mb-8">
               <p>Doa Restu Anda merupakan karunia yang sangat berarti bagi kami. Dan jika memberi adalah ungkapan tanda kasih Anda, Anda dapat memberi kado secara cashless melalui:</p>
             </div>
             <div className="grid gap-6 max-w-md mx-auto">
@@ -433,12 +399,12 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         )}
 
         {/* Pesan Pribadi */}
-                {data?.message && (
+        {data?.message && (
           <div className="text-center mt-16 mb-8">
-            <h3 className="font-serif text-3xl text-[#2D1810] mb-4">
+            <h3 className="font-serif text-2xl sm:text-3xl text-center text-[#2D1810] mb-4">
               Pesan Pribadi
             </h3>
-            <div className="prose prose-lg mx-auto text-[#2D1810] max-w-2xl px-4">
+            <div className="prose-sm sm:prose max-w-none text-[#2D1810] max-w-2xl px-4">
               <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: data.message }} />
             </div>
           </div>
