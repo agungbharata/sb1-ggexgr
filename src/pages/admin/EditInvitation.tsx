@@ -83,12 +83,12 @@ const EditInvitation: React.FC = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="py-8">
-        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-8">
+      <div className="py-4 sm:py-6 lg:py-8">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             {/* Preview Section */}
-            <div className="w-full lg:w-1/2 lg:sticky lg:top-8">
-              <div className="relative border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[calc(100vh-100px)] w-full max-w-[420px] mx-auto">
+            <div className="w-full lg:w-1/2 lg:sticky lg:top-4">
+              <div className="relative border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] sm:h-[700px] lg:h-[calc(100vh-100px)] w-full max-w-[420px] mx-auto">
                 {/* Volume & Power Buttons */}
                 <div className="h-[32px] w-[3px] bg-gray-800 absolute -start-[17px] top-[72px] rounded-s-lg"></div>
                 <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
@@ -107,7 +107,7 @@ const EditInvitation: React.FC = () => {
 
             {/* Form Section */}
             <div className="w-full lg:w-1/2">
-              <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6">
+              <div className="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-4 sm:p-6">
                 <InvitationForm
                   onUpdate={handleUpdate}
                   onChange={handleChange}
@@ -286,6 +286,26 @@ const EditInvitation: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Save Button */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 md:hidden">
+        <button 
+          onClick={handleUpdate}
+          className="w-full bg-primary hover:bg-primary-dark text-white py-3 px-4 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        >
+          Save Changes
+        </button>
+      </div>
+
+      {/* Desktop Save Button */}
+      <button 
+        onClick={handleUpdate}
+        className="hidden md:flex fixed bottom-8 right-8 bg-primary hover:bg-primary-dark text-white p-4 rounded-full shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        </svg>
+      </button>
     </div>
   );
 };
