@@ -12,9 +12,15 @@ export interface TemplateTheme {
 }
 
 export interface BaseTemplateProps {
-  data: Partial<InvitationData>;
-  theme: TemplateTheme;
+  invitation: InvitationData;
 }
+
+const defaultTheme: TemplateTheme = {
+  backgroundColor: '#ffffff',
+  textColor: '#333333',
+  accentColor: '#4F46E5',
+  fontFamily: 'serif'
+};
 
 export const formatDate = (dateStr?: string) => {
   if (!dateStr) return '';
@@ -26,29 +32,49 @@ export const formatDate = (dateStr?: string) => {
   }
 };
 
-const BaseTemplate: React.FC<BaseTemplateProps> = ({ data, theme }) => {
+const BaseTemplate: React.FC<BaseTemplateProps> = ({ invitation }) => {
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full h-full">
       <div 
-        className="relative p-8 rounded-lg shadow-lg overflow-hidden"
+        className="relative h-full p-8 overflow-hidden"
         style={{
-          backgroundColor: theme.backgroundColor,
-          color: theme.textColor,
-          fontFamily: theme.fontFamily
+          backgroundColor: defaultTheme.backgroundColor,
+          color: defaultTheme.textColor,
+          fontFamily: defaultTheme.fontFamily
         }}
       >
-        {theme.pattern && (
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage: theme.pattern,
-              backgroundRepeat: 'repeat',
-              zIndex: 0
-            }}
-          />
-        )}
-        <div className="relative z-10">
-          {/* Template content will be rendered here by child components */}
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-center">
+          <h1 className="text-3xl font-semibold mb-4">
+            {invitation.brideNames} & {invitation.groomNames}
+          </h1>
+          
+          <p className="text-lg mb-6">{invitation.openingText || 'Bersama keluarga mereka'}</p>
+          
+          <p className="text-xl mb-8">{invitation.invitationText || 'Mengundang kehadiran Anda'}</p>
+
+          {invitation.showAkad && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">Akad Nikah</h2>
+              <p>{formatDate(invitation.akadDate)}</p>
+              <p>{invitation.akadTime}</p>
+              <p>{invitation.akadVenue}</p>
+            </div>
+          )}
+
+          {invitation.showResepsi && (
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-2">Resepsi</h2>
+              <p>{formatDate(invitation.resepsiDate)}</p>
+              <p>{invitation.resepsiTime}</p>
+              <p>{invitation.resepsiVenue}</p>
+            </div>
+          )}
+
+          <div className="mt-auto">
+            <p className="text-lg">
+              Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir
+            </p>
+          </div>
         </div>
       </div>
     </div>
