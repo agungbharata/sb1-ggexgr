@@ -376,21 +376,21 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                   className="bg-white/50 p-6 rounded-xl space-y-4"
                 >
                   <p className="text-lg font-medium text-[#2D1810]">
-                    {account.bank_name}
+                    {account.bank}
                   </p>
                   <div className="space-y-2">
-                    {visibleAccounts[account.account_number] ? (
+                    {visibleAccounts[account.accountNumber] ? (
                       <>
                         <p className="text-[#2D1810] font-mono text-lg tracking-wider">
-                          {account.account_number}
+                          {account.accountNumber}
                         </p>
                         <p className="text-[#2D1810]/80">
-                          a.n {account.account_holder}
+                          a.n {account.accountName}
                         </p>
                       </>
                     ) : (
                       <button
-                        onClick={() => toggleAccountVisibility(account.account_number)}
+                        onClick={() => toggleAccountVisibility(account.accountNumber)}
                         className="px-4 py-2 bg-[#2D1810]/10 hover:bg-[#2D1810]/20 rounded-lg text-[#2D1810] transition-colors duration-200"
                       >
                         Tampilkan Rekening
