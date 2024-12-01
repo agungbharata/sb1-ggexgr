@@ -345,6 +345,8 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           </div>
         )}
 
+
+
         {/* Social Links */}
         {data?.socialLinks && data.socialLinks.length > 0 && (
           <div className="text-center">
@@ -426,6 +428,18 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
             <div className="mt-6 text-center text-[#2D1810]/80 text-sm">
               <p>Setiap doa dan pemberian Anda akan sangat berarti bagi perjalanan kami ke depan.</p>
               <p>Terima kasih atas perhatian dan kebaikan hati Anda.</p>
+            </div>
+          </div>
+        )}
+
+        {/* Pesan Pribadi */}
+                {data?.message && (
+          <div className="text-center mt-16 mb-8">
+            <h3 className="font-serif text-3xl text-[#2D1810] mb-4">
+              Pesan Pribadi
+            </h3>
+            <div className="prose prose-lg mx-auto text-[#2D1810] max-w-2xl px-4">
+              <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: data.message }} />
             </div>
           </div>
         )}
