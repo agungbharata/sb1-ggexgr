@@ -5,6 +5,8 @@ import { Calendar, Clock, MapPin } from 'react-feather';
 import type { InvitationData } from '../../types/invitation';
 import { getTimeWithZone } from '../TimeZoneSelector';
 import SocialMediaPreview from '../SocialMediaPreview';
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 interface JavaneseTemplateProps {
   data: Partial<InvitationData>;
@@ -23,6 +25,8 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
   const [resepsiCountdown, setResepsiCountdown] = useState<CountdownValues | null>(null);
   const [visibleAccounts, setVisibleAccounts] = useState<{ [key: string]: boolean }>({});
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
@@ -293,30 +297,40 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         {/* Gallery */}
         {data?.gallery && data.gallery.length > 0 && (
           <div>
-            <h3 className="font-serif text-2xl sm:text-3xl text-center text-[#2D1810] mb-4">
+            <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
               Galeri Foto
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-2">
               {data.gallery.map((photo, index) => (
                 <div 
-                  key={index} 
-                  className="aspect-square rounded-lg overflow-hidden"
+                  key={index}
+                  className="aspect-square overflow-hidden rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => {
+                    setPhotoIndex(index);
+                    setIsOpen(true);
+                  }}
                 >
                   <img
                     src={photo}
-                    alt={`Gallery ${index + 1}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    alt={`Gallery photo ${index + 1}`}
+                    className="w-full h-full object-cover"
                   />
                 </div>
               ))}
             </div>
+            <Lightbox
+              open={isOpen}
+              close={() => setIsOpen(false)}
+              index={photoIndex}
+              slides={data.gallery.map(src => ({ src }))}
+            />
           </div>
         )}
 
         {/* Social Links */}
         {data?.socialLinks && data.socialLinks.length > 0 && (
           <div className="text-center">
-            <h3 className="font-serif text-2xl sm:text-3xl text-center text-[#2D1810] mb-4">
+            <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
               Media Sosial
             </h3>
             <div className="space-y-4 w-full">
