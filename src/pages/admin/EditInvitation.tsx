@@ -262,17 +262,28 @@ const EditInvitation: React.FC = () => {
           </InvitationForm>
         </div>
 
-        {/* Preview Section */}
+        {/* Mobile Preview Section */}
         <div className="w-full lg:w-1/2">
-          <div className="bg-white rounded-lg shadow-lg">
-            <div className="p-4 bg-gray-50 border-b">
-              <h2 className="text-lg font-semibold">Preview</h2>
-            </div>
-            <div className="w-full max-h-[800px] overflow-y-auto">
-              <JavaneseTemplate
-                data={formData}
-                isViewOnly={true}
-              />
+          <div className="relative border-gray-800 dark:border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[calc(100vh-100px)] w-full max-w-[420px] mx-auto">
+            {/* Volume Buttons */}
+            <div className="h-[32px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -start-[17px] top-[72px] rounded-s-lg"></div>
+            <div className="h-[46px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
+            <div className="h-[46px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg"></div>
+            {/* Power Button */}
+            <div className="h-[64px] w-[3px] bg-gray-800 dark:bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
+            
+            {/* Screen */}
+            <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white">
+              {/* Notch */}
+              <div className="h-[28px] bg-gray-800 w-[148px] absolute top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2"></div>
+              
+              {/* Content */}
+              <div className="w-full h-full overflow-y-auto bg-white">
+                <JavaneseTemplate
+                  data={formData}
+                  isViewOnly={true}
+                />
+              </div>
             </div>
           </div>
         </div>
