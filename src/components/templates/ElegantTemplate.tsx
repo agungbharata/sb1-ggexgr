@@ -3,12 +3,11 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import type { InvitationData } from '../../types/invitation';
 
-interface JavaneseTemplateProps {
-  data: Partial<InvitationData>;
-  isViewOnly?: boolean;
+interface ElegantTemplateProps {
+  data?: InvitationData;
 }
 
-const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly }) => {
+const ElegantTemplate: React.FC<ElegantTemplateProps> = ({ data }) => {
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
     try {
@@ -18,18 +17,28 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
     }
   };
 
+  const formatTime = (timeStr?: string) => {
+    if (!timeStr) return '';
+    return timeStr;
+  };
+
   return (
-    <div className="min-h-screen bg-[#F6E6D9]">
-      {/* Cover Section */}
-      <section 
-        className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
-        style={{ 
-          backgroundImage: data?.coverPhoto ? `url(${data.coverPhoto})` : 'url("/ornaments/batik-bg.jpg")'
-        }}
-      >
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="relative z-10 text-center text-white px-4">
-          <h1 className="font-serif text-5xl md:text-7xl mb-6">
+    <div className="min-h-screen bg-gradient-to-b from-neutral-50 to-neutral-100">
+      {/* Hero Section */}
+      <section className="relative h-screen">
+        {data?.coverPhoto ? (
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${data.coverPhoto})` }}
+          >
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-100 to-violet-200" />
+        )}
+        
+        <div className="relative h-full flex flex-col items-center justify-center text-white px-4">
+          <h1 className="font-serif text-5xl md:text-7xl mb-6 text-center">
             {data?.brideNames} & {data?.groomNames}
           </h1>
           {data?.date && (
@@ -40,22 +49,22 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         </div>
       </section>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-16 space-y-24">
-        {/* Opening */}
-        <div className="text-center">
+      {/* Main Content */}
+      <main className="max-w-4xl mx-auto px-4 py-16 space-y-24">
+        {/* Opening Text */}
+        <section className="text-center">
           <div 
-            className="prose prose-lg mx-auto text-[#2D1810]"
+            className="prose prose-lg mx-auto text-neutral-800"
             dangerouslySetInnerHTML={{ __html: data?.openingText || '' }}
           />
-        </div>
+        </section>
 
-        {/* Couple */}
-        <div className="grid md:grid-cols-2 gap-16">
+        {/* Couple Information */}
+        <section className="grid md:grid-cols-2 gap-16">
           {/* Bride */}
           <div className="text-center space-y-6">
             {data?.bridePhoto && (
-              <div className="aspect-square w-64 mx-auto overflow-hidden rounded-full border-4 border-[#2D1810]/20">
+              <div className="aspect-square w-64 mx-auto overflow-hidden rounded-full">
                 <img 
                   src={data.bridePhoto} 
                   alt={data.brideNames} 
@@ -64,14 +73,13 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
               </div>
             )}
             <div>
-              <h2 className="font-serif text-3xl text-[#2D1810] mb-2">
+              <h2 className="font-serif text-3xl text-neutral-800 mb-2">
                 {data?.brideNames}
               </h2>
               {data?.brideParents && (
-                <div className="text-[#2D1810]/80 space-y-1">
-                  <p className="font-medium">Putri dari:</p>
-                  <p className="font-serif">{data.brideParents}</p>
-                </div>
+                <p className="text-neutral-600">
+                  Putri dari {data.brideParents}
+                </p>
               )}
             </div>
           </div>
@@ -79,7 +87,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           {/* Groom */}
           <div className="text-center space-y-6">
             {data?.groomPhoto && (
-              <div className="aspect-square w-64 mx-auto overflow-hidden rounded-full border-4 border-[#2D1810]/20">
+              <div className="aspect-square w-64 mx-auto overflow-hidden rounded-full">
                 <img 
                   src={data.groomPhoto} 
                   alt={data.groomNames} 
@@ -88,44 +96,43 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
               </div>
             )}
             <div>
-              <h2 className="font-serif text-3xl text-[#2D1810] mb-2">
+              <h2 className="font-serif text-3xl text-neutral-800 mb-2">
                 {data?.groomNames}
               </h2>
               {data?.groomParents && (
-                <div className="text-[#2D1810]/80 space-y-1">
-                  <p className="font-medium">Putra dari:</p>
-                  <p className="font-serif">{data.groomParents}</p>
-                </div>
+                <p className="text-neutral-600">
+                  Putra dari {data.groomParents}
+                </p>
               )}
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Invitation Text */}
-        <div className="text-center">
+        <section className="text-center">
           <div 
-            className="prose prose-lg mx-auto text-[#2D1810]"
+            className="prose prose-lg mx-auto text-neutral-800"
             dangerouslySetInnerHTML={{ __html: data?.invitationText || '' }}
           />
-        </div>
+        </section>
 
         {/* Events */}
-        <div className="space-y-16">
+        <section className="space-y-16">
           {/* Akad */}
           {data?.showAkad && (
-            <div className="bg-white/50 rounded-2xl p-8 space-y-6">
-              <h3 className="font-serif text-3xl text-center text-[#2D1810]">
+            <div className="bg-white rounded-2xl p-8 shadow-sm space-y-6">
+              <h3 className="font-serif text-3xl text-center text-neutral-800">
                 Akad Nikah
               </h3>
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-4 text-center">
-                  <p className="text-xl text-[#2D1810]">
+                  <p className="text-xl text-neutral-800">
                     {formatDate(data.akadDate)}
                   </p>
-                  <p className="text-lg text-[#2D1810]/80">
-                    {data.akadTime}
+                  <p className="text-lg text-neutral-600">
+                    {formatTime(data.akadTime)}
                   </p>
-                  <p className="text-[#2D1810]/80">
+                  <p className="text-neutral-600">
                     {data.akadVenue}
                   </p>
                 </div>
@@ -148,19 +155,19 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
           {/* Resepsi */}
           {data?.showResepsi && (
-            <div className="bg-white/50 rounded-2xl p-8 space-y-6">
-              <h3 className="font-serif text-3xl text-center text-[#2D1810]">
+            <div className="bg-white rounded-2xl p-8 shadow-sm space-y-6">
+              <h3 className="font-serif text-3xl text-center text-neutral-800">
                 Resepsi Pernikahan
               </h3>
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="space-y-4 text-center">
-                  <p className="text-xl text-[#2D1810]">
+                  <p className="text-xl text-neutral-800">
                     {formatDate(data.resepsiDate)}
                   </p>
-                  <p className="text-lg text-[#2D1810]/80">
-                    {data.resepsiTime}
+                  <p className="text-lg text-neutral-600">
+                    {formatTime(data.resepsiTime)}
                   </p>
-                  <p className="text-[#2D1810]/80">
+                  <p className="text-neutral-600">
                     {data.resepsiVenue}
                   </p>
                 </div>
@@ -180,12 +187,25 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
               </div>
             </div>
           )}
-        </div>
+        </section>
+
+        {/* Personal Message */}
+        {data?.message && (
+          <section className="text-center bg-white rounded-2xl p-8 shadow-sm">
+            <h3 className="font-serif text-3xl text-neutral-800 mb-6">
+              Pesan Pribadi
+            </h3>
+            <div 
+              className="prose prose-lg mx-auto text-neutral-800"
+              dangerouslySetInnerHTML={{ __html: data.message }}
+            />
+          </section>
+        )}
 
         {/* Gallery */}
         {data?.gallery && data.gallery.length > 0 && (
-          <div>
-            <h3 className="font-serif text-3xl text-center text-[#2D1810] mb-8">
+          <section>
+            <h3 className="font-serif text-3xl text-center text-neutral-800 mb-8">
               Galeri Foto
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -197,18 +217,18 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                   <img
                     src={photo}
                     alt={`Gallery ${index + 1}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                   />
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Social Links */}
+        {/* Social Media */}
         {data?.socialLinks && data.socialLinks.length > 0 && (
-          <div className="text-center">
-            <h3 className="font-serif text-3xl text-[#2D1810] mb-8">
+          <section className="text-center">
+            <h3 className="font-serif text-3xl text-neutral-800 mb-8">
               Media Sosial
             </h3>
             <div className="flex flex-wrap justify-center gap-4">
@@ -218,44 +238,17 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-6 py-3 bg-white/50 rounded-full text-[#2D1810] hover:bg-white/70 transition-colors"
+                  className="px-6 py-3 bg-white rounded-full text-neutral-800 shadow-sm hover:shadow-md transition-shadow"
                 >
                   {link.platform}
                 </a>
               ))}
             </div>
-          </div>
+          </section>
         )}
-
-        {/* Bank Accounts */}
-        {data?.bankAccounts && data.bankAccounts.length > 0 && (
-          <div className="text-center">
-            <h3 className="font-serif text-3xl text-[#2D1810] mb-8">
-              Amplop Digital
-            </h3>
-            <div className="grid gap-6 max-w-md mx-auto">
-              {data.bankAccounts.map((account, index) => (
-                <div 
-                  key={index}
-                  className="bg-white/50 p-6 rounded-xl space-y-2"
-                >
-                  <p className="text-lg font-medium text-[#2D1810]">
-                    {account.bank_name}
-                  </p>
-                  <p className="text-[#2D1810]">
-                    {account.account_number}
-                  </p>
-                  <p className="text-[#2D1810]/80">
-                    a.n {account.account_holder}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      </main>
     </div>
   );
 };
 
-export default JavaneseTemplate;
+export default ElegantTemplate;
