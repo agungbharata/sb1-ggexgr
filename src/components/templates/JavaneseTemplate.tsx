@@ -3,6 +3,7 @@ import { format, differenceInDays, differenceInHours, differenceInMinutes, diffe
 import { id } from 'date-fns/locale';
 import { Calendar, Clock, MapPin } from 'react-feather';
 import type { InvitationData } from '../../types/invitation';
+import { getTimeWithZone } from '../TimeZoneSelector';
 
 interface JavaneseTemplateProps {
   data: Partial<InvitationData>;
@@ -179,7 +180,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                   <div className="flex items-center space-x-3 text-[#2D1810]">
                     <Clock className="w-5 h-5" />
                     <p className="text-lg">
-                      {data.akadTime} WIB
+                      {getTimeWithZone(data.akadTime || '', data.timezone)}
                     </p>
                   </div>
                   <div className="flex items-center space-x-3 text-[#2D1810] text-center">
@@ -248,7 +249,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                   <div className="flex items-center space-x-3 text-[#2D1810]">
                     <Clock className="w-5 h-5" />
                     <p className="text-lg">
-                      {data.resepsiTime} WIB
+                      {getTimeWithZone(data.resepsiTime || '', data.timezone)}
                     </p>
                   </div>
                   <div className="flex items-center space-x-3 text-[#2D1810] text-center">

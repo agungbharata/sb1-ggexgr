@@ -14,6 +14,8 @@ import CopyLinkButton from './CopyLinkButton';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MusicLibrary } from './MusicLibrary';
 import { colors } from '../styles/colors';
+import TimeZoneSelector from './TimeZoneSelector';
+import type { TimeZone } from '../types/invitation';
 
 
 interface InvitationFormProps {
@@ -605,7 +607,20 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
 {/* Detail Acara */}
 <div className="space-y-6">
   <h3 className="text-lg font-medium text-gray-700">Detail Acara</h3>
-  
+
+    {/* Timezone Selection */}
+    <div className="mb-4">
+    <TimeZoneSelector
+      value={formData.timezone || 'WIB'}
+      onChange={(timezone) => {
+        const newData = { ...formData, timezone };
+        setFormData(newData);
+        onChange?.(newData);
+      }}
+    />
+  </div>
+
+
   {/* Akad Section */}
   <div className="p-4 space-y-4 rounded-md border">
     <div className="flex items-center space-x-2">

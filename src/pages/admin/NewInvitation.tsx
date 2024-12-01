@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import InvitationForm from '../../components/InvitationForm';
 import TemplateSelector from '../../components/TemplateSelector';
-import type { InvitationData } from '../../types/invitation';
+import TimeZoneSelector from '../../components/TimeZoneSelector';
+import type { InvitationData, TimeZone } from '../../types/invitation';
 
 const defaultFormData: InvitationData = {
   brideNames: '',
@@ -31,12 +32,13 @@ const defaultFormData: InvitationData = {
 const initialData: InvitationData = {
   ...defaultFormData,
   showMusicLibrary: false,
-  backgroundMusic: ''
+  backgroundMusic: '',
+  timezone: 'WIB' as TimeZone,
 };
 
 const NewInvitation: React.FC = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = React.useState<InvitationData>(initialData);
+  const [formData, setFormData] = React.useState<Partial<InvitationData>>(initialData);
 
   const handleUpdate = async (data: InvitationData) => {
     setFormData(data);
@@ -226,6 +228,17 @@ const NewInvitation: React.FC = () => {
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Timezone */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Zona Waktu</label>
+                <TimeZoneSelector
+                  value={formData.timezone || 'WIB'}
+                  onChange={(timezone) => setFormData({ ...formData, timezone })}
+                />
               </div>
             </div>
           </InvitationForm>

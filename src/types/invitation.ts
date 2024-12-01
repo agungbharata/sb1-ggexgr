@@ -41,6 +41,7 @@ export interface InvitationData {
   createdAt?: string;
   updatedAt?: string;
   published_at?: string;
+  timezone?: 'WIB' | 'WITA' | 'WIT';
 }
 
 export interface DatabaseInvitation {
@@ -130,3 +131,5 @@ export const defaultFormData: InvitationData = {
 };
 
 import { TemplateType } from '../components/TemplateSelector';
+
+export type TimeZone = 'WIB' | 'WITA' | 'WIT';
