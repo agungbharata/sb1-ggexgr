@@ -6,12 +6,15 @@ import TimeZoneSelector from '../../components/TimeZoneSelector';
 import JavaneseTemplate from '../../components/templates/JavaneseTemplate';
 import type { InvitationData, TimeZone } from '../../types/invitation';
 import { supabase } from '../../lib/supabase';
+import { Smartphone, Monitor } from 'react-feather';
 
 const EditInvitation: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [formData, setFormData] = useState<InvitationData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [previewMode, setPreviewMode] = useState<'mobile' | 'desktop'>('mobile');
 
   useEffect(() => {
     const fetchInvitation = async () => {
@@ -45,8 +48,23 @@ const EditInvitation: React.FC = () => {
     fetchInvitation();
   }, [id, navigate]);
 
-  const handleUpdate = async (data: InvitationData) => {
-    setFormData(data);
+  const handleUpdate = async () => {
+    if (!formData) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('invitations')
+        .update(formData)
+        .eq('id', id);
+
+      if (error) throw error;
+      // Show success toast or notification here
+    } catch (error: any) {
+      console.error('Error updating invitation:', error.message);
+      // Show error toast or notification here
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleChange = (data: InvitationData) => {
@@ -88,21 +106,65 @@ const EditInvitation: React.FC = () => {
           <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
             {/* Preview Section */}
             <div className="w-full lg:w-1/2 lg:sticky lg:top-4">
-              <div className="relative border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] sm:h-[700px] lg:h-[calc(100vh-100px)] w-full max-w-[420px] mx-auto">
-                {/* Volume & Power Buttons */}
-                <div className="h-[32px] w-[3px] bg-gray-800 absolute -start-[17px] top-[72px] rounded-s-lg"></div>
-                <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
-                <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg"></div>
-                <div className="h-[64px] w-[3px] bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
-                
-                {/* Phone Screen */}
-                <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white">
-                  <div className="h-[28px] bg-gray-800 w-[148px] absolute top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2"></div>
-                  <div className="w-full h-full overflow-y-auto bg-white">
-                    <JavaneseTemplate data={formData} isViewOnly={true} />
+              {/* Preview Mode Switcher */}
+              <div className="flex justify-center mb-4 space-x-2">
+                <button
+                  onClick={() => setPreviewMode('mobile')}
+                  className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
+                    previewMode === 'mobile'
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Smartphone className="w-4 h-4 mr-2" />
+                  Mobile
+                </button>
+                <button
+                  onClick={() => setPreviewMode('desktop')}
+                  className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
+                    previewMode === 'desktop'
+                      ? 'bg-primary text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  <Monitor className="w-4 h-4 mr-2" />
+                  Desktop
+                </button>
+              </div>
+
+              {/* Mobile Preview */}
+              {previewMode === 'mobile' && (
+                <div className="relative border-gray-800 bg-gray-800 border-[14px] rounded-[2.5rem] h-[600px] sm:h-[700px] lg:h-[calc(100vh-100px)] w-full max-w-[420px] mx-auto">
+                  <div className="h-[32px] w-[3px] bg-gray-800 absolute -start-[17px] top-[72px] rounded-s-lg"></div>
+                  <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[124px] rounded-s-lg"></div>
+                  <div className="h-[46px] w-[3px] bg-gray-800 absolute -start-[17px] top-[178px] rounded-s-lg"></div>
+                  <div className="h-[64px] w-[3px] bg-gray-800 absolute -end-[17px] top-[142px] rounded-e-lg"></div>
+                  <div className="rounded-[2rem] overflow-hidden w-full h-full bg-white">
+                    <div className="h-[28px] bg-gray-800 w-[148px] absolute top-0 rounded-b-[1rem] left-1/2 -translate-x-1/2"></div>
+                    <div className="w-full h-full overflow-y-auto bg-white">
+                      <JavaneseTemplate data={formData} isViewOnly={true} />
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Desktop Preview */}
+              {previewMode === 'desktop' && (
+                <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+                  <div className="h-8 bg-gray-800 flex items-center px-4">
+                    <div className="flex space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                  </div>
+                  <div className="border-t border-gray-200">
+                    <div className="aspect-video overflow-y-auto">
+                      <JavaneseTemplate data={formData} isViewOnly={true} />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Form Section */}
@@ -291,20 +353,45 @@ const EditInvitation: React.FC = () => {
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 md:hidden">
         <button 
           onClick={handleUpdate}
-          className="w-full bg-primary hover:bg-primary-dark text-white py-3 px-4 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          disabled={saving}
+          className={`w-full bg-primary hover:bg-primary-dark text-white py-3 px-4 rounded-lg shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+            saving ? 'opacity-75 cursor-not-allowed' : ''
+          }`}
         >
-          Save Changes
+          <span className="flex items-center justify-center">
+            {saving ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+              </>
+            ) : (
+              'Save Changes'
+            )}
+          </span>
         </button>
       </div>
 
       {/* Desktop Save Button */}
       <button 
         onClick={handleUpdate}
-        className="hidden md:flex fixed bottom-8 right-8 bg-primary hover:bg-primary-dark text-white p-4 rounded-full shadow-lg transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        disabled={saving}
+        className={`hidden md:flex fixed bottom-8 right-8 bg-primary hover:bg-primary-dark text-white p-4 rounded-full shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+          saving ? 'opacity-75 cursor-not-allowed' : 'hover:scale-105'
+        }`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-        </svg>
+        {saving ? (
+          <svg className="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        )}
       </button>
     </div>
   );
