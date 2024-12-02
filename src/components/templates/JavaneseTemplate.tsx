@@ -179,14 +179,6 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           </div>
         </div>
 
-        {/* Invitation Text */}
-        <div className="text-center">
-          <div 
-            className="prose-sm sm:prose max-w-none text-[#2D1810]"
-            dangerouslySetInnerHTML={{ __html: data?.invitationText || '' }}
-          />
-        </div>
-
         {/* Events */}
         <div className="space-y-8">
           {/* Akad */}
@@ -494,13 +486,26 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
         {/* Pesan Pribadi */}
         {data?.message && (
-          <div className="text-center mt-16 mb-8">
-            <h3 className="font-serif text-2xl sm:text-3xl text-center text-[#2D1810] mb-4">
-              Pesan Pribadi
-            </h3>
-            <div className="prose-sm sm:prose max-w-none text-[#2D1810] max-w-2xl px-4">
-              <div className="whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: data.message }} />
-            </div>
+          <div className="py-8 px-4 text-center">
+            <div 
+              className="text-lg mb-4 font-secondary leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: data.message }}
+            />
+          </div>
+        )}
+
+        {/* Audio Player */}
+        {data?.showMusicLibrary && data?.backgroundMusic && (
+          <div className="fixed bottom-4 right-4 z-50">
+            <audio
+              controls
+              autoPlay
+              loop
+              className="w-64 h-12 rounded-lg shadow-lg"
+            >
+              <source src={data.backgroundMusic} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
           </div>
         )}
       </div>

@@ -30,65 +30,68 @@ const InvitationDisplay: React.FC = () => {
   useEffect(() => {
     const fetchInvitation = async () => {
       try {
-        const { data, error } = await supabase
+        const { data: invitation, error } = await supabase
           .from('invitations')
           .select('*')
-          .eq('slug', slug)
+          .eq('custom_slug', slug)
           .single();
 
         if (error) throw error;
 
-        // Transform database fields to match InvitationData type
-        const transformedData: InvitationData = {
-          id: data.id,
-          brideNames: data.bride_names,
-          groomNames: data.groom_names,
-          brideParents: data.bride_parents,
-          groomParents: data.groom_parents,
-          showAkad: data.show_akad,
-          akadDate: data.akad_date,
-          akadTime: data.akad_time,
-          akadVenue: data.akad_venue,
-          akadMapsUrl: data.akad_maps_url,
-          akadMapsEmbed: data.akad_maps_embed,
-          showResepsi: data.show_resepsi,
-          resepsiDate: data.resepsi_date,
-          resepsiTime: data.resepsi_time,
-          resepsiVenue: data.resepsi_venue,
-          resepsiMapsUrl: data.resepsi_maps_url,
-          resepsiMapsEmbed: data.resepsi_maps_embed,
-          date: data.date,
-          time: data.time,
-          venue: data.venue,
-          openingText: data.opening_text,
-          invitationText: data.invitation_text,
-          coverPhoto: data.cover_photo,
-          bridePhoto: data.bride_photo,
-          groomPhoto: data.groom_photo,
-          gallery: data.gallery || [],
-          socialLinks: data.social_links || [],
-          bankAccounts: data.bank_accounts || [],
-          googleMapsUrl: data.google_maps_url,
-          googleMapsEmbed: data.google_maps_embed,
-          template: data.template || 'javanese',
-          customSlug: data.custom_slug,
-          showMusicLibrary: data.show_music_library,
-          backgroundMusic: data.background_music,
-          timezone: data.timezone,
-          createdAt: data.created_at,
-          updatedAt: data.updated_at
-        };
+        console.log('Fetched invitation data:', invitation);
 
-        setInvitation(transformedData);
-      } catch (err: any) {
-        console.error('Error fetching invitation:', err);
-        setError('Invitation not found');
-      } finally {
+        if (invitation) {
+          const transformedData = {
+            id: invitation.id,
+            brideNames: invitation.bride_names || '',
+            groomNames: invitation.groom_names || '',
+            brideParents: invitation.bride_parents || '',
+            groomParents: invitation.groom_parents || '',
+            showAkad: invitation.show_akad || false,
+            akadDate: invitation.akad_date || '',
+            akadTime: invitation.akad_time || '',
+            akadVenue: invitation.akad_venue || '',
+            akadMapsUrl: invitation.akad_maps_url || '',
+            akadMapsEmbed: invitation.akad_maps_embed || '',
+            showResepsi: invitation.show_resepsi || false,
+            resepsiDate: invitation.resepsi_date || '',
+            resepsiTime: invitation.resepsi_time || '',
+            resepsiVenue: invitation.resepsi_venue || '',
+            resepsiMapsUrl: invitation.resepsi_maps_url || '',
+            resepsiMapsEmbed: invitation.resepsi_maps_embed || '',
+            openingText: invitation.opening_text || '',
+            invitationText: invitation.invitation_text || '',
+            message: invitation.message || '',
+            coverPhoto: invitation.cover_photo || '',
+            bridePhoto: invitation.bride_photo || '',
+            groomPhoto: invitation.groom_photo || '',
+            gallery: invitation.gallery || [],
+            socialLinks: invitation.social_links || [],
+            bankAccounts: invitation.bank_accounts || [],
+            googleMapsUrl: invitation.google_maps_url || '',
+            googleMapsEmbed: invitation.google_maps_embed || '',
+            template: invitation.template || 'javanese',
+            customSlug: invitation.custom_slug || '',
+            showMusicLibrary: invitation.show_music_library || false,
+            backgroundMusic: invitation.background_music || '',
+            createdAt: invitation.created_at,
+            updatedAt: invitation.updated_at
+          };
+
+          console.log('Transformed invitation data:', transformedData);
+          setInvitation(transformedData);
+          setLoading(false);
+        }
+      } catch (error: any) {
+        console.error('Error fetching invitation:', error);
+        setError(error.message);
         setLoading(false);
       }
     };
 
-    fetchInvitation();
+    if (slug) {
+      fetchInvitation();
+    }
   }, [slug]);
 
   if (loading) {

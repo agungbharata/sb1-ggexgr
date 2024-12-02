@@ -13,11 +13,6 @@ const EditInvitation: React.FC = () => {
 
   useEffect(() => {
     const fetchInvitation = async () => {
-      if (!id) {
-        navigate('/dashboard');
-        return;
-      }
-
       try {
         const { data, error } = await supabase
           .from('invitations')
@@ -27,61 +22,60 @@ const EditInvitation: React.FC = () => {
 
         if (error) throw error;
 
-        if (!data) {
-          throw new Error('Invitation not found');
+        console.log('Fetched invitation data:', data);
+
+        if (data) {
+          const transformedData: InvitationData = {
+            id: data.id,
+            brideNames: data.bride_names || '',
+            groomNames: data.groom_names || '',
+            brideParents: data.bride_parents || '',
+            groomParents: data.groom_parents || '',
+            showAkad: data.show_akad || false,
+            akadDate: data.akad_date || '',
+            akadTime: data.akad_time || '',
+            akadVenue: data.akad_venue || '',
+            akadMapsUrl: data.akad_maps_url || '',
+            akadMapsEmbed: data.akad_maps_embed || '',
+            showResepsi: data.show_resepsi || false,
+            resepsiDate: data.resepsi_date || '',
+            resepsiTime: data.resepsi_time || '',
+            resepsiVenue: data.resepsi_venue || '',
+            resepsiMapsUrl: data.resepsi_maps_url || '',
+            resepsiMapsEmbed: data.resepsi_maps_embed || '',
+            openingText: data.opening_text || '',
+            invitationText: data.invitation_text || '',
+            coverPhoto: data.cover_photo || '',
+            bridePhoto: data.bride_photo || '',
+            groomPhoto: data.groom_photo || '',
+            gallery: data.gallery || [],
+            socialLinks: data.social_links || [],
+            bankAccounts: data.bank_accounts || [],
+            googleMapsUrl: data.google_maps_url || '',
+            googleMapsEmbed: data.google_maps_embed || '',
+            template: data.template || 'javanese',
+            customSlug: data.custom_slug || '',
+            showMusicLibrary: data.show_music_library || false,
+            backgroundMusic: data.background_music || '',
+            createdAt: data.created_at,
+            updatedAt: data.updated_at
+          };
+
+          console.log('Transformed data:', transformedData);
+          setFormData(transformedData);
+          setLoading(false);
         }
-
-        // Transform database fields to match InvitationData type
-        const transformedData: InvitationData = {
-          id: data.id,
-          brideNames: data.bride_names,
-          groomNames: data.groom_names,
-          brideParents: data.bride_parents,
-          groomParents: data.groom_parents,
-          showAkad: data.show_akad,
-          akadDate: data.akad_date,
-          akadTime: data.akad_time,
-          akadVenue: data.akad_venue,
-          akadMapsUrl: data.akad_maps_url,
-          akadMapsEmbed: data.akad_maps_embed,
-          showResepsi: data.show_resepsi,
-          resepsiDate: data.resepsi_date,
-          resepsiTime: data.resepsi_time,
-          resepsiVenue: data.resepsi_venue,
-          resepsiMapsUrl: data.resepsi_maps_url,
-          resepsiMapsEmbed: data.resepsi_maps_embed,
-          date: data.date,
-          time: data.time,
-          venue: data.venue,
-          openingText: data.opening_text,
-          invitationText: data.invitation_text,
-          coverPhoto: data.cover_photo,
-          bridePhoto: data.bride_photo,
-          groomPhoto: data.groom_photo,
-          gallery: data.gallery || [],
-          socialLinks: data.social_links || [],
-          bankAccounts: data.bank_accounts || [],
-          googleMapsUrl: data.google_maps_url,
-          googleMapsEmbed: data.google_maps_embed,
-          template: data.template || 'javanese',
-          customSlug: data.custom_slug,
-          showMusicLibrary: data.show_music_library,
-          backgroundMusic: data.background_music,
-          createdAt: data.created_at,
-          updatedAt: data.updated_at
-        };
-
-        setFormData(transformedData);
-      } catch (error) {
-        console.error('Error loading invitation:', error);
-        alert('Error loading invitation. Please try again.');
-      } finally {
+      } catch (error: any) {
+        console.error('Error fetching invitation:', error);
+        alert('Error fetching invitation data: ' + error.message);
         setLoading(false);
       }
     };
 
-    fetchInvitation();
-  }, [id, navigate]);
+    if (id) {
+      fetchInvitation();
+    }
+  }, [id]);
 
   const handleUpdate = async (updatedData: InvitationData) => {
     setSaving(true);
