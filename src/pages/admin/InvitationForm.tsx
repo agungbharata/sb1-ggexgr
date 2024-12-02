@@ -25,7 +25,30 @@ interface InvitationData {
   slug?: string;
   custom_slug?: string;
   theme?: string;
+  template?: string;
 }
+
+interface TemplateType {
+  id: string;
+  name: string;
+}
+
+const TemplatePreview: React.FC<{ templateId: string; selected: boolean; onClick: () => void }> = ({
+  templateId,
+  selected,
+  onClick,
+}) => {
+  return (
+    <div
+      className={`p-4 border border-gray-300 rounded-md shadow-sm cursor-pointer ${
+        selected ? 'bg-emerald-500 text-white' : ''
+      }`}
+      onClick={onClick}
+    >
+      <h4 className="text-lg font-medium">{templateId.charAt(0).toUpperCase() + templateId.slice(1)}</h4>
+    </div>
+  );
+};
 
 const InvitationForm: React.FC = () => {
   const { id } = useParams();
@@ -45,6 +68,8 @@ const InvitationForm: React.FC = () => {
     bank_accounts: [],
     theme: 'default'
   });
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -65,6 +90,7 @@ const InvitationForm: React.FC = () => {
 
       if (data) {
         setFormData(data);
+        setSelectedTemplate(data.template);
       }
     } catch (error: any) {
       toast.error('Error loading invitation: ' + error.message);
@@ -295,6 +321,42 @@ const InvitationForm: React.FC = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
               />
             </div>
+          </div>
+
+          {/* Template Selection */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b pb-2">
+              <h3 className="text-lg font-medium text-gray-700">
+                Pilih Template Undangan
+                {selectedTemplate && (
+                  <span className="ml-2 text-sm text-emerald-600">
+                    (Terpilih: {selectedTemplate.charAt(0).toUpperCase() + selectedTemplate.slice(1)})
+                  </span>
+                )}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowTemplates(!showTemplates)}
+                className="px-3 py-1 text-sm font-medium text-emerald-600 hover:text-emerald-700 border border-emerald-600 rounded-md hover:bg-emerald-50 transition-colors"
+              >
+                {showTemplates ? '↑ Sembunyikan' : '↓ Tampilkan'}
+              </button>
+            </div>
+            {showTemplates && (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {(['javanese', 'sundanese', 'minang', 'bali', 'modern'] as TemplateType[]).map((templateId) => (
+                  <TemplatePreview
+                    key={templateId}
+                    templateId={templateId}
+                    selected={selectedTemplate === templateId}
+                    onClick={() => {
+                      setSelectedTemplate(templateId);
+                      setFormData(prev => ({ ...prev, template: templateId }));
+                    }}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Theme Selection */}

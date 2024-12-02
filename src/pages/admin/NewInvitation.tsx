@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InvitationForm from '../../components/InvitationForm';
 import TemplateSelector from '../../components/TemplateSelector';
+import { TemplateGrid } from '../../components/TemplatePreview';
 import TimeZoneSelector from '../../components/TimeZoneSelector';
 import type { InvitationData, TimeZone } from '../../types/invitation';
 
@@ -40,6 +41,7 @@ const NewInvitation: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState<Partial<InvitationData>>(initialData);
   const [activeView, setActiveView] = useState('mobile');
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const handleUpdate = async (data: InvitationData) => {
     setFormData(data);
@@ -137,6 +139,8 @@ const NewInvitation: React.FC = () => {
 
         {/* Form Section */}
         <div className="w-full lg:w-1/2">
+
+
           <InvitationForm
             onUpdate={handleUpdate}
             onChange={handleChange}

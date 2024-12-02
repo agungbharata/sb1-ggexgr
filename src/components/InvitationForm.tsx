@@ -439,19 +439,21 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           {/* Template Selection */}
           <div className="space-y-4">
             <h3 className="text-lg font-medium text-gray-700">Pilih Template Undangan</h3>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {(['javanese', 'sundanese', 'minang', 'bali', 'modern'] as TemplateType[]).map((templateId) => (
-                <TemplatePreview
-                  key={templateId}
-                  templateId={templateId}
-                  selected={selectedTemplate === templateId}
-                  onClick={() => {
-                    setSelectedTemplate(templateId);
-                    setFormData(prev => ({ ...prev, template: templateId }));
-                  }}
-                />
-              ))}
-            </div>
+            <select
+              value={selectedTemplate}
+              onChange={(e) => {
+                setSelectedTemplate(e.target.value as TemplateType);
+                setFormData(prev => ({ ...prev, template: e.target.value as TemplateType }));
+              }}
+              className="px-4 py-2 w-full rounded-md border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+            >
+              <option value="javanese">Template Jawa</option>
+              <option value="sundanese">Template Sunda</option>
+              <option value="minang">Template Minang</option>
+              <option value="bali">Template Bali</option>
+              <option value="modern">Template Modern</option>
+            </select>
+            
           </div>
 
           {/* Foto Sampul */}
