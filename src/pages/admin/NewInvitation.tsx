@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InvitationForm from '../../components/InvitationForm';
 import TemplateSelector from '../../components/TemplateSelector';
@@ -39,6 +39,7 @@ const initialData: InvitationData = {
 const NewInvitation: React.FC = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = React.useState<Partial<InvitationData>>(initialData);
+  const [activeView, setActiveView] = useState('mobile');
 
   const handleUpdate = async (data: InvitationData) => {
     setFormData(data);
@@ -53,9 +54,70 @@ const NewInvitation: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Create New Invitation</h1>
-      <div className="flex flex-col lg:flex-row gap-8">
+    <div className="container px-4 py-8 mx-auto">
+      <h1 className="mb-12 text-2xl font-bold text-center">Create New Invitation</h1>
+      <div className="flex flex-col gap-8 lg:flex-row">\
+
+
+               {/* Live Template Section with Tabs */}
+               <div className="overflow-hidden sticky top-0 p-4 w-full h-screen bg-gray-100 lg:w-1/2">
+          <div className="flex justify-center mb-4 space-x-4 border-b border-gray-200">
+            <button
+              onClick={() => setActiveView('mobile')}
+              className={`pb-2 px-4 text-sm font-medium transition-colors duration-200 ${
+                activeView === 'mobile'
+                  ? 'border-b-2 border-blue-500 text-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Mobile View
+            </button>
+            <button
+              onClick={() => setActiveView('tablet')}
+              className={`pb-2 px-4 text-sm font-medium transition-colors duration-200 ${
+                activeView === 'tablet'
+                  ? 'border-b-2 border-blue-500 text-blue-600'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Tablet View
+            </button>
+          </div>
+
+          <div className="flex justify-center items-start h-[calc(100%-3rem)] overflow-y-auto py-4">
+            {/* Mobile Preview */}
+            {activeView === 'mobile' && (
+              <div className="relative w-[320px] h-[640px] bg-white rounded-[3rem] shadow-xl p-2 border-8 border-gray-800">
+                <div className="absolute top-0 left-1/2 w-24 h-6 bg-gray-800 rounded-b-2xl transform -translate-x-1/2"></div>
+                <div className="w-full h-full overflow-auto rounded-[2.5rem]">
+                  <TemplateSelector
+                    templateId={formData.theme || 'javanese'}
+                    data={formData}
+                    isViewOnly={true}
+                  />
+                </div>
+                <div className="absolute bottom-4 left-1/2 w-24 h-1 bg-gray-800 rounded-full transform -translate-x-1/2"></div>
+              </div>
+            )}
+
+            {/* Tablet Preview */}
+            {activeView === 'tablet' && (
+              <div className="relative w-[600px] h-[800px] bg-white rounded-[2rem] shadow-xl p-3 border-[12px] border-gray-800">
+                <div className="absolute top-0 left-1/2 w-32 h-6 bg-gray-800 rounded-b-2xl transform -translate-x-1/2"></div>
+                <div className="w-full h-full overflow-auto rounded-[1.5rem]">
+                  <TemplateSelector
+                    templateId={formData.theme || 'javanese'}
+                    data={formData}
+                    isViewOnly={true}
+                  />
+                </div>
+                <div className="absolute bottom-4 left-1/2 w-32 h-1 bg-gray-800 rounded-full transform -translate-x-1/2"></div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        
         {/* Form Section */}
         <div className="w-full lg:w-1/2">
           <InvitationForm
@@ -74,7 +136,7 @@ const NewInvitation: React.FC = () => {
                   value={formData.brideNames}
                   onChange={handleFieldChange}
                   placeholder="Masukkan nama lengkap pengantin wanita"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
               <div>
@@ -85,7 +147,7 @@ const NewInvitation: React.FC = () => {
                   value={formData.brideParents}
                   onChange={handleFieldChange}
                   placeholder="Contoh: Bapak Ahmad & Ibu Siti"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
             </div>
@@ -100,7 +162,7 @@ const NewInvitation: React.FC = () => {
                   value={formData.groomNames}
                   onChange={handleFieldChange}
                   placeholder="Masukkan nama lengkap pengantin pria"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
               <div>
@@ -111,7 +173,7 @@ const NewInvitation: React.FC = () => {
                   value={formData.groomParents}
                   onChange={handleFieldChange}
                   placeholder="Contoh: Bapak Budi & Ibu Ani"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
             </div>
@@ -122,9 +184,9 @@ const NewInvitation: React.FC = () => {
               
               {/* Akad Section */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-md font-medium text-gray-700">Akad Nikah</h4>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-medium text-gray-700 text-md">Akad Nikah</h4>
+                  <label className="inline-flex relative items-center cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.showAkad !== false}
@@ -139,7 +201,7 @@ const NewInvitation: React.FC = () => {
                 </div>
 
                 {formData.showAkad !== false && (
-                  <div className="space-y-4 pl-4 border-l-2 border-gray-200">
+                  <div className="pl-4 space-y-4 border-l-2 border-gray-200">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Tanggal Akad</label>
                       <input
@@ -147,7 +209,7 @@ const NewInvitation: React.FC = () => {
                         name="akadDate"
                         value={formData.akadDate || ''}
                         onChange={handleFieldChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                     </div>
                     <div>
@@ -157,7 +219,7 @@ const NewInvitation: React.FC = () => {
                         name="akadTime"
                         value={formData.akadTime || ''}
                         onChange={handleFieldChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                     </div>
                     <div>
@@ -168,7 +230,7 @@ const NewInvitation: React.FC = () => {
                         value={formData.akadVenue || ''}
                         onChange={handleFieldChange}
                         placeholder="Masukkan lokasi akad nikah"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                     </div>
                   </div>
@@ -177,9 +239,9 @@ const NewInvitation: React.FC = () => {
 
               {/* Resepsi Section */}
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-md font-medium text-gray-700">Resepsi</h4>
-                  <label className="relative inline-flex items-center cursor-pointer">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-medium text-gray-700 text-md">Resepsi</h4>
+                  <label className="inline-flex relative items-center cursor-pointer">
                     <input
                       type="checkbox"
                       checked={formData.showResepsi !== false}
@@ -194,7 +256,7 @@ const NewInvitation: React.FC = () => {
                 </div>
 
                 {formData.showResepsi !== false && (
-                  <div className="space-y-4 pl-4 border-l-2 border-gray-200">
+                  <div className="pl-4 space-y-4 border-l-2 border-gray-200">
                     <div>
                       <label className="block text-sm font-medium text-gray-700">Tanggal Resepsi</label>
                       <input
@@ -202,7 +264,7 @@ const NewInvitation: React.FC = () => {
                         name="resepsiDate"
                         value={formData.resepsiDate || ''}
                         onChange={handleFieldChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                     </div>
                     <div>
@@ -212,7 +274,7 @@ const NewInvitation: React.FC = () => {
                         name="resepsiTime"
                         value={formData.resepsiTime || ''}
                         onChange={handleFieldChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                     </div>
                     <div>
@@ -223,7 +285,7 @@ const NewInvitation: React.FC = () => {
                         value={formData.resepsiVenue || ''}
                         onChange={handleFieldChange}
                         placeholder="Masukkan lokasi resepsi"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                        className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                       />
                     </div>
                   </div>
@@ -244,14 +306,7 @@ const NewInvitation: React.FC = () => {
           </InvitationForm>
         </div>
         
-        {/* Live Template Section */}
-        <div className="w-full lg:w-1/2 sticky top-0 h-screen overflow-auto">
-          <TemplateSelector
-            templateId={formData.theme || 'javanese'}
-            data={formData}
-            isViewOnly={true}
-          />
-        </div>
+ 
       </div>
     </div>
   );
