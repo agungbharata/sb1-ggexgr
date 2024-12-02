@@ -213,7 +213,21 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                     <div className="flex flex-col items-center space-y-2">
                       <div className="flex items-center space-x-2 text-[#2D1810]">
                         <MapPin className="w-4 h-4" />
-                        <p className="text-sm sm:text-base text-center">{data.akadVenue}</p>
+                        {data.akadMapsUrl ? (
+                          <a 
+                            href={data.akadMapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm sm:text-base text-center hover:text-[#2D1810]/70 transition-colors duration-200 cursor-pointer"
+                            title="Klik untuk membuka di Google Maps"
+                          >
+                            {data.akadVenue}
+                          </a>
+                        ) : (
+                          <p className="text-sm sm:text-base text-center">
+                            {data.akadVenue}
+                          </p>
+                        )}
                       </div>
                       {data.akadMapsUrl && (
                         <a 
@@ -291,7 +305,21 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                     <div className="flex flex-col items-center space-y-2">
                       <div className="flex items-center space-x-2 text-[#2D1810]">
                         <MapPin className="w-4 h-4" />
-                        <p className="text-sm sm:text-base text-center">{data.resepsiVenue}</p>
+                        {data.resepsiMapsUrl ? (
+                          <a 
+                            href={data.resepsiMapsUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm sm:text-base text-center hover:text-[#2D1810]/70 transition-colors duration-200 cursor-pointer"
+                            title="Klik untuk membuka di Google Maps"
+                          >
+                            {data.resepsiVenue}
+                          </a>
+                        ) : (
+                          <p className="text-sm sm:text-base text-center">
+                            {data.resepsiVenue}
+                          </p>
+                        )}
                       </div>
                       {data.resepsiMapsUrl && (
                         <a 
