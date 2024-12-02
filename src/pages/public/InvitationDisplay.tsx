@@ -74,6 +74,7 @@ const InvitationDisplay: React.FC = () => {
             customSlug: invitation.custom_slug || '',
             showMusicLibrary: invitation.show_music_library || false,
             backgroundMusic: invitation.background_music || '',
+            timezone: invitation.timezone || 'WIB',
             createdAt: invitation.created_at,
             updatedAt: invitation.updated_at
           };

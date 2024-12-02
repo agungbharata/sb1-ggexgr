@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Calendar, Clock, MapPin } from 'react-feather';
-import type { InvitationData } from '../../types/invitation';
+import { Clock, MapPin } from 'lucide-react';
+import { InvitationData } from '../../types/invitation';
 import { getTimeWithZone } from '../TimeZoneSelector';
 import SocialMediaPreview from '../SocialMediaPreview';
 import Lightbox from "yet-another-react-lightbox";
@@ -195,12 +195,12 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                       {formatDate(data.akadDate)}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-2 text-[#2D1810]">
-                    <Clock className="w-4 h-4" />
-                    <p className="text-sm sm:text-base">
-                      {data.akadTime ? getTimeWithZone(data.akadTime, data.timezone) : ''}
-                    </p>
-                  </div>
+                  {data?.akadTime && (
+                    <div className="flex items-center gap-2 justify-center">
+                      <Clock className="w-5 h-5" />
+                      <span>{getTimeWithZone(data.akadTime, data.timezone || 'WIB')}</span>
+                    </div>
+                  )}
                   {data.akadVenue && (
                     <div className="flex flex-col items-center space-y-2">
                       <div className="flex items-center space-x-2 text-[#2D1810]">
@@ -287,12 +287,12 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                       {formatDate(data.resepsiDate)}
                     </p>
                   </div>
-                  <div className="flex items-center space-x-2 text-[#2D1810]">
-                    <Clock className="w-4 h-4" />
-                    <p className="text-sm sm:text-base">
-                      {data.resepsiTime ? getTimeWithZone(data.resepsiTime, data.timezone) : ''}
-                    </p>
-                  </div>
+                  {data?.resepsiTime && (
+                    <div className="flex items-center gap-2 justify-center">
+                      <Clock className="w-5 h-5" />
+                      <span>{getTimeWithZone(data.resepsiTime, data.timezone || 'WIB')}</span>
+                    </div>
+                  )}
                   {data.resepsiVenue && (
                     <div className="flex flex-col items-center space-y-2">
                       <div className="flex items-center space-x-2 text-[#2D1810]">

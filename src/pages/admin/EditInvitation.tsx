@@ -14,7 +14,7 @@ const EditInvitation: React.FC = () => {
   useEffect(() => {
     const fetchInvitation = async () => {
       try {
-        const { data, error } = await supabase
+        const { data: invitation, error } = await supabase
           .from('invitations')
           .select('*')
           .eq('id', id)
@@ -22,52 +22,54 @@ const EditInvitation: React.FC = () => {
 
         if (error) throw error;
 
-        console.log('Fetched invitation data:', data);
+        console.log('Fetched invitation data:', invitation);
 
-        if (data) {
+        if (invitation) {
           const transformedData: InvitationData = {
-            id: data.id,
-            brideNames: data.bride_names || '',
-            groomNames: data.groom_names || '',
-            brideParents: data.bride_parents || '',
-            groomParents: data.groom_parents || '',
-            showAkad: data.show_akad || false,
-            akadDate: data.akad_date || '',
-            akadTime: data.akad_time || '',
-            akadVenue: data.akad_venue || '',
-            akadMapsUrl: data.akad_maps_url || '',
-            akadMapsEmbed: data.akad_maps_embed || '',
-            showResepsi: data.show_resepsi || false,
-            resepsiDate: data.resepsi_date || '',
-            resepsiTime: data.resepsi_time || '',
-            resepsiVenue: data.resepsi_venue || '',
-            resepsiMapsUrl: data.resepsi_maps_url || '',
-            resepsiMapsEmbed: data.resepsi_maps_embed || '',
-            openingText: data.opening_text || '',
-            invitationText: data.invitation_text || '',
-            coverPhoto: data.cover_photo || '',
-            bridePhoto: data.bride_photo || '',
-            groomPhoto: data.groom_photo || '',
-            gallery: data.gallery || [],
-            socialLinks: data.social_links || [],
-            bankAccounts: data.bank_accounts || [],
-            googleMapsUrl: data.google_maps_url || '',
-            googleMapsEmbed: data.google_maps_embed || '',
-            template: data.template || 'javanese',
-            customSlug: data.custom_slug || '',
-            showMusicLibrary: data.show_music_library || false,
-            backgroundMusic: data.background_music || '',
-            createdAt: data.created_at,
-            updatedAt: data.updated_at
+            id: invitation.id,
+            brideNames: invitation.bride_names || '',
+            groomNames: invitation.groom_names || '',
+            brideParents: invitation.bride_parents || '',
+            groomParents: invitation.groom_parents || '',
+            showAkad: invitation.show_akad || false,
+            akadDate: invitation.akad_date || '',
+            akadTime: invitation.akad_time || '',
+            akadVenue: invitation.akad_venue || '',
+            akadMapsUrl: invitation.akad_maps_url || '',
+            akadMapsEmbed: invitation.akad_maps_embed || '',
+            showResepsi: invitation.show_resepsi || false,
+            resepsiDate: invitation.resepsi_date || '',
+            resepsiTime: invitation.resepsi_time || '',
+            resepsiVenue: invitation.resepsi_venue || '',
+            resepsiMapsUrl: invitation.resepsi_maps_url || '',
+            resepsiMapsEmbed: invitation.resepsi_maps_embed || '',
+            openingText: invitation.opening_text || '',
+            invitationText: invitation.invitation_text || '',
+            message: invitation.message || '',
+            coverPhoto: invitation.cover_photo || '',
+            bridePhoto: invitation.bride_photo || '',
+            groomPhoto: invitation.groom_photo || '',
+            gallery: invitation.gallery || [],
+            socialLinks: invitation.social_links || [],
+            bankAccounts: invitation.bank_accounts || [],
+            googleMapsUrl: invitation.google_maps_url || '',
+            googleMapsEmbed: invitation.google_maps_embed || '',
+            template: invitation.template || 'javanese',
+            customSlug: invitation.custom_slug || '',
+            showMusicLibrary: invitation.show_music_library || false,
+            backgroundMusic: invitation.background_music || '',
+            timezone: invitation.timezone || 'WIB',
+            createdAt: invitation.created_at,
+            updatedAt: invitation.updated_at
           };
 
-          console.log('Transformed data:', transformedData);
+          console.log('Transformed invitation data:', transformedData);
           setFormData(transformedData);
           setLoading(false);
         }
       } catch (error: any) {
         console.error('Error fetching invitation:', error);
-        alert('Error fetching invitation data: ' + error.message);
+        alert(`Error fetching invitation: ${error.message}`);
         setLoading(false);
       }
     };
@@ -100,6 +102,7 @@ const EditInvitation: React.FC = () => {
         resepsi_maps_embed: updatedData.resepsiMapsEmbed,
         opening_text: updatedData.openingText,
         invitation_text: updatedData.invitationText,
+        message: updatedData.message,
         cover_photo: updatedData.coverPhoto,
         bride_photo: updatedData.bridePhoto,
         groom_photo: updatedData.groomPhoto,
@@ -112,6 +115,7 @@ const EditInvitation: React.FC = () => {
         custom_slug: updatedData.customSlug,
         show_music_library: updatedData.showMusicLibrary,
         background_music: updatedData.backgroundMusic,
+        timezone: updatedData.timezone,
         updated_at: new Date().toISOString()
       };
 
@@ -153,6 +157,7 @@ const EditInvitation: React.FC = () => {
         resepsiMapsEmbed: data.resepsi_maps_embed,
         openingText: data.opening_text,
         invitationText: data.invitation_text,
+        message: data.message,
         coverPhoto: data.cover_photo,
         bridePhoto: data.bride_photo,
         groomPhoto: data.groom_photo,
@@ -165,6 +170,7 @@ const EditInvitation: React.FC = () => {
         customSlug: data.custom_slug,
         showMusicLibrary: data.show_music_library,
         backgroundMusic: data.background_music,
+        timezone: data.timezone,
         createdAt: data.created_at,
         updatedAt: data.updated_at
       };
