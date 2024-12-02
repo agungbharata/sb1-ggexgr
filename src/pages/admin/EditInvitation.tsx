@@ -17,9 +17,18 @@ const EditInvitation: React.FC = () => {
   const [previewDevice, setPreviewDevice] = useState<'mobile' | 'tablet' | 'desktop'>('mobile');
 
   const deviceSizes = {
-    mobile: { width: 'w-[375px]', height: 'h-[667px]' },
-    tablet: { width: 'w-[768px]', height: 'h-[1024px]' },
-    desktop: { width: 'w-[1280px]', height: 'h-[800px]' },
+    mobile: { 
+      frame: 'w-[375px] h-[812px]',
+      scale: 'scale-[0.7] lg:scale-[0.8]'
+    },
+    tablet: { 
+      frame: 'w-[768px] h-[1024px]',
+      scale: 'scale-[0.65] lg:scale-[0.75]'
+    },
+    desktop: { 
+      frame: 'w-[1200px] h-[750px]',
+      scale: 'scale-[0.65] lg:scale-[0.75]'
+    },
   };
 
   useEffect(() => {
@@ -148,80 +157,107 @@ const EditInvitation: React.FC = () => {
                 </button>
               </div>
 
-              {/* Preview Container with Scroll */}
-              <div className="overflow-auto max-h-[calc(100vh-200px)] flex items-start justify-center">
-                {/* Device Frame Container */}
-                <div className={`relative ${deviceSizes[previewDevice].width} ${deviceSizes[previewDevice].height} transition-all duration-300`}>
-                  {/* Mobile Frame */}
-                  {previewDevice === 'mobile' && (
-                    <div className="relative w-full h-full">
-                      {/* Phone Frame */}
-                      <div className="absolute inset-0 bg-gray-800 rounded-[3rem] shadow-xl">
-                        {/* Notch */}
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-6 w-40 bg-gray-800 rounded-b-2xl"></div>
-                        {/* Side Buttons */}
-                        <div className="absolute -left-1 top-24 w-1 h-12 bg-gray-700 rounded-l"></div>
-                        <div className="absolute -right-1 top-32 w-1 h-16 bg-gray-700 rounded-r"></div>
-                        <div className="absolute -left-1 top-40 w-1 h-12 bg-gray-700 rounded-l"></div>
-                      </div>
-                      {/* Screen Content */}
-                      <div className="absolute inset-[12px] rounded-[2.5rem] overflow-hidden bg-white">
-                        <div className="w-full h-full overflow-y-auto">
-                          <JavaneseTemplate data={formData} isViewOnly={true} />
+              {/* Preview Container */}
+              <div className="h-[900px] overflow-hidden flex items-center justify-center bg-gray-50 rounded-xl">
+                {/* Device Frame Container with Scale */}
+                <div className={`origin-center transition-all duration-300 ${previewDevice === 'desktop' ? 'scale-[0.65] lg:scale-[0.75]' : deviceSizes[previewDevice].scale}`}>
+                  {/* Device Frame */}
+                  <div className={`relative ${previewDevice === 'desktop' ? 'w-[1200px] h-[750px]' : deviceSizes[previewDevice].frame} transition-all duration-300`}>
+                    {/* Mobile Frame */}
+                    {previewDevice === 'mobile' && (
+                      <div className="relative w-full h-full">
+                        {/* Phone Frame */}
+                        <div className="absolute inset-0 bg-gray-800 rounded-[3rem] shadow-xl">
+                          {/* Notch */}
+                          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-8 w-[120px] bg-black rounded-b-3xl"></div>
+                          {/* Side Buttons */}
+                          <div className="absolute -left-1 top-[120px] w-1 h-12 bg-gray-700 rounded-l"></div>
+                          <div className="absolute -left-1 top-[160px] w-1 h-12 bg-gray-700 rounded-l"></div>
+                          <div className="absolute -right-1 top-[120px] w-1 h-16 bg-gray-700 rounded-r"></div>
+                          {/* Bottom Bar */}
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-gray-700 rounded-full"></div>
                         </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Desktop Frame */}
-                  {previewDevice === 'desktop' && (
-                    <div className="relative w-full h-full">
-                      {/* Monitor Frame */}
-                      <div className="absolute -inset-4 bg-gray-800 rounded-2xl shadow-xl">
-                        {/* Monitor Stand */}
-                        <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
-                          <div className="w-32 h-4 bg-gray-700 rounded-t-lg"></div>
-                          <div className="w-48 h-2 bg-gray-600 rounded-b-lg"></div>
-                        </div>
-                      </div>
-                      {/* Screen Content */}
-                      <div className="absolute inset-0 bg-white rounded-lg overflow-hidden">
-                        {/* Browser Chrome */}
-                        <div className="h-8 bg-gray-100 flex items-center px-4 border-b">
-                          <div className="flex space-x-2">
-                            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                          </div>
-                          {/* URL Bar */}
-                          <div className="mx-4 flex-1 h-5 bg-white rounded px-2 text-xs flex items-center text-gray-600">
-                            weddinggas.com/invitation/preview
+                        {/* Screen Content */}
+                        <div className="absolute inset-[12px] rounded-[2.5rem] overflow-hidden bg-white">
+                          <div className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                            <JavaneseTemplate data={formData} isViewOnly={true} />
                           </div>
                         </div>
-                        {/* Browser Content */}
-                        <div className="h-[calc(100%-2rem)] overflow-y-auto">
-                          <JavaneseTemplate data={formData} isViewOnly={true} />
-                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Tablet Frame */}
-                  {previewDevice === 'tablet' && (
-                    <div className="relative w-full h-full">
-                      {/* Tablet Frame */}
-                      <div className="absolute inset-0 bg-gray-800 rounded-[2rem] shadow-xl">
-                        {/* Camera */}
-                        <div className="absolute top-4 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-gray-700"></div>
-                      </div>
-                      {/* Screen Content */}
-                      <div className="absolute inset-[10px] rounded-[1.75rem] overflow-hidden bg-white">
-                        <div className="w-full h-full overflow-y-auto">
-                          <JavaneseTemplate data={formData} isViewOnly={true} />
+                    {/* Desktop Frame (Laptop) */}
+                    {previewDevice === 'desktop' && (
+                      <div className="relative w-full h-full">
+                        {/* Laptop Frame */}
+                        <div className="relative w-full h-full">
+                          {/* Screen Frame */}
+                          <div className="absolute -inset-3 bg-[#1a1a1a] rounded-xl shadow-xl">
+                            {/* Camera */}
+                            <div className="absolute top-2 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-black/30"></div>
+                          </div>
+                          {/* Screen Content */}
+                          <div className="absolute inset-0 bg-white overflow-hidden">
+                            {/* Browser Chrome */}
+                            <div className="h-7 bg-gray-100 flex items-center space-x-3 px-3 border-b">
+                              {/* Window Controls */}
+                              <div className="flex space-x-1.5">
+                                <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                                <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                                <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                              </div>
+                              {/* URL Bar */}
+                              <div className="flex-1 h-5 bg-white rounded flex items-center px-2">
+                                <div className="flex items-center space-x-2 text-[10px] text-gray-600">
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                  </svg>
+                                  <span>weddinggas.com/invitation/preview</span>
+                                </div>
+                              </div>
+                            </div>
+                            {/* Browser Content */}
+                            <div className="h-[calc(100%-1.75rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                              <JavaneseTemplate data={formData} isViewOnly={true} />
+                            </div>
+                          </div>
+                          {/* Laptop Base */}
+                          <div className="absolute -bottom-12 -inset-x-3">
+                            <div className="relative w-full">
+                              {/* Base Top with Hinge */}
+                              <div className="h-2 bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a] rounded-t-sm">
+                                <div className="absolute inset-x-0 top-0 h-[1px] bg-gray-600/20"></div>
+                              </div>
+                              {/* Base Bottom */}
+                              <div className="h-10 bg-gradient-to-b from-[#dadada] to-[#c0c0c0] rounded-b-xl">
+                                {/* Trackpad */}
+                                <div className="absolute top-2 left-1/2 -translate-x-1/2 w-[40%] h-6 bg-[#b8b8b8] rounded-lg"></div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+
+                    {/* Tablet Frame */}
+                    {previewDevice === 'tablet' && (
+                      <div className="relative w-full h-full">
+                        {/* Tablet Frame */}
+                        <div className="absolute inset-0 bg-gray-800 rounded-[2rem] shadow-xl">
+                          {/* Camera */}
+                          <div className="absolute top-4 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-gray-700"></div>
+                          {/* Home Button */}
+                          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full border-2 border-gray-700"></div>
+                        </div>
+                        {/* Screen Content */}
+                        <div className="absolute inset-[10px] rounded-[1.75rem] overflow-hidden bg-white">
+                          <div className="w-full h-full overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                            <JavaneseTemplate data={formData} isViewOnly={true} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -418,7 +454,7 @@ const EditInvitation: React.FC = () => {
           <span className="flex items-center justify-center">
             {saving ? (
               <>
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
