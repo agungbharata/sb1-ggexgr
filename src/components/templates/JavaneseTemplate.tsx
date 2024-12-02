@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Clock, MapPin } from 'lucide-react';
+import { Clock, MapPin, Calendar } from 'lucide-react';
 import { InvitationData } from '../../types/invitation';
 import { getTimeWithZone } from '../TimeZoneSelector';
 import SocialMediaPreview from '../SocialMediaPreview';

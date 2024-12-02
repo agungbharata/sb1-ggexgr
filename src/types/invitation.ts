@@ -8,40 +8,39 @@ export interface InvitationData {
   akadDate: string;
   akadTime: string;
   akadVenue: string;
-  akadMapsUrl?: string;
-  akadMapsEmbed?: string;
+  akadMapsUrl: string;
   showResepsi: boolean;
   resepsiDate: string;
   resepsiTime: string;
   resepsiVenue: string;
-  resepsiMapsUrl?: string;
-  resepsiMapsEmbed?: string;
+  resepsiMapsUrl: string;
   openingText: string;
   invitationText: string;
-  coverPhoto?: string;
-  bridePhoto?: string;
-  groomPhoto?: string;
+  message: string;
+  coverPhoto: string;
+  bridePhoto: string;
+  groomPhoto: string;
   gallery: string[];
-  socialLinks: any[];
-  bankAccounts: any[];
-  customSlug?: string;
-  googleMapsUrl?: string;
-  googleMapsEmbed?: string;
-  template?: string;
-  theme?: string;
-  fontFamily?: string;
-  primaryColor?: string;
-  secondaryColor?: string;
-  status?: 'draft' | 'published';
-  isPublished?: boolean;
-  rsvpEnabled?: boolean;
-  commentsEnabled?: boolean;
-  showMusicLibrary?: boolean;
-  backgroundMusic?: string;
+  socialLinks: SocialLink[];
+  bankAccounts: BankAccount[];
+  template: string;
+  customSlug: string;
+  backgroundMusic: string;
+  timezone: string;
   createdAt?: string;
   updatedAt?: string;
-  published_at?: string;
-  timezone?: 'WIB' | 'WITA' | 'WIT';
+}
+
+export interface SocialLink {
+  platform: string;
+  username: string;
+  url: string;
+}
+
+export interface BankAccount {
+  bank: string;
+  accountNumber: string;
+  accountName: string;
 }
 
 export interface DatabaseInvitation {
@@ -75,18 +74,6 @@ export interface DatabaseInvitation {
   comments_enabled?: boolean;
 }
 
-export interface SocialLink {
-  platform: string;
-  username: string;
-  url: string;
-}
-
-export interface BankAccount {
-  bank: string;
-  accountNumber: string;
-  accountName: string;
-}
-
 export interface MusicLibrary {
   id: string;
   title: string;
@@ -95,7 +82,7 @@ export interface MusicLibrary {
   created_at?: string;
 }
 
-export const defaultFormData: InvitationData = {
+export const defaultInvitationData: InvitationData = {
   brideNames: '',
   groomNames: '',
   brideParents: '',
@@ -105,29 +92,24 @@ export const defaultFormData: InvitationData = {
   akadTime: '',
   akadVenue: '',
   akadMapsUrl: '',
-  akadMapsEmbed: '',
   showResepsi: false,
   resepsiDate: '',
   resepsiTime: '',
   resepsiVenue: '',
   resepsiMapsUrl: '',
-  resepsiMapsEmbed: '',
   openingText: '',
   invitationText: '',
+  message: '',
+  coverPhoto: '',
+  bridePhoto: '',
+  groomPhoto: '',
   gallery: [],
   socialLinks: [],
   bankAccounts: [],
-  template: 'default',
-  theme: 'default',
-  fontFamily: 'default',
-  primaryColor: '#000000',
-  secondaryColor: '#ffffff',
-  status: 'draft',
-  isPublished: false,
-  rsvpEnabled: true,
-  commentsEnabled: true,
-  showMusicLibrary: false,
-  backgroundMusic: ''
+  template: 'javanese',
+  customSlug: '',
+  backgroundMusic: '',
+  timezone: 'WIB'
 };
 
 import { TemplateType } from '../components/TemplateSelector';
