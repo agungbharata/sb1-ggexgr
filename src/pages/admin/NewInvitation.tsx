@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InvitationForm from '../../components/InvitationForm';
 import TemplateSelector from '../../components/TemplateSelector';
 import TimeZoneSelector from '../../components/TimeZoneSelector';
 import type { InvitationData, TimeZone } from '../../types/invitation';
+import { supabase } from '../../lib/supabase';
+import { Smartphone, Monitor } from 'react-feather';
+import toast from 'react-hot-toast';
 
 const defaultFormData: InvitationData = {
   brideNames: '',
@@ -38,219 +41,115 @@ const initialData: InvitationData = {
 
 const NewInvitation: React.FC = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = React.useState<Partial<InvitationData>>(initialData);
+  const [formData, setFormData] = useState<InvitationData>(initialData);
+  const [saving, setSaving] = useState(false);
+  const [previewDevice, setPreviewDevice] = useState<'mobile' | 'tablet' | 'desktop'>('mobile');
 
-  const handleUpdate = async (data: InvitationData) => {
-    setFormData(data);
+  const deviceSizes = {
+    mobile: { 
+      frame: 'w-[375px] h-[812px]',
+      scale: 'scale-[0.7] lg:scale-[0.8]'
+    },
+    tablet: { 
+      frame: 'w-[768px] h-[1024px]',
+      scale: 'scale-[0.65] lg:scale-[0.75]'
+    },
+    desktop: { 
+      frame: 'w-[1200px] h-[750px]',
+      scale: 'scale-[0.65] lg:scale-[0.75]'
+    },
   };
 
-  const handleChange = (data: InvitationData) => {
-    setFormData(data);
-  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
 
-  const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    try {
+      const user = supabase.auth.user();
+      if (!user) throw new Error('Not authenticated');
+
+      const { data, error } = await supabase
+        .from('invitations')
+        .insert([
+          {
+            ...formData,
+            user_id: user.id,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      toast.success('Undangan berhasil dibuat!');
+      navigate('/dashboard/invitations');
+    } catch (error: any) {
+      console.error('Error creating invitation:', error);
+      toast.error('Gagal membuat undangan. Silakan coba lagi.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Create New Invitation</h1>
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Form Section */}
-        <div className="w-full lg:w-1/2">
-          <InvitationForm
-            onUpdate={handleUpdate}
-            onChange={handleChange}
-            initialData={initialData}
-            isEditing={false}
-          >
-            {/* Bride & Parents */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Nama Pengantin Wanita</label>
-                <input
-                  type="text"
-                  name="brideNames"
-                  value={formData.brideNames}
-                  onChange={handleFieldChange}
-                  placeholder="Masukkan nama lengkap pengantin wanita"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Nama Orang Tua Pengantin Wanita</label>
-                <input
-                  type="text"
-                  name="brideParents"
-                  value={formData.brideParents}
-                  onChange={handleFieldChange}
-                  placeholder="Contoh: Bapak Ahmad & Ibu Siti"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
+        {/* Preview Panel */}
+        <div className="lg:w-1/2">
+          <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">Preview</h2>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setPreviewDevice('mobile')}
+                  className={`p-2 rounded ${
+                    previewDevice === 'mobile'
+                      ? 'bg-emerald-100 text-emerald-600'
+                      : 'hover:bg-gray-100 text-gray-600'
+                  }`}
+                  title="Mobile Preview"
+                >
+                  <Smartphone className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setPreviewDevice('desktop')}
+                  className={`p-2 rounded ${
+                    previewDevice === 'desktop'
+                      ? 'bg-emerald-100 text-emerald-600'
+                      : 'hover:bg-gray-100 text-gray-600'
+                  }`}
+                  title="Desktop Preview"
+                >
+                  <Monitor className="w-5 h-5" />
+                </button>
               </div>
             </div>
 
-            {/* Groom & Parents */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Nama Pengantin Pria</label>
-                <input
-                  type="text"
-                  name="groomNames"
-                  value={formData.groomNames}
-                  onChange={handleFieldChange}
-                  placeholder="Masukkan nama lengkap pengantin pria"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Nama Orang Tua Pengantin Pria</label>
-                <input
-                  type="text"
-                  name="groomParents"
-                  value={formData.groomParents}
-                  onChange={handleFieldChange}
-                  placeholder="Contoh: Bapak Budi & Ibu Ani"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            <div className={`flex justify-center transition-all duration-300 ${deviceSizes[previewDevice].scale}`}>
+              <div className={`bg-white shadow-lg rounded-lg overflow-hidden ${deviceSizes[previewDevice].frame}`}>
+                <TemplateSelector
+                  templateId={formData.theme}
+                  data={formData}
+                  isViewOnly={true}
                 />
               </div>
             </div>
-
-            {/* Event Details */}
-            <div className="space-y-6">
-              <h3 className="text-lg font-medium text-gray-900">Detail Acara</h3>
-              
-              {/* Akad Section */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-md font-medium text-gray-700">Akad Nikah</h4>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.showAkad !== false}
-                      onChange={(e) => handleFieldChange({
-                        target: { name: 'showAkad', value: e.target.checked }
-                      })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    <span className="ml-3 text-sm font-medium text-gray-700">Tampilkan</span>
-                  </label>
-                </div>
-
-                {formData.showAkad !== false && (
-                  <div className="space-y-4 pl-4 border-l-2 border-gray-200">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Tanggal Akad</label>
-                      <input
-                        type="date"
-                        name="akadDate"
-                        value={formData.akadDate || ''}
-                        onChange={handleFieldChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Waktu Akad</label>
-                      <input
-                        type="time"
-                        name="akadTime"
-                        value={formData.akadTime || ''}
-                        onChange={handleFieldChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Tempat Akad</label>
-                      <input
-                        type="text"
-                        name="akadVenue"
-                        value={formData.akadVenue || ''}
-                        onChange={handleFieldChange}
-                        placeholder="Masukkan lokasi akad nikah"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Resepsi Section */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="text-md font-medium text-gray-700">Resepsi</h4>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.showResepsi !== false}
-                      onChange={(e) => handleFieldChange({
-                        target: { name: 'showResepsi', value: e.target.checked }
-                      })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                    <span className="ml-3 text-sm font-medium text-gray-700">Tampilkan</span>
-                  </label>
-                </div>
-
-                {formData.showResepsi !== false && (
-                  <div className="space-y-4 pl-4 border-l-2 border-gray-200">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Tanggal Resepsi</label>
-                      <input
-                        type="date"
-                        name="resepsiDate"
-                        value={formData.resepsiDate || ''}
-                        onChange={handleFieldChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Waktu Resepsi</label>
-                      <input
-                        type="time"
-                        name="resepsiTime"
-                        value={formData.resepsiTime || ''}
-                        onChange={handleFieldChange}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Tempat Resepsi</label>
-                      <input
-                        type="text"
-                        name="resepsiVenue"
-                        value={formData.resepsiVenue || ''}
-                        onChange={handleFieldChange}
-                        placeholder="Masukkan lokasi resepsi"
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Timezone */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Zona Waktu</label>
-                <TimeZoneSelector
-                  value={formData.timezone || 'WIB'}
-                  onChange={(timezone) => setFormData({ ...formData, timezone })}
-                />
-              </div>
-            </div>
-          </InvitationForm>
+          </div>
         </div>
-        
-        {/* Live Template Section */}
-        <div className="w-full lg:w-1/2 sticky top-0 h-screen overflow-auto">
-          <TemplateSelector
-            templateId={formData.theme || 'javanese'}
-            data={formData}
-            isViewOnly={true}
-          />
+
+        {/* Form Panel */}
+        <div className="lg:w-1/2">
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6">Detail Undangan</h2>
+            <InvitationForm
+              initialData={formData}
+              onSubmit={handleSubmit}
+              onChange={setFormData}
+              isSubmitting={saving}
+            />
+          </div>
         </div>
       </div>
     </div>
