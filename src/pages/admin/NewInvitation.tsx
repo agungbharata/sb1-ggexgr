@@ -56,11 +56,9 @@ const NewInvitation: React.FC = () => {
   return (
     <div className="container px-4 py-8 mx-auto">
       <h1 className="mb-12 text-2xl font-bold text-center">Create New Invitation</h1>
-      <div className="flex flex-col gap-8 lg:flex-row">\
-
-
-               {/* Live Template Section with Tabs */}
-               <div className="overflow-hidden sticky top-0 p-4 w-full h-screen bg-gray-100 lg:w-1/2">
+      <div className="flex flex-col gap-8 lg:flex-row">
+        {/* Live Template Section with Tabs */}
+        <div className="overflow-hidden sticky top-0 p-4 w-full h-screen bg-gray-100 lg:w-1/2">
           <div className="flex justify-center mb-4 space-x-4 border-b border-gray-200">
             <button
               onClick={() => setActiveView('mobile')}
@@ -85,11 +83,31 @@ const NewInvitation: React.FC = () => {
           </div>
 
           <div className="flex justify-center items-start h-[calc(100%-3rem)] overflow-y-auto py-4">
+            <style jsx>{`
+              .scrollbar-thin::-webkit-scrollbar {
+                width: 4px;
+              }
+              .scrollbar-thin::-webkit-scrollbar-track {
+                background: transparent;
+              }
+              .scrollbar-thin::-webkit-scrollbar-thumb {
+                background-color: rgb(209, 213, 219);
+                border-radius: 20px;
+              }
+              .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+                background-color: rgb(156, 163, 175);
+              }
+              .scrollbar-thin {
+                scrollbar-width: thin;
+                scrollbar-color: rgb(209, 213, 219) transparent;
+              }
+            `}</style>
+
             {/* Mobile Preview */}
             {activeView === 'mobile' && (
               <div className="relative w-[320px] h-[640px] bg-white rounded-[3rem] shadow-xl p-2 border-8 border-gray-800">
                 <div className="absolute top-0 left-1/2 w-24 h-6 bg-gray-800 rounded-b-2xl transform -translate-x-1/2"></div>
-                <div className="w-full h-full overflow-auto rounded-[2.5rem]">
+                <div className="w-full h-full overflow-auto rounded-[2.5rem] scrollbar-thin">
                   <TemplateSelector
                     templateId={formData.theme || 'javanese'}
                     data={formData}
@@ -104,7 +122,7 @@ const NewInvitation: React.FC = () => {
             {activeView === 'tablet' && (
               <div className="relative w-[600px] h-[800px] bg-white rounded-[2rem] shadow-xl p-3 border-[12px] border-gray-800">
                 <div className="absolute top-0 left-1/2 w-32 h-6 bg-gray-800 rounded-b-2xl transform -translate-x-1/2"></div>
-                <div className="w-full h-full overflow-auto rounded-[1.5rem]">
+                <div className="w-full h-full overflow-auto rounded-[1.5rem] scrollbar-thin">
                   <TemplateSelector
                     templateId={formData.theme || 'javanese'}
                     data={formData}
@@ -117,7 +135,6 @@ const NewInvitation: React.FC = () => {
           </div>
         </div>
 
-        
         {/* Form Section */}
         <div className="w-full lg:w-1/2">
           <InvitationForm
