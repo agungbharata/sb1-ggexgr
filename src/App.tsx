@@ -31,10 +31,12 @@ function App() {
       <AuthProvider>
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
+            {/* Invitation Display Route - No Layout */}
+            <Route path="/:slug" element={<InvitationDisplay />} />
+
             {/* Public Routes */}
             <Route element={<PublicLayout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/:slug" element={<InvitationDisplay />} />
             </Route>
 
             {/* Auth Routes */}

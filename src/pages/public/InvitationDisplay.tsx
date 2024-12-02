@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../../utils/supabaseClient';
+import type { InvitationData } from '../../types/invitation';
+import JavaneseTemplate from '../../components/templates/JavaneseTemplate';
 
 interface Invitation {
   id: string;
@@ -21,7 +23,7 @@ interface Invitation {
 
 const InvitationDisplay: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const [invitation, setInvitation] = useState<Invitation | null>(null);
+  const [invitation, setInvitation] = useState<InvitationData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +38,48 @@ const InvitationDisplay: React.FC = () => {
 
         if (error) throw error;
 
-        setInvitation(data);
+        // Transform database fields to match InvitationData type
+        const transformedData: InvitationData = {
+          id: data.id,
+          brideNames: data.bride_names,
+          groomNames: data.groom_names,
+          brideParents: data.bride_parents,
+          groomParents: data.groom_parents,
+          showAkad: data.show_akad,
+          akadDate: data.akad_date,
+          akadTime: data.akad_time,
+          akadVenue: data.akad_venue,
+          akadMapsUrl: data.akad_maps_url,
+          akadMapsEmbed: data.akad_maps_embed,
+          showResepsi: data.show_resepsi,
+          resepsiDate: data.resepsi_date,
+          resepsiTime: data.resepsi_time,
+          resepsiVenue: data.resepsi_venue,
+          resepsiMapsUrl: data.resepsi_maps_url,
+          resepsiMapsEmbed: data.resepsi_maps_embed,
+          date: data.date,
+          time: data.time,
+          venue: data.venue,
+          openingText: data.opening_text,
+          invitationText: data.invitation_text,
+          coverPhoto: data.cover_photo,
+          bridePhoto: data.bride_photo,
+          groomPhoto: data.groom_photo,
+          gallery: data.gallery || [],
+          socialLinks: data.social_links || [],
+          bankAccounts: data.bank_accounts || [],
+          googleMapsUrl: data.google_maps_url,
+          googleMapsEmbed: data.google_maps_embed,
+          template: data.template || 'javanese',
+          customSlug: data.custom_slug,
+          showMusicLibrary: data.show_music_library,
+          backgroundMusic: data.background_music,
+          timezone: data.timezone,
+          createdAt: data.created_at,
+          updatedAt: data.updated_at
+        };
+
+        setInvitation(transformedData);
       } catch (err: any) {
         console.error('Error fetching invitation:', err);
         setError('Invitation not found');
@@ -71,91 +114,8 @@ const InvitationDisplay: React.FC = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-white">
-      {/* Cover Image */}
-      {invitation.cover_photo && (
-        <div className="relative h-96">
-          <img
-            src={invitation.cover_photo}
-            alt="Wedding Cover"
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold text-gray-900">
-            {invitation.bride_names} & {invitation.groom_names}
-          </h1>
-          
-          <p className="mt-4 text-xl text-gray-600">
-            {invitation.opening_text}
-          </p>
-
-          <div className="mt-8 space-y-4">
-            <p className="text-lg text-gray-700">
-              {invitation.invitation_text}
-            </p>
-
-            <div className="mt-8">
-              <h2 className="text-2xl font-semibold text-gray-900">When & Where</h2>
-              <div className="mt-4">
-                <p className="text-lg text-gray-700">{invitation.date}</p>
-                <p className="text-lg text-gray-700">{invitation.time}</p>
-                <p className="text-lg text-gray-700">{invitation.venue}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Map */}
-          {invitation.google_maps_embed && (
-            <div className="mt-12">
-              <div className="aspect-w-16 aspect-h-9">
-                <iframe
-                  src={invitation.google_maps_embed}
-                  className="w-full h-96 border-0"
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
-              </div>
-              {invitation.google_maps_url && (
-                <a
-                  href={invitation.google_maps_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-block text-emerald-600 hover:text-emerald-500"
-                >
-                  Open in Google Maps
-                </a>
-              )}
-            </div>
-          )}
-
-          {/* Gallery */}
-          {invitation.gallery && invitation.gallery.length > 0 && (
-            <div className="mt-12">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Gallery</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {invitation.gallery.map((photo, index) => (
-                  <div key={index} className="aspect-w-1 aspect-h-1">
-                    <img
-                      src={photo}
-                      alt={`Gallery ${index + 1}`}
-                      className="w-full h-full object-cover rounded-lg"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+  // Render the invitation using JavaneseTemplate
+  return <JavaneseTemplate data={invitation} isViewOnly={true} />;
 };
 
 export default InvitationDisplay;
