@@ -1,4 +1,5 @@
 import React from 'react';
+import Select from 'react-select';
 
 export interface Theme {
   id: string;
@@ -75,7 +76,7 @@ const themes: Theme[] = [
   },
   {
     id: 'minang',
-    name: 'Minang Heritage',
+    name: 'Minang Heritage', 
     description: 'Tema dengan sentuhan ornamen Minangkabau',
     preview: '/themes/minang-preview.jpg',
     style: {
@@ -99,19 +100,19 @@ const themes: Theme[] = [
   {
     id: 'bali',
     name: 'Bali Paradise',
-    description: 'Nuansa tropis dengan ornamen khas Bali',
+    description: 'Tema yang terinspirasi dari keindahan pulau Bali',
     preview: '/themes/bali-preview.jpg',
     style: {
       fontFamily: {
-        title: 'Cinzel',
-        body: 'Montserrat'
+        title: 'Lora',
+        body: 'Nunito'
       },
       colors: {
-        primary: '#2E7D32',
-        secondary: '#4CAF50',
-        accent: '#81C784',
-        background: '#F1F8E9',
-        text: '#1B5E20'
+        primary: '#00796B',
+        secondary: '#26A69A',
+        accent: '#80CBC4',
+        background: '#E0F2F1',
+        text: '#004D40'
       },
       patterns: {
         header: '/patterns/bali-header.png',
@@ -127,32 +128,57 @@ interface ThemeSelectorProps {
 }
 
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({ selectedTheme, onThemeChange }) => {
+  const options = themes.map(theme => ({
+    value: theme.id,
+    label: theme.name,
+    description: theme.description,
+    theme: theme
+  }));
+
+  const selectedOption = options.find(option => option.value === selectedTheme);
+
+  const customStyles = {
+    option: (provided: any, state: any) => ({
+      ...provided,
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '10px',
+      backgroundColor: state.isSelected ? '#F3F4F6' : state.isFocused ? '#F9FAFB' : 'white',
+      color: '#111827',
+      '&:hover': {
+        backgroundColor: '#F9FAFB'
+      }
+    }),
+    control: (provided: any) => ({
+      ...provided,
+      borderColor: '#E5E7EB',
+      boxShadow: 'none',
+      '&:hover': {
+        borderColor: '#D1D5DB'
+      }
+    })
+  };
+
+  const formatOptionLabel = ({ label, description }: any) => (
+    <div>
+      <div className="font-medium">{label}</div>
+      <div className="text-sm text-gray-500">{description}</div>
+    </div>
+  );
+
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
       <h3 className="text-xl font-serif font-semibold text-gray-900 mb-4">Pilih Template</h3>
-      <div className="grid grid-cols-2 gap-4">
-        {themes.map((theme) => (
-          <div
-            key={theme.id}
-            className={`relative cursor-pointer rounded-lg overflow-hidden transition-all duration-200 transform hover:scale-105 ${
-              selectedTheme === theme.id ? 'ring-2 ring-emerald-500' : ''
-            }`}
-            onClick={() => onThemeChange(theme)}
-          >
-            <div className="aspect-w-16 aspect-h-9">
-              <img
-                src={theme.preview}
-                alt={theme.name}
-                className="object-cover w-full h-full"
-              />
-            </div>
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
-              <h4 className="text-white font-medium">{theme.name}</h4>
-              <p className="text-white/80 text-sm">{theme.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
+      <Select
+        options={options}
+        value={selectedOption}
+        onChange={(option: any) => onThemeChange(option.theme)}
+        styles={customStyles}
+        formatOptionLabel={formatOptionLabel}
+        placeholder="Cari template..."
+        isSearchable
+        className="w-full"
+      />
     </div>
   );
 };
