@@ -199,46 +199,47 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                 <div className="flex flex-col items-center space-y-3">
                   <div className="flex items-center space-x-2 text-[#2D1810]">
                     <Calendar className="w-4 h-4" />
-                    <span className="text-sm sm:text-base text-[#2D1810]">
+                    <p className="text-sm sm:text-base">
                       {formatDate(data.akadDate)}
-                    </span>
+                    </p>
                   </div>
                   <div className="flex items-center space-x-2 text-[#2D1810]">
                     <Clock className="w-4 h-4" />
-                    <span className="text-sm sm:text-base text-[#2D1810]">
+                    <p className="text-sm sm:text-base">
                       {data.akadTime ? getTimeWithZone(data.akadTime, data.timezone) : ''}
-                    </span>
+                    </p>
                   </div>
-                  <div className="flex items-center space-x-2 text-[#2D1810]">
-                    <MapPin className="w-4 h-4" />
-                    <span className="text-sm sm:text-base text-[#2D1810]">
-                      {data.akadVenue}
-                    </span>
-                  </div>
-                  {data.googleMapsEmbed && (
-                    <div className="mt-4">
-                      <iframe
-                        src={data.googleMapsEmbed}
-                        width="100%"
-                        height="200"
-                        style={{ border: 0 }}
-                        allowFullScreen
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        className="rounded-lg"
-                      />
+                  {data.akadVenue && (
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="flex items-center space-x-2 text-[#2D1810]">
+                        <MapPin className="w-4 h-4" />
+                        <p className="text-sm sm:text-base text-center">{data.akadVenue}</p>
+                      </div>
+                      {data.akadMapsUrl && (
+                        <a 
+                          href={data.akadMapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-3 py-1.5 bg-[#2D1810]/10 hover:bg-[#2D1810]/20 rounded-lg text-[#2D1810] text-sm transition-colors duration-200"
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Buka di Google Maps
+                        </a>
+                      )}
+                      {data.akadMapsEmbed && (
+                        <div className="w-full h-48 rounded-lg overflow-hidden mt-2">
+                          <iframe
+                            src={data.akadMapsEmbed}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                          />
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {data.googleMapsUrl && (
-                    <a
-                      href={data.googleMapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center space-x-2 mt-2 px-4 py-2 bg-[#2D1810] text-white rounded-lg text-sm hover:bg-[#2D1810]/80 transition-colors"
-                    >
-                      <MapPin className="w-4 h-4" />
-                      <span>Buka di Google Maps</span>
-                    </a>
                   )}
                 </div>
 
@@ -276,46 +277,47 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                 <div className="flex flex-col items-center space-y-3">
                   <div className="flex items-center space-x-2 text-[#2D1810]">
                     <Calendar className="w-4 h-4" />
-                    <span className="text-sm sm:text-base text-[#2D1810]">
+                    <p className="text-sm sm:text-base">
                       {formatDate(data.resepsiDate)}
-                    </span>
+                    </p>
                   </div>
                   <div className="flex items-center space-x-2 text-[#2D1810]">
                     <Clock className="w-4 h-4" />
-                    <span className="text-sm sm:text-base text-[#2D1810]">
+                    <p className="text-sm sm:text-base">
                       {data.resepsiTime ? getTimeWithZone(data.resepsiTime, data.timezone) : ''}
-                    </span>
+                    </p>
                   </div>
-                  <div className="flex items-center space-x-2 text-[#2D1810]">
-                    <MapPin className="w-4 h-4" />
-                    <span className="text-sm sm:text-base text-[#2D1810]">
-                      {data.resepsiVenue}
-                    </span>
-                  </div>
-                  {data.googleMapsEmbed && (
-                    <div className="mt-4">
-                      <iframe
-                        src={data.googleMapsEmbed}
-                        width="100%"
-                        height="200"
-                        style={{ border: 0 }}
-                        allowFullScreen
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        className="rounded-lg"
-                      />
+                  {data.resepsiVenue && (
+                    <div className="flex flex-col items-center space-y-2">
+                      <div className="flex items-center space-x-2 text-[#2D1810]">
+                        <MapPin className="w-4 h-4" />
+                        <p className="text-sm sm:text-base text-center">{data.resepsiVenue}</p>
+                      </div>
+                      {data.resepsiMapsUrl && (
+                        <a 
+                          href={data.resepsiMapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-3 py-1.5 bg-[#2D1810]/10 hover:bg-[#2D1810]/20 rounded-lg text-[#2D1810] text-sm transition-colors duration-200"
+                        >
+                          <MapPin className="w-4 h-4 mr-2" />
+                          Buka di Google Maps
+                        </a>
+                      )}
+                      {data.resepsiMapsEmbed && (
+                        <div className="w-full h-48 rounded-lg overflow-hidden mt-2">
+                          <iframe
+                            src={data.resepsiMapsEmbed}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                          />
+                        </div>
+                      )}
                     </div>
-                  )}
-                  {data.googleMapsUrl && (
-                    <a
-                      href={data.googleMapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center space-x-2 mt-2 px-4 py-2 bg-[#2D1810] text-white rounded-lg text-sm hover:bg-[#2D1810]/80 transition-colors"
-                    >
-                      <MapPin className="w-4 h-4" />
-                      <span>Buka di Google Maps</span>
-                    </a>
                   )}
                 </div>
 
