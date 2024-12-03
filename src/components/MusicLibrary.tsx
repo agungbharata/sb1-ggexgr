@@ -150,13 +150,13 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelect, selectedMu
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="flex items-center gap-2 text-lg font-medium text-gray-900">
-        <Music className="w-5 h-5" /> Musik Latar
-      </h3>
-      
-      {/* Tombol Nonaktifkan Musik */}
-      <div className="flex items-center gap-2 mb-4">
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h3 className="flex items-center gap-2 text-base font-medium text-gray-900">
+          <Music className="w-4 h-4" /> Musik Latar
+        </h3>
+        
+        {/* Tombol Nonaktifkan */}
         <button
           type="button"
           onClick={() => {
@@ -164,60 +164,61 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelect, selectedMu
               audioRef.current.pause();
               setCurrentlyPlaying(null);
             }
-            onSelect(null);  // Set musik ke null untuk menonaktifkan
+            onSelect(null);
           }}
-          className={`flex items-center gap-2 px-4 py-2 text-sm rounded-md transition-colors ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors ${
             !selectedMusic 
               ? 'bg-red-100 text-red-700' 
-              : 'bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-red-600'
+              : 'text-gray-700 hover:text-red-600'
           }`}
         >
-          <VolumeX className="w-4 h-4" />
-          {!selectedMusic ? 'Musik Dinonaktifkan' : 'Nonaktifkan Musik'}
+          <VolumeX className="w-3.5 h-3.5" />
+          {!selectedMusic ? 'Musik Dinonaktifkan' : 'Nonaktifkan'}
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid gap-2">
         {loading ? (
-          <div className="flex justify-center py-4">
-            <div className="w-6 h-6 rounded-full border-2 border-indigo-500 animate-spin border-t-transparent"></div>
+          <div className="flex justify-center py-2">
+            <div className="w-5 h-5 rounded-full border-2 border-indigo-500 animate-spin border-t-transparent"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {musicList.map((music) => (
-              <div
-                key={music.id}
-                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-all duration-200"
-              >
-                <h3 className="text-lg font-medium text-[#8B7355] mb-2">{music.title}</h3>
-                <p className="text-sm text-[#6B5B4E] mb-4">{music.artist}</p>
-                <div className="flex items-center justify-between space-x-4">
-                  <button
-                    type="button"
-                    onClick={() => handlePlay(music.url)}
-                    className="px-4 py-2 bg-[#D4B996] text-white rounded-md hover:bg-[#C4A576] transition-colors duration-200"
-                  >
-                    {currentlyPlaying === music.url ? (
-                      <Pause className="w-5 h-5" />
-                    ) : (
-                      <Play className="w-5 h-5" />
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleSelect(music.url)}
-                    className={`px-4 py-2 border border-[#D4B996] text-[#8B7355] rounded-md hover:bg-[#F5E9E2] transition-colors duration-200 ${
-                      selectedMusic === music.url
-                        ? 'bg-[#D4B996] text-white'
-                        : ''
-                    }`}
-                  >
-                    {selectedMusic === music.url ? 'Terpilih' : 'Pilih'}
-                  </button>
+          musicList.map((music) => (
+            <div
+              key={music.id}
+              className="flex items-center justify-between bg-white rounded-md p-2 hover:bg-gray-50"
+            >
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handlePlay(music.url)}
+                  className="p-1.5 text-gray-600 hover:text-gray-900 rounded-md hover:bg-gray-100"
+                >
+                  {currentlyPlaying === music.url ? (
+                    <Pause className="w-4 h-4" />
+                  ) : (
+                    <Play className="w-4 h-4" />
+                  )}
+                </button>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-900">{music.title}</h4>
+                  <p className="text-xs text-gray-500">{music.artist}</p>
                 </div>
               </div>
-            ))}
-          </div>
+              
+              <button
+                type="button"
+                onClick={() => handleSelect(music.url)}
+                className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                  selectedMusic === music.url
+                    ? 'bg-indigo-100 text-indigo-700'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {selectedMusic === music.url ? 'Terpilih' : 'Pilih'}
+              </button>
+            </div>
+          ))
         )}
       </div>
       <audio ref={audioRef} className="hidden" />
