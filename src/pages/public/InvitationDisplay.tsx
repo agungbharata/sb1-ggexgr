@@ -92,7 +92,7 @@ const InvitationDisplay: React.FC = () => {
           template: invitation.template || 'javanese',
           customSlug: invitation.custom_slug || '',
           backgroundMusic: invitation.background_music || '',
-          timeZone: invitation.time_zone || 'WIB'
+          timezone: invitation.time_zone || 'WIB'
         };
 
         console.log('Transformed invitation data:', transformedData);

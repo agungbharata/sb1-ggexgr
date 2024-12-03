@@ -26,7 +26,7 @@ export interface InvitationData {
   template: string;
   customSlug?: string;
   backgroundMusic?: string;
-  timeZone?: TimeZone;
+  timezone?: TimeZone; 
   createdAt?: string;
   updatedAt?: string;
 }
@@ -90,7 +90,7 @@ export const defaultInvitationData: InvitationData = {
   openingText: 'Bersama keluarga mereka',
   invitationText: 'Mengundang kehadiran Anda',
   template: 'javanese',
-  timeZone: 'WIB',
+  timezone: 'WIB',
   gallery: [],
   socialLinks: [],
   bankAccounts: []
