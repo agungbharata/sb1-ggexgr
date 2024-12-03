@@ -1,58 +1,73 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Music, VolumeX } from 'lucide-react';
+import { preloadAudio } from '../utils/audioUtils';
 
 interface BackgroundMusicProps {
-  audioUrl?: string;
+  bucket?: string;
+  path?: string;
 }
 
-const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ audioUrl }) => {
-  const [isPlaying, setIsPlaying] = useState(true);
+const BackgroundMusic: React.FC<BackgroundMusicProps> = ({ bucket = 'music-files', path }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Effect untuk menginisialisasi audio saat komponen dimount
   useEffect(() => {
-    if (!audioUrl) return;
+    if (!bucket || !path) return;
 
-    const audio = new Audio(audioUrl);
-    audio.volume = 0.3;
-    audio.loop = true;
-    audioRef.current = audio;
+    let mounted = true;
 
-    const playAudio = async () => {
+    const initAudio = async () => {
       try {
-        await audio.play();
-        setIsPlaying(true);
+        // Tunggu sampai halaman sepenuhnya dimuat
+        if (document.readyState !== 'complete') {
+          await new Promise(resolve => {
+            window.addEventListener('load', resolve, { once: true });
+          });
+        }
+
+        // Preload audio setelah halaman dimuat
+        const audio = await preloadAudio(bucket, path);
+        if (!mounted) return;
+
+        audio.loop = true;
+        audioRef.current = audio;
+        setIsLoaded(true);
       } catch (error) {
-        console.log('Autoplay prevented:', error);
-        setIsPlaying(false);
+        console.error('Error loading audio:', error);
       }
     };
 
-    playAudio();
+    initAudio();
 
     return () => {
-      audio.pause();
-      audio.src = '';
+      mounted = false;
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = '';
+      }
     };
-  }, [audioUrl]);
+  }, [bucket, path]);
 
   const togglePlay = async () => {
-    if (!audioRef.current) return;
+    if (!audioRef.current || !isLoaded) return;
 
     try {
       if (isPlaying) {
         audioRef.current.pause();
       } else {
+        // Coba play hanya saat user klik
         await audioRef.current.play();
       }
       setIsPlaying(!isPlaying);
     } catch (error) {
-      console.log('Play/pause error:', error);
+      console.error('Play/pause error:', error);
       setIsPlaying(false);
     }
   };
 
-  if (!audioUrl) return null;
+  // Tampilkan tombol hanya setelah audio siap
+  if (!bucket || !path || !isLoaded) return null;
 
   return (
     <button

@@ -14,4 +14,19 @@ export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     detectSessionInUrl: true
   }
-})
+});
+
+// Utility function untuk get URL dengan cache control
+export const getStorageUrl = (bucket: string, path: string) => {
+  const { data } = supabase.storage
+    .from(bucket)
+    .getPublicUrl(path, {
+      transform: {
+        metadata: {
+          cacheControl: 'public, max-age=31536000'
+        }
+      }
+    });
+  
+  return data.publicUrl;
+};
