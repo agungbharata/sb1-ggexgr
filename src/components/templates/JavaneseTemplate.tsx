@@ -99,7 +99,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
     <div className="min-h-screen bg-[#F6E6D9]">
       {/* Cover Section */}
       <section 
-        className="relative min-h-screen flex items-center justify-center bg-cover bg-center"
+        className="flex relative justify-center items-center min-h-screen bg-center bg-cover"
         style={{ 
           backgroundImage: data?.coverPhoto ? `url(${data.coverPhoto})` : 'url("/ornaments/batik-bg.jpg")'
         }}
@@ -108,14 +108,14 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         {data?.backgroundMusic && <BackgroundMusic audioUrl={data.backgroundMusic} />}
         
         <div className="absolute inset-0 bg-black/30" />
-        <div className="relative z-10 text-center text-white px-4 w-full max-w-3xl mx-auto">
-          <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl mb-4 leading-tight">
+        <div className="relative z-10 px-4 mx-auto w-full max-w-3xl text-center text-white">
+          <h1 className="mb-4 font-serif text-3xl leading-tight sm:text-4xl md:text-5xl">
             {data?.brideNames} 
-            <span className="block text-2xl sm:text-3xl md:text-4xl my-2">&</span> 
+            <span className="block my-2 text-2xl sm:text-3xl md:text-4xl">&</span> 
             {data?.groomNames}
           </h1>
           {data?.date && (
-            <p className="text-base sm:text-lg md:text-xl font-light">
+            <p className="text-base font-light sm:text-lg md:text-xl">
               {formatDate(data.date)}
             </p>
           )}
@@ -123,25 +123,28 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
       </section>
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto px-4 py-8 space-y-12">
+      <div className="px-4 py-8 mx-auto space-y-12 max-w-3xl">
         {/* Opening */}
         <div className="text-center">
           <div 
-            className="prose-sm sm:prose max-w-none text-[#2D1810]"
-            dangerouslySetInnerHTML={{ __html: data?.openingText || '' }}
+            className="prose prose-lg mx-auto text-[#2D1810]"
+            dangerouslySetInnerHTML={{ 
+              __html: data?.openingText || '' 
+            }} 
           />
         </div>
 
+      
         {/* Couple */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 gap-8 mx-auto max-w-3xl md:grid-cols-2">
           {/* Bride */}
-          <div className="text-center space-y-4">
+          <div className="space-y-4 text-center">
             {data?.bridePhoto && (
               <div className="aspect-square w-32 sm:w-40 md:w-48 mx-auto overflow-hidden rounded-full border-4 border-[#2D1810]/20">
                 <img 
                   src={data.bridePhoto} 
                   alt={data.brideNames} 
-                  className="w-full h-full object-cover"
+                  className="object-cover w-full h-full"
                 />
               </div>
             )}
@@ -159,13 +162,13 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           </div>
 
           {/* Groom */}
-          <div className="text-center space-y-4">
+          <div className="space-y-4 text-center">
             {data?.groomPhoto && (
               <div className="aspect-square w-32 sm:w-40 md:w-48 mx-auto overflow-hidden rounded-full border-4 border-[#2D1810]/20">
                 <img 
                   src={data.groomPhoto} 
                   alt={data.groomNames} 
-                  className="w-full h-full object-cover"
+                  className="object-cover w-full h-full"
                 />
               </div>
             )}
@@ -183,11 +186,21 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           </div>
         </div>
 
+          {/* Invitation Text */}
+          <div className="text-center">
+          <div 
+            className="prose prose-lg mx-auto text-[#2D1810]"
+            dangerouslySetInnerHTML={{ 
+              __html: data?.invitationText || '' 
+            }} 
+          />
+        </div>
+
         {/* Events */}
         <div className="space-y-8">
           {/* Akad */}
           {data?.showAkad && (
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 space-y-4">
+            <div className="p-4 space-y-4 rounded-xl backdrop-blur-sm bg-white/50">
               <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
                 Akad Nikah
               </h3>
@@ -200,7 +213,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                     </p>
                   </div>
                   {data?.akadTime && (
-                    <div className="flex items-center gap-2 justify-center">
+                    <div className="flex gap-2 justify-center items-center">
                       <Clock className="w-5 h-5" />
                       <span>{getTimeWithZone(data.akadTime, data.timezone || 'WIB')}</span>
                     </div>
@@ -220,7 +233,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                             {data.akadVenue}
                           </a>
                         ) : (
-                          <p className="text-sm sm:text-base text-center">
+                          <p className="text-sm text-center sm:text-base">
                             {data.akadVenue}
                           </p>
                         )}
@@ -232,12 +245,12 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                           rel="noopener noreferrer"
                           className="inline-flex items-center px-3 py-1.5 bg-[#2D1810]/10 hover:bg-[#2D1810]/20 rounded-lg text-[#2D1810] text-sm transition-colors duration-200"
                         >
-                          <MapPin className="w-4 h-4 mr-2" />
+                          <MapPin className="mr-2 w-4 h-4" />
                           Buka di Google Maps
                         </a>
                       )}
                       {data.akadMapsEmbed && (
-                        <div className="w-full h-48 rounded-lg overflow-hidden mt-2">
+                        <div className="overflow-hidden mt-2 w-full h-48 rounded-lg">
                           <iframe
                             src={data.akadMapsEmbed}
                             width="100%"
@@ -254,20 +267,20 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                 </div>
 
                 {akadCountdown && (
-                  <div className="grid grid-cols-4 gap-2 text-center mt-4">
-                    <div className="bg-white/80 rounded-lg p-2">
+                  <div className="grid grid-cols-4 gap-2 mt-4 text-center">
+                    <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.days}</div>
                       <div className="text-xs text-[#2D1810]/80">Hari</div>
                     </div>
-                    <div className="bg-white/80 rounded-lg p-2">
+                    <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.hours}</div>
                       <div className="text-xs text-[#2D1810]/80">Jam</div>
                     </div>
-                    <div className="bg-white/80 rounded-lg p-2">
+                    <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.minutes}</div>
                       <div className="text-xs text-[#2D1810]/80">Menit</div>
                     </div>
-                    <div className="bg-white/80 rounded-lg p-2">
+                    <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.seconds}</div>
                       <div className="text-xs text-[#2D1810]/80">Detik</div>
                     </div>
@@ -279,7 +292,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
           {/* Resepsi */}
           {data?.showResepsi && (
-            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-4 space-y-4">
+            <div className="p-4 space-y-4 rounded-xl backdrop-blur-sm bg-white/50">
               <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
                 Resepsi Pernikahan
               </h3>
@@ -292,7 +305,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                     </p>
                   </div>
                   {data?.resepsiTime && (
-                    <div className="flex items-center gap-2 justify-center">
+                    <div className="flex gap-2 justify-center items-center">
                       <Clock className="w-5 h-5" />
                       <span>{getTimeWithZone(data.resepsiTime, data.timezone || 'WIB')}</span>
                     </div>
@@ -312,7 +325,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                             {data.resepsiVenue}
                           </a>
                         ) : (
-                          <p className="text-sm sm:text-base text-center">
+                          <p className="text-sm text-center sm:text-base">
                             {data.resepsiVenue}
                           </p>
                         )}
@@ -324,12 +337,12 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                           rel="noopener noreferrer"
                           className="inline-flex items-center px-3 py-1.5 bg-[#2D1810]/10 hover:bg-[#2D1810]/20 rounded-lg text-[#2D1810] text-sm transition-colors duration-200"
                         >
-                          <MapPin className="w-4 h-4 mr-2" />
+                          <MapPin className="mr-2 w-4 h-4" />
                           Buka di Google Maps
                         </a>
                       )}
                       {data.resepsiMapsEmbed && (
-                        <div className="w-full h-48 rounded-lg overflow-hidden mt-2">
+                        <div className="overflow-hidden mt-2 w-full h-48 rounded-lg">
                           <iframe
                             src={data.resepsiMapsEmbed}
                             width="100%"
@@ -346,20 +359,20 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                 </div>
 
                 {resepsiCountdown && (
-                  <div className="grid grid-cols-4 gap-2 text-center mt-4">
-                    <div className="bg-white/80 rounded-lg p-2">
+                  <div className="grid grid-cols-4 gap-2 mt-4 text-center">
+                    <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.days}</div>
                       <div className="text-xs text-[#2D1810]/80">Hari</div>
                     </div>
-                    <div className="bg-white/80 rounded-lg p-2">
+                    <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.hours}</div>
                       <div className="text-xs text-[#2D1810]/80">Jam</div>
                     </div>
-                    <div className="bg-white/80 rounded-lg p-2">
+                    <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.minutes}</div>
                       <div className="text-xs text-[#2D1810]/80">Menit</div>
                     </div>
-                    <div className="bg-white/80 rounded-lg p-2">
+                    <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.seconds}</div>
                       <div className="text-xs text-[#2D1810]/80">Detik</div>
                     </div>
@@ -380,7 +393,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
               {data.gallery.map((photo, index) => (
                 <div 
                   key={index}
-                  className="aspect-square overflow-hidden rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                  className="overflow-hidden rounded-lg transition-opacity cursor-pointer aspect-square hover:opacity-90"
                   onClick={() => {
                     setPhotoIndex(index);
                     setIsOpen(true);
@@ -389,7 +402,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                   <img
                     src={photo}
                     alt={`Gallery photo ${index + 1}`}
-                    className="w-full h-full object-cover"
+                    className="object-cover w-full h-full"
                   />
                 </div>
               ))}
@@ -411,8 +424,8 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
             </h3>
             <div className="space-y-4 w-full">
               {data.socialLinks.map((link, index) => (
-                <div key={index} className="bg-white/80 backdrop-blur-sm rounded-lg p-4 w-full">
-                  <div className="flex items-center justify-between mb-2">
+                <div key={index} className="p-4 w-full rounded-lg backdrop-blur-sm bg-white/80">
+                  <div className="flex justify-between items-center mb-2">
                     <a
                       href={link.url}
                       target="_blank"
@@ -438,11 +451,11 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
             <div className="prose-sm sm:prose max-w-none text-[#2D1810] mb-8">
               <p>Doa Restu Anda merupakan karunia yang sangat berarti bagi kami. Dan jika memberi adalah ungkapan tanda kasih Anda, Anda dapat memberi kado secara cashless melalui:</p>
             </div>
-            <div className="grid gap-6 max-w-md mx-auto">
+            <div className="grid gap-6 mx-auto max-w-md">
               {data.bankAccounts.map((account, index) => (
                 <div 
                   key={index}
-                  className="bg-white/50 p-6 rounded-xl space-y-4"
+                  className="p-6 space-y-4 rounded-xl bg-white/50"
                 >
                   <p className="text-lg font-medium text-[#2D1810]">
                     {account.bank}
@@ -490,9 +503,9 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
         {/* Pesan Pribadi */}
         {data?.message && (
-          <div className="py-8 px-4 text-center">
+          <div className="px-4 py-8 text-center">
             <div 
-              className="text-lg mb-4 font-secondary leading-relaxed"
+              className="mb-4 text-lg leading-relaxed font-secondary"
               dangerouslySetInnerHTML={{ __html: data.message }}
             />
           </div>
@@ -500,7 +513,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
         {/* Audio Player */}
         {data?.showMusicLibrary && data?.backgroundMusic && (
-          <div className="fixed bottom-4 right-4 z-50">
+          <div className="fixed right-4 bottom-4 z-50">
             <audio
               controls
               autoPlay
