@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import type { InvitationData } from '../../types/invitation';
 import BaseTemplate, { BaseTemplateProps } from './BaseTemplate';
+import BackgroundMusic from '../BackgroundMusic';
 
 interface ModernTemplateProps {
   data: Partial<InvitationData>;
@@ -28,6 +29,9 @@ const ModernTemplate: React.FC<ModernTemplateProps> = ({ data, isViewOnly }) => 
           backgroundColor: 'rgba(255, 255, 255, 0.95)'
         }}
       >
+        {/* Background Music */}
+        {data?.backgroundMusic && <BackgroundMusic audioUrl={data.backgroundMusic} />}
+
         <div className="absolute inset-0 bg-gradient-to-b from-[#2C3E50]/50 to-transparent" />
         
         {/* Modern Frame */}

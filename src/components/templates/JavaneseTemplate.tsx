@@ -7,6 +7,7 @@ import { getTimeWithZone } from '../TimeZoneSelector';
 import SocialMediaPreview from '../SocialMediaPreview';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import BackgroundMusic from '../BackgroundMusic';
 
 interface JavaneseTemplateProps {
   data: Partial<InvitationData>;
@@ -103,6 +104,9 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           backgroundImage: data?.coverPhoto ? `url(${data.coverPhoto})` : 'url("/ornaments/batik-bg.jpg")'
         }}
       >
+        {/* Background Music */}
+        {data?.backgroundMusic && <BackgroundMusic audioUrl={data.backgroundMusic} />}
+        
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative z-10 text-center text-white px-4 w-full max-w-lg mx-auto">
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl mb-4 leading-tight">
