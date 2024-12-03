@@ -469,10 +469,13 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           </div>
           <div className="mt-4">
             <MusicLibrary
-              selectedMusic={formData.backgroundMusic}
-              onSelect={(url) => handleFieldChange({
-                target: { name: 'backgroundMusic', value: url }
-              } as any)}
+              selectedMusic={formData.backgroundMusic || ''}
+              onSelect={(url) => {
+                setFormData((prev) => ({
+                  ...prev,
+                  backgroundMusic: url || undefined
+                }));
+              }}
             />
           </div>
         </div>
