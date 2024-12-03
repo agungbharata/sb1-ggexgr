@@ -9,6 +9,7 @@ import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import BackgroundMusic from '../BackgroundMusic';
 import FloatingNavigation from '../FloatingNavigation';
+import TextEditor from '../TextEditor';
 
 interface JavaneseTemplateProps {
   data: Partial<InvitationData>;
@@ -39,6 +40,8 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
       return dateStr;
     }
   };
+
+  const [openingText, setOpeningText] = useState(data?.quranVerse || '');
 
   const calculateCountdown = (dateStr?: string, timeStr?: string): CountdownValues | null => {
     if (!dateStr || !timeStr) return null;
@@ -157,13 +160,20 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
       <div className="px-8 py-24 mx-auto space-y-12 max-w-3xl bg-white/95">
         {/* Opening */}
         <div className="text-center">
-          <div 
-            className="prose prose-lg mx-auto text-[#2D1810]"
-            dangerouslySetInnerHTML={{ 
-              __html: data?.openingText || '' 
-            }} 
-          />
-        </div>
+  {isViewOnly ? (
+    <div 
+      className="prose prose-lg mx-auto text-[#2D1810]"
+      dangerouslySetInnerHTML={{ 
+        __html: openingText || data?.openingText || ''
+      }} 
+    />
+  ) : (
+    <TextEditor
+      value={openingText}
+      onChange={setOpeningText}
+    />
+  )}
+</div>
 
       
         {/* Couple */}
