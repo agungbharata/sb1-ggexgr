@@ -22,9 +22,10 @@ const EditInvitation: React.FC = () => {
 
         if (error) throw error;
 
-        console.log('Fetched invitation data:', invitation);
+        console.log('Fetched raw data:', invitation);
 
         if (invitation) {
+          // Transform snake_case to camelCase
           const transformedData = {
             id: invitation.id,
             brideNames: invitation.bride_names || '',
@@ -41,8 +42,8 @@ const EditInvitation: React.FC = () => {
             resepsiTime: invitation.resepsi_time || '',
             resepsiVenue: invitation.resepsi_venue || '',
             resepsiMapsUrl: invitation.resepsi_maps_url || '',
-            openingText: invitation.opening_text || '',
-            invitationText: invitation.invitation_text || '',
+            openingText: invitation.opening_text || 'Bersama keluarga mereka',
+            invitationText: invitation.invitation_text || 'Mengundang kehadiran Anda',
             message: invitation.message || '',
             coverPhoto: invitation.cover_photo || '',
             bridePhoto: invitation.bride_photo || '',
@@ -58,7 +59,7 @@ const EditInvitation: React.FC = () => {
             updatedAt: invitation.updated_at
           };
 
-          console.log('Transformed invitation data:', transformedData);
+          console.log('Transformed data:', transformedData);
           setFormData(transformedData);
           setLoading(false);
         }
@@ -75,9 +76,10 @@ const EditInvitation: React.FC = () => {
   }, [id]);
 
   const handleUpdate = async (updatedData: InvitationData) => {
-    setSaving(true);
     try {
-      // Transform back to database format
+      setSaving(true);
+      
+      // Transform camelCase back to snake_case
       const dbData = {
         bride_names: updatedData.brideNames || '',
         groom_names: updatedData.groomNames || '',
@@ -109,7 +111,7 @@ const EditInvitation: React.FC = () => {
         updated_at: new Date().toISOString()
       };
 
-      console.log('Updating invitation with data:', dbData);
+      console.log('Saving to database:', dbData);
 
       const { data, error } = await supabase
         .from('invitations')
@@ -118,50 +120,12 @@ const EditInvitation: React.FC = () => {
         .select()
         .single();
 
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
+      if (error) throw error;
 
-      console.log('Update successful:', data);
-      alert('Invitation updated successfully');
+      console.log('Save successful:', data);
+      alert('Undangan berhasil disimpan!');
       
-      // Refresh form data with the updated data
-      const transformedData: InvitationData = {
-        id: data.id,
-        brideNames: data.bride_names || '',
-        groomNames: data.groom_names || '',
-        brideParents: data.bride_parents || '',
-        groomParents: data.groom_parents || '',
-        showAkad: data.show_akad || false,
-        akadDate: data.akad_date || '',
-        akadTime: data.akad_time || '',
-        akadVenue: data.akad_venue || '',
-        akadMapsUrl: data.akad_maps_url || '',
-        showResepsi: data.show_resepsi || false,
-        resepsiDate: data.resepsi_date || '',
-        resepsiTime: data.resepsi_time || '',
-        resepsiVenue: data.resepsi_venue || '',
-        resepsiMapsUrl: data.resepsi_maps_url || '',
-        openingText: data.opening_text || '',
-        invitationText: data.invitation_text || '',
-        message: data.message || '',
-        coverPhoto: data.cover_photo || '',
-        bridePhoto: data.bride_photo || '',
-        groomPhoto: data.groom_photo || '',
-        gallery: data.gallery || [],
-        socialLinks: data.social_links || [],
-        bankAccounts: data.bank_accounts || [],
-        template: data.template || 'javanese',
-        customSlug: data.custom_slug || '',
-        backgroundMusic: data.background_music || '',
-        timezone: data.timezone || 'WIB',
-        createdAt: data.created_at,
-        updatedAt: data.updated_at
-      };
-      
-      setFormData(transformedData);
-
+      setFormData(updatedData);
     } catch (error: any) {
       console.error('Error updating invitation:', error);
       alert(`Error updating invitation: ${error.message}`);
@@ -170,38 +134,35 @@ const EditInvitation: React.FC = () => {
     }
   };
 
-  const handleChange = useCallback((data: InvitationData) => {
-    setFormData(data);
-  }, []);
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      <div className="container mx-auto max-w-3xl py-8">
+        <div className="flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        </div>
       </div>
     );
   }
 
   if (!formData) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="container mx-auto max-w-3xl py-8">
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          Invitation not found
+          Undangan tidak ditemukan
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container py-8 mx-auto max-w-3xl">
+    <div className="container mx-auto max-w-3xl py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">Edit Invitation</h1>
+        <h1 className="text-2xl font-bold">Edit Undangan</h1>
       </div>
       
       <InvitationForm 
         initialData={formData}
         onUpdate={handleUpdate}
-        onChange={handleChange}
         isEditing={true}
       />
     </div>
