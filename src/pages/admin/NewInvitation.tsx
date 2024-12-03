@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InvitationForm from '../../components/InvitationForm';
+import TimeZoneSelector from '../../components/TimeZoneSelector'; // Add this line
 import type { InvitationData, TimeZone } from '../../types/invitation';
 
 const defaultFormData: InvitationData = {
@@ -31,7 +32,7 @@ const initialData: InvitationData = {
   ...defaultFormData,
   showMusicLibrary: false,
   backgroundMusic: '',
-  timezone: 'WIB' as TimeZone,
+  timeZone: 'WIB' as TimeZone,
 };
 
 const NewInvitation: React.FC = () => {
@@ -229,16 +230,13 @@ const NewInvitation: React.FC = () => {
 
         {/* Timezone */}
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Zona Waktu</label>
-            <input
-              type="text"
-              name="timezone"
-              value={formData.timezone || ''}
-              onChange={handleFieldChange}
-              className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
+          <TimeZoneSelector
+            value={formData.timeZone || 'WIB'}
+            onChange={(value) => {
+              setFormData({ ...formData, timeZone: value });
+            }}
+            className="mb-4"
+          />
         </div>
       </InvitationForm>
     </div>

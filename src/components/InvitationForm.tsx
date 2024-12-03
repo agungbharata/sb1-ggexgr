@@ -3,6 +3,7 @@ import { Calendar, Clock, MapPin, Save, Link, Plus, Minus, Music } from 'lucide-
 import type { InvitationData } from '../types/invitation';
 import { supabase } from '../lib/supabase';
 import ImageUpload from './ImageUpload';
+import TimeZoneSelector from './TimeZoneSelector';
 import GalleryUpload from './GalleryUpload';
 import BankAccounts from './BankAccounts';
 import SocialLinks from './SocialLinks';
@@ -14,8 +15,7 @@ import CopyLinkButton from './CopyLinkButton';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MusicLibrary } from './MusicLibrary';
 import { colors } from '../styles/colors';
-import TimeZoneSelector from './TimeZoneSelector';
-import type { TimeZone } from '../types/invitation';
+import { TimeZone } from '../types/invitation';
 
 interface InvitationFormProps {
   onSubmit: (data: InvitationData) => void;
@@ -272,46 +272,17 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
           <h3 className="text-lg font-medium text-gray-700">Detail Acara</h3>
 
           {/* Timezone Selection */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Zona Waktu
-            </label>
-            <div className="flex gap-4">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="timeZone"
-                  value="WIB"
-                  checked={formData.timeZone === 'WIB'}
-                  onChange={handleFieldChange}
-                  className="form-radio text-pink-600"
-                />
-                <span className="ml-2">WIB</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="timeZone"
-                  value="WITA"
-                  checked={formData.timeZone === 'WITA'}
-                  onChange={handleFieldChange}
-                  className="form-radio text-pink-600"
-                />
-                <span className="ml-2">WITA</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="timeZone"
-                  value="WIT"
-                  checked={formData.timeZone === 'WIT'}
-                  onChange={handleFieldChange}
-                  className="form-radio text-pink-600"
-                />
-                <span className="ml-2">WIT</span>
-              </label>
-            </div>
-          </div>
+          <TimeZoneSelector
+            value={formData.timeZone || 'WIB'}
+            onChange={(timezone) => {
+              const updatedData = {
+                ...formData,
+                timeZone: timezone,
+              };
+              setFormData(updatedData);
+            }}
+            className="mb-4"
+          />
 
           {/* Akad Section */}
           <div className="space-y-4">

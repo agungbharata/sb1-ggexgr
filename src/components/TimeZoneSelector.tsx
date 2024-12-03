@@ -38,7 +38,9 @@ export const TimeZoneSelector: React.FC<TimeZoneSelectorProps> = ({
 
 export const getTimeWithZone = (time: string, timezone: TimeZone = 'WIB'): string => {
   if (!time) return '';
-  return `${time} ${timezone}`;
+  const tz = timeZones.find(t => t.value === timezone);
+  if (!tz) return `${time} WIB`; // fallback to WIB
+  return `${time} ${tz.value}`;
 };
 
 export default TimeZoneSelector;

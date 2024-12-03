@@ -141,7 +141,8 @@ const EditInvitation: React.FC = () => {
         bank_accounts: Array.isArray(data.bankAccounts) ? data.bankAccounts : [],
         template: data.template || 'javanese',
         custom_slug: data.customSlug || '',
-        background_music: data.backgroundMusic || ''
+        background_music: data.backgroundMusic || '',
+        time_zone: data.timeZone || 'WIB'
       };
 
       console.log('Transformed data:', JSON.stringify(transformedData, null, 2));
