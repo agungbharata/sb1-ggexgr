@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Music, VolumeX } from 'lucide-react';
+import { Play, Pause, Music, VolumeX, ChevronDown, ChevronUp } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { MusicLibrary as MusicLibraryType } from '../types/invitation';
 
@@ -12,6 +12,7 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelect, selectedMu
   const [musicList, setMusicList] = useState<MusicLibraryType[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<string | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -150,77 +151,99 @@ export const MusicLibrary: React.FC<MusicLibraryProps> = ({ onSelect, selectedMu
   };
 
   return (
-    <div className="space-y-3">
+    <div className="border rounded-lg p-4">
       <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-base font-medium text-gray-900">
-          <Music className="w-4 h-4" /> Musik Latar
-        </h3>
+        <div className="flex items-center gap-2">
+          <Music className="w-4 h-4" />
+          <h3 className="text-base font-medium text-gray-900">Musik Latar</h3>
+        </div>
         
-        {/* Tombol Nonaktifkan */}
-        <button
-          type="button"
-          onClick={() => {
-            if (audioRef.current) {
-              audioRef.current.pause();
-              setCurrentlyPlaying(null);
-            }
-            onSelect(null);
-          }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors ${
-            !selectedMusic 
-              ? 'bg-red-100 text-red-700' 
-              : 'text-gray-700 hover:text-red-600'
-          }`}
-        >
-          <VolumeX className="w-3.5 h-3.5" />
-          {!selectedMusic ? 'Musik Dinonaktifkan' : 'Nonaktifkan'}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Tombol Nonaktifkan */}
+          <button
+            type="button"
+            onClick={() => {
+              if (audioRef.current) {
+                audioRef.current.pause();
+                setCurrentlyPlaying(null);
+              }
+              onSelect(null);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-md transition-colors ${
+              !selectedMusic 
+                ? 'bg-red-100 text-red-700' 
+                : 'text-gray-700 hover:text-red-600'
+            }`}
+          >
+            <VolumeX className="w-3.5 h-3.5" />
+            {!selectedMusic ? 'Musik Dinonaktifkan' : 'Nonaktifkan'}
+          </button>
+
+          {/* Toggle Expand Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              setIsExpanded(!isExpanded);
+            }}
+            className="p-1 hover:bg-gray-100 rounded-md"
+          >
+            {isExpanded ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </button>
+        </div>
       </div>
 
-      <div className="grid gap-2">
-        {loading ? (
-          <div className="flex justify-center py-2">
-            <div className="w-5 h-5 rounded-full border-2 border-indigo-500 animate-spin border-t-transparent"></div>
-          </div>
-        ) : (
-          musicList.map((music) => (
-            <div
-              key={music.id}
-              className="flex items-center justify-between bg-white rounded-md p-2 hover:bg-gray-50"
-            >
-              <div className="flex items-center gap-2">
+      {/* Expandable Content */}
+      {isExpanded && (
+        <div className="mt-3 grid gap-2">
+          {loading ? (
+            <div className="flex justify-center py-2">
+              <div className="w-5 h-5 rounded-full border-2 border-indigo-500 animate-spin border-t-transparent"></div>
+            </div>
+          ) : (
+            musicList.map((music) => (
+              <div
+                key={music.id}
+                className="flex items-center justify-between bg-white rounded-md p-2 hover:bg-gray-50"
+              >
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handlePlay(music.url)}
+                    className="p-1.5 text-gray-600 hover:text-gray-900 rounded-md hover:bg-gray-100"
+                  >
+                    {currentlyPlaying === music.url ? (
+                      <Pause className="w-4 h-4" />
+                    ) : (
+                      <Play className="w-4 h-4" />
+                    )}
+                  </button>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900">{music.title}</h4>
+                    <p className="text-xs text-gray-500">{music.artist}</p>
+                  </div>
+                </div>
+                
                 <button
                   type="button"
-                  onClick={() => handlePlay(music.url)}
-                  className="p-1.5 text-gray-600 hover:text-gray-900 rounded-md hover:bg-gray-100"
+                  onClick={() => handleSelect(music.url)}
+                  className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                    selectedMusic === music.url
+                      ? 'bg-indigo-100 text-indigo-700'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
                 >
-                  {currentlyPlaying === music.url ? (
-                    <Pause className="w-4 h-4" />
-                  ) : (
-                    <Play className="w-4 h-4" />
-                  )}
+                  {selectedMusic === music.url ? 'Terpilih' : 'Pilih'}
                 </button>
-                <div>
-                  <h4 className="text-sm font-medium text-gray-900">{music.title}</h4>
-                  <p className="text-xs text-gray-500">{music.artist}</p>
-                </div>
               </div>
-              
-              <button
-                type="button"
-                onClick={() => handleSelect(music.url)}
-                className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
-                  selectedMusic === music.url
-                    ? 'bg-indigo-100 text-indigo-700'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {selectedMusic === music.url ? 'Terpilih' : 'Pilih'}
-              </button>
-            </div>
-          ))
-        )}
-      </div>
+            ))
+          )}
+        </div>
+      )}
       <audio ref={audioRef} className="hidden" />
     </div>
   );
