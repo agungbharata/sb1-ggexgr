@@ -18,18 +18,16 @@ import TimeZoneSelector from './TimeZoneSelector';
 import type { TimeZone } from '../types/invitation';
 
 interface InvitationFormProps {
-  onUpdate: (data: InvitationData) => void;
-  onChange?: (data: InvitationData) => void;
+  onSubmit: (data: InvitationData) => void;
   initialData: InvitationData;
-  isEditing?: boolean;
+  isSubmitting?: boolean;
   isViewOnly?: boolean;
 }
 
 const InvitationForm: React.FC<InvitationFormProps> = ({
-  onUpdate,
-  onChange,
+  onSubmit,
   initialData,
-  isEditing = false,
+  isSubmitting = false,
   isViewOnly = false,
 }) => {
   const { id } = useParams();
@@ -45,25 +43,21 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     setFormData(initialData);
   }, [initialData]);
 
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const [customSlug, setCustomSlug] = useState(initialData.customSlug || '');
   const [slugError, setSlugError] = useState('');
   const [savedUrl, setSavedUrl] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaving(true);
+    setError(null);
 
     try {
       console.log('Submitting form with data:', formData);
-      await onUpdate(formData);
+      await onSubmit(formData);
     } catch (error) {
       console.error('Error submitting form:', error);
       setError(error instanceof Error ? error.message : 'An error occurred');
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -79,9 +73,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     };
 
     setFormData(updatedData);
-    if (onChange) {
-      onChange(updatedData);
-    }
   };
 
   const handleRichTextChange = (field: string) => (value: string) => {
@@ -93,9 +84,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     };
 
     setFormData(updatedData);
-    if (onChange) {
-      onChange(updatedData);
-    }
   };
 
   const handleImageUpload = (field: string, base64: string | undefined) => {
@@ -105,9 +93,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     };
 
     setFormData(updatedData);
-    if (onChange) {
-      onChange(updatedData);
-    }
   };
 
   const handleSocialLinksChange = (links: string[]) => {
@@ -117,9 +102,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     };
 
     setFormData(updatedData);
-    if (onChange) {
-      onChange(updatedData);
-    }
   };
 
   const handleBankAccountsChange = (accounts: string[]) => {
@@ -129,9 +111,6 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
     };
 
     setFormData(updatedData);
-    if (onChange) {
-      onChange(updatedData);
-    }
   };
 
   const [showSocialLinks, setShowSocialLinks] = useState(false);
@@ -289,8 +268,50 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         </div>
 
         {/* Detail Acara */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-medium text-gray-700">Detail Acara</h2>
+        <div className="space-y-6">
+          <h3 className="text-lg font-medium text-gray-700">Detail Acara</h3>
+
+          {/* Timezone Selection */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Zona Waktu
+            </label>
+            <div className="flex gap-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="timeZone"
+                  value="WIB"
+                  checked={formData.timeZone === 'WIB'}
+                  onChange={handleFieldChange}
+                  className="form-radio text-pink-600"
+                />
+                <span className="ml-2">WIB</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="timeZone"
+                  value="WITA"
+                  checked={formData.timeZone === 'WITA'}
+                  onChange={handleFieldChange}
+                  className="form-radio text-pink-600"
+                />
+                <span className="ml-2">WITA</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="timeZone"
+                  value="WIT"
+                  checked={formData.timeZone === 'WIT'}
+                  onChange={handleFieldChange}
+                  className="form-radio text-pink-600"
+                />
+                <span className="ml-2">WIT</span>
+              </label>
+            </div>
+          </div>
 
           {/* Akad Section */}
           <div className="space-y-4">
@@ -450,17 +471,19 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
             )}
           </div>
 
-          {/* Message Section */}
+          {/* Pesan Pribadi */}
           <div className="space-y-4">
-            <h2 className="text-lg font-medium text-gray-700">Pesan Undangan</h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Pesan Pribadi
-              </label>
+            <h3 className="text-lg font-medium text-gray-700">Pesan Pribadi</h3>
+            <div className="mt-1">
               <RichTextEditor
                 value={formData.message || ''}
-                onChange={handleRichTextChange('message')}
+                onChange={(value) => handleRichTextChange('message')(value)}
+                height={200}
+                placeholder="Tulis pesan pribadi Anda di sini..."
               />
+              <p className="mt-2 text-sm text-gray-500">
+                Pesan ini akan ditampilkan di halaman undangan Anda.
+              </p>
             </div>
           </div>
         </div>
@@ -558,11 +581,11 @@ const InvitationForm: React.FC<InvitationFormProps> = ({
         <div className="flex justify-end">
           <button
             type="submit"
-            disabled={isSaving}
+            disabled={isSubmitting}
             className="flex justify-center items-center px-6 py-3 w-full text-base font-medium text-white bg-gradient-to-r from-pink-500 to-rose-500 rounded-md border border-transparent hover:from-pink-600 hover:to-rose-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save className="mr-2 w-5 h-5" />
-            {isSaving ? 'Menyimpan...' : isEditing ? 'Perbarui Undangan' : 'Simpan Undangan'}
+            {isSubmitting ? 'Menyimpan...' : 'Simpan Undangan'}
           </button>
         </div>
       </form>

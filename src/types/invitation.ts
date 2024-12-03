@@ -26,7 +26,7 @@ export interface InvitationData {
   template: string;
   customSlug?: string;
   backgroundMusic?: string;
-  timezone: TimeZone;
+  timeZone?: TimeZone;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -73,7 +73,7 @@ export interface DatabaseInvitation {
   bank_accounts?: BankAccount[];
   template: string;
   background_music?: string;
-  timezone: TimeZone;
+  time_zone?: TimeZone;
   created_at?: string;
   updated_at?: string;
 }
@@ -90,7 +90,7 @@ export const defaultInvitationData: InvitationData = {
   openingText: 'Bersama keluarga mereka',
   invitationText: 'Mengundang kehadiran Anda',
   template: 'javanese',
-  timezone: 'WIB',
+  timeZone: 'WIB',
   gallery: [],
   socialLinks: [],
   bankAccounts: []
