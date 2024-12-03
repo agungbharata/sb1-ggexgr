@@ -154,7 +154,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
       </section>
 
       {/* Content */}
-      <div className="px-4 py-8 mx-auto space-y-12 max-w-3xl">
+      <div className="px-8 py-24 mx-auto space-y-12 max-w-3xl bg-white/95">
         {/* Opening */}
         <div className="text-center">
           <div 
@@ -228,10 +228,10 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         </div>
 
         {/* Events */}
-        <div className="space-y-8">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           {/* Akad */}
           {data?.showAkad && (
-            <div className="p-4 space-y-4 rounded-xl backdrop-blur-sm bg-white/50">
+            <div className="p-4 space-y-4 bg-[rgb(248,241,235)] rounded-xl backdrop-blur-sm">
               <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
                 Akad Nikah
               </h3>
@@ -323,7 +323,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
 
           {/* Resepsi */}
           {data?.showResepsi && (
-            <div className="p-4 space-y-4 rounded-xl backdrop-blur-sm bg-white/50">
+            <div className="p-4 space-y-4 rounded-xl backdrop-blur-sm bg-[rgb(248,241,235)]">
               <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
                 Resepsi Pernikahan
               </h3>
