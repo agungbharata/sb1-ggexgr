@@ -228,10 +228,10 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         </div>
 
         {/* Events */}
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Akad */}
           {data?.showAkad && (
-            <div className="p-4 space-y-4 bg-[rgb(248,241,235)] rounded-xl backdrop-blur-sm">
+            <div className="p-6 space-y-4 bg-[rgb(248,241,235)] rounded-xl backdrop-blur-sm">
               <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
                 Akad Nikah
               </h3>
@@ -298,7 +298,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                 </div>
 
                 {akadCountdown && (
-                  <div className="grid grid-cols-4 gap-2 mt-4 text-center">
+                  <div className="grid grid-cols-3 gap-2 mt-4 text-center">
                     <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.days}</div>
                       <div className="text-xs text-[#2D1810]/80">Hari</div>
@@ -311,10 +311,10 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.minutes}</div>
                       <div className="text-xs text-[#2D1810]/80">Menit</div>
                     </div>
-                    <div className="p-2 rounded-lg bg-white/80">
+                    {/* <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{akadCountdown.seconds}</div>
                       <div className="text-xs text-[#2D1810]/80">Detik</div>
-                    </div>
+                    </div> */}
                   </div>
                 )}
               </div>
@@ -390,7 +390,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                 </div>
 
                 {resepsiCountdown && (
-                  <div className="grid grid-cols-4 gap-2 mt-4 text-center">
+                  <div className="grid grid-cols-3 gap-2 mt-4 text-center">
                     <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.days}</div>
                       <div className="text-xs text-[#2D1810]/80">Hari</div>
@@ -403,10 +403,10 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.minutes}</div>
                       <div className="text-xs text-[#2D1810]/80">Menit</div>
                     </div>
-                    <div className="p-2 rounded-lg bg-white/80">
+                    {/* <div className="p-2 rounded-lg bg-white/80">
                       <div className="text-base sm:text-lg font-bold text-[#2D1810]">{resepsiCountdown.seconds}</div>
                       <div className="text-xs text-[#2D1810]/80">Detik</div>
-                    </div>
+                    </div> */}
                   </div>
                 )}
               </div>
@@ -420,7 +420,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
             <h3 className="font-serif text-xl sm:text-2xl text-center text-[#2D1810] mb-4">
               Galeri Foto
             </h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               {data.gallery.map((photo, index) => (
                 <div 
                   key={index}
