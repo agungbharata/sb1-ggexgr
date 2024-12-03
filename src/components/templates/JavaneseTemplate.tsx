@@ -108,7 +108,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         {data?.backgroundMusic && <BackgroundMusic audioUrl={data.backgroundMusic} />}
         
         <div className="absolute inset-0 bg-black/30" />
-        <div className="relative z-10 text-center text-white px-4 w-full max-w-lg mx-auto">
+        <div className="relative z-10 text-center text-white px-4 w-full max-w-3xl mx-auto">
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl mb-4 leading-tight">
             {data?.brideNames} 
             <span className="block text-2xl sm:text-3xl md:text-4xl my-2">&</span> 
@@ -123,7 +123,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
       </section>
 
       {/* Content */}
-      <div className="max-w-lg mx-auto px-4 py-8 space-y-12">
+      <div className="max-w-3xl mx-auto px-4 py-8 space-y-12">
         {/* Opening */}
         <div className="text-center">
           <div 
@@ -133,7 +133,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
         </div>
 
         {/* Couple */}
-        <div className="space-y-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
           {/* Bride */}
           <div className="text-center space-y-4">
             {data?.bridePhoto && (
