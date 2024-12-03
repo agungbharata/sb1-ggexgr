@@ -1,67 +1,76 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Document from '@tiptap/extension-document';
+import Paragraph from '@tiptap/extension-paragraph';
+import Text from '@tiptap/extension-text';
+import Heading from '@tiptap/extension-heading';
+import '../styles/editor.css';
 
 interface TextEditorProps {
   value: string;
   onChange: (value: string) => void;
 }
 
+const CustomHeading = Heading.configure({
+  levels: [1, 2, 3],
+  HTMLAttributes: {
+    class: 'custom-heading',
+  },
+});
+
 const TextEditor: React.FC<TextEditorProps> = ({ value, onChange }) => {
-  const [selectedText, setSelectedText] = useState('');
+  const editor = useEditor({
+    extensions: [
+      Document,
+      Paragraph,
+      Text,
+      CustomHeading,
+      StarterKit.configure({
+        heading: false, // disable default heading
+      }),
+    ],
+    content: value,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+    editorProps: {
+      attributes: {
+        class: 'tiptap editor-content',
+      },
+    },
+  });
 
-  const handleHeadingClick = (level: number) => {
-    const textArea = document.querySelector('textarea');
-    if (!textArea) return;
-
-    const start = textArea.selectionStart;
-    const end = textArea.selectionEnd;
-    const text = textArea.value;
-
-    const selectedText = text.substring(start, end);
-    const headingText = `<h${level}>${selectedText}</h${level}>`;
-    
-    const newText = text.substring(0, start) + headingText + text.substring(end);
-    onChange(newText);
-  };
+  if (!editor) {
+    return null;
+  }
 
   return (
-    <div className="text-editor">
-      <div className="flex gap-2 mb-2 toolbar">
+    <div className="editor-container">
+      <div className="editor-toolbar">
         <button
-          onClick={() => handleHeadingClick(1)}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          className={`toolbar-button ${editor.isActive('heading', { level: 1 }) ? 'is-active' : ''}`}
+          title="Heading 1 - 38px"
         >
           H1
         </button>
         <button
-          onClick={() => handleHeadingClick(2)}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className={`toolbar-button ${editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}`}
+          title="Heading 2 - 32px"
         >
           H2
         </button>
         <button
-          onClick={() => handleHeadingClick(3)}
-          className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          className={`toolbar-button ${editor.isActive('heading', { level: 3 }) ? 'is-active' : ''}`}
+          title="Heading 3 - 28px"
         >
           H3
         </button>
       </div>
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onSelect={(e) => {
-          const target = e.target as HTMLTextAreaElement;
-          setSelectedText(target.value.substring(target.selectionStart, target.selectionEnd));
-        }}
-        className="w-full min-h-[200px] p-2 border rounded"
-      />
-      <div className="mt-4 preview">
-        <div
-          dangerouslySetInnerHTML={{
-            __html: value
-          }}
-          className="prose"
-        />
-      </div>
+      <EditorContent editor={editor} />
     </div>
   );
 };
