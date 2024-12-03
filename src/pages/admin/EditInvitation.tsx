@@ -4,6 +4,20 @@ import InvitationForm from '../../components/InvitationForm';
 import type { InvitationData } from '../../types/invitation';
 import { supabase } from '../../lib/supabase';
 
+const generateSlug = (brideName: string, groomName: string): string => {
+  const cleanName = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '') // Hapus karakter non-alphanumeric
+      .trim();
+  };
+
+  const brideSlug = cleanName(brideName);
+  const groomSlug = cleanName(groomName);
+  
+  return `${brideSlug}-${groomSlug}`;
+};
+
 const EditInvitation: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -77,7 +91,7 @@ const EditInvitation: React.FC = () => {
         setFormData(transformedData);
         
         // Set invitation URL
-        const slug = invitation.custom_slug || invitation.id;
+        const slug = invitation.custom_slug || invitation.slug;
         const baseUrl = window.location.origin;
         setInvitationUrl(`${baseUrl}/${slug}`);
         
@@ -121,13 +135,9 @@ const EditInvitation: React.FC = () => {
         bride_parents: data.brideParents || '',
         groom_parents: data.groomParents || '',
         show_akad: Boolean(data.showAkad),
-        akad_date: data.akadDate || '',
-        akad_time: data.akadTime || '',
         akad_venue: data.akadVenue || '',
         akad_maps_url: data.akadMapsUrl || '',
         show_resepsi: Boolean(data.showResepsi),
-        resepsi_date: data.resepsiDate || '',
-        resepsi_time: data.resepsiTime || '',
         resepsi_venue: data.resepsiVenue || '',
         resepsi_maps_url: data.resepsiMapsUrl || '',
         opening_text: data.openingText || '',
@@ -144,6 +154,28 @@ const EditInvitation: React.FC = () => {
         background_music: data.backgroundMusic || '',
         time_zone: data.timeZone || 'WIB'
       };
+
+      // Generate new slug if bride or groom name changed
+      const baseSlug = generateSlug(data.brideNames, data.groomNames);
+      
+      // Check if slug already exists (excluding current invitation)
+      const { data: existingInvitation } = await supabase
+        .from('invitations')
+        .select('id')
+        .eq('slug', baseSlug)
+        .neq('id', id)
+        .single();
+
+      // If slug exists for another invitation, add random string
+      transformedData.slug = existingInvitation 
+        ? `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`
+        : baseSlug;
+
+      // Hanya tambahkan field tanggal dan waktu jika ada nilainya
+      if (data.akadDate) transformedData.akad_date = data.akadDate;
+      if (data.akadTime) transformedData.akad_time = data.akadTime;
+      if (data.resepsiDate) transformedData.resepsi_date = data.resepsiDate;
+      if (data.resepsiTime) transformedData.resepsi_time = data.resepsiTime;
 
       console.log('Transformed data:', JSON.stringify(transformedData, null, 2));
 

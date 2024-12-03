@@ -1,8 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import InvitationForm from '../../components/InvitationForm';
-import TimeZoneSelector from '../../components/TimeZoneSelector'; // Add this line
 import type { InvitationData, TimeZone } from '../../types/invitation';
+import { supabase } from '../../lib/supabase';
+
+const generateSlug = (brideName: string, groomName: string): string => {
+  const cleanName = (name: string) => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '') // Hapus karakter non-alphanumeric
+      .trim();
+  };
+
+  const brideSlug = cleanName(brideName);
+  const groomSlug = cleanName(groomName);
+  
+  return `${brideSlug}-${groomSlug}`;
+};
 
 const defaultFormData: InvitationData = {
   brideNames: '',
@@ -17,228 +31,128 @@ const defaultFormData: InvitationData = {
   resepsiDate: '',
   resepsiTime: '',
   resepsiVenue: '',
-  date: '',
-  time: '',
-  venue: '',
   openingText: 'Bersama keluarga mereka',
   invitationText: 'Mengundang kehadiran Anda',
   gallery: [],
   socialLinks: [],
   bankAccounts: [],
-  theme: 'default'
-};
-
-const initialData: InvitationData = {
-  ...defaultFormData,
-  showMusicLibrary: false,
-  backgroundMusic: '',
-  timeZone: 'WIB' as TimeZone,
+  template: 'javanese',
+  timeZone: 'WIB' as TimeZone
 };
 
 const NewInvitation: React.FC = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = React.useState<Partial<InvitationData>>(initialData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  const handleUpdate = async (data: InvitationData) => {
-    setFormData(data);
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/login');
+        return;
+      }
+      setUserId(user.id);
+    };
+
+    checkUser();
+  }, [navigate]);
+
+  const handleSubmit = async (data: InvitationData) => {
+    try {
+      if (!userId) {
+        throw new Error('Silakan login terlebih dahulu');
+      }
+
+      setIsSubmitting(true);
+
+      // Generate slug dari nama pengantin
+      const baseSlug = generateSlug(data.brideNames, data.groomNames);
+      
+      // Cek apakah slug sudah ada
+      const { data: existingInvitation } = await supabase
+        .from('invitations')
+        .select('id')
+        .eq('slug', baseSlug)
+        .single();
+
+      // Jika slug sudah ada, tambahkan random string
+      const slug = existingInvitation 
+        ? `${baseSlug}-${Math.random().toString(36).substring(2, 7)}`
+        : baseSlug;
+      
+      // Transform camelCase to snake_case for database
+      const transformedData: Record<string, any> = {
+        user_id: userId,
+        slug,
+        bride_names: data.brideNames,
+        groom_names: data.groomNames,
+        bride_parents: data.brideParents || null,
+        groom_parents: data.groomParents || null,
+        show_akad: data.showAkad,
+        akad_venue: data.akadVenue || null,
+        akad_maps_url: data.akadMapsUrl || null,
+        show_resepsi: data.showResepsi,
+        resepsi_venue: data.resepsiVenue || null,
+        resepsi_maps_url: data.resepsiMapsUrl || null,
+        opening_text: data.openingText || '',
+        invitation_text: data.invitationText || '',
+        message: data.message || null,
+        cover_photo: data.coverPhoto || null,
+        bride_photo: data.bridePhoto || null,
+        groom_photo: data.groomPhoto || null,
+        gallery: data.gallery || [],
+        social_links: data.socialLinks || [],
+        bank_accounts: data.bankAccounts || [],
+        template: data.template || 'javanese',
+        custom_slug: data.customSlug || null,
+        background_music: data.backgroundMusic || null,
+        time_zone: data.timeZone || 'WIB'
+      };
+
+      // Hanya tambahkan field tanggal dan waktu jika ada nilainya
+      if (data.akadDate) transformedData.akad_date = data.akadDate;
+      if (data.akadTime) transformedData.akad_time = data.akadTime;
+      if (data.resepsiDate) transformedData.resepsi_date = data.resepsiDate;
+      if (data.resepsiTime) transformedData.resepsi_time = data.resepsiTime;
+
+      console.log('Saving invitation with data:', transformedData);
+
+      // Insert new invitation
+      const { data: newInvitation, error } = await supabase
+        .from('invitations')
+        .insert(transformedData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+
+      // Navigate to edit page
+      navigate(`/admin/invitation/${newInvitation.id}`);
+      
+    } catch (error) {
+      console.error('Error creating invitation:', error);
+      alert('Terjadi kesalahan saat membuat undangan. Silakan coba lagi.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleChange = (data: InvitationData) => {
-    setFormData(data);
-  };
-
-  const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  if (!userId) {
+    return null; // atau tampilkan loading spinner
+  }
 
   return (
     <div className="container px-4 py-8 mx-auto max-w-3xl">
       <h1 className="mb-8 text-2xl font-bold text-center">Create New Invitation</h1>
       <InvitationForm 
-        data={formData} 
-        onChange={handleChange}
-        onUpdate={handleUpdate}
-        initialData={initialData}
-        isEditing={false}
-      >
-        {/* Bride & Parents */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Nama Pengantin Wanita</label>
-            <input
-              type="text"
-              name="brideNames"
-              value={formData.brideNames}
-              onChange={handleFieldChange}
-              placeholder="Masukkan nama lengkap pengantin wanita"
-              className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Nama Orang Tua Pengantin Wanita</label>
-            <input
-              type="text"
-              name="brideParents"
-              value={formData.brideParents}
-              onChange={handleFieldChange}
-              placeholder="Contoh: Bapak Ahmad & Ibu Siti"
-              className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
-        </div>
-
-        {/* Groom & Parents */}
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Nama Pengantin Pria</label>
-            <input
-              type="text"
-              name="groomNames"
-              value={formData.groomNames}
-              onChange={handleFieldChange}
-              placeholder="Masukkan nama lengkap pengantin pria"
-              className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Nama Orang Tua Pengantin Pria</label>
-            <input
-              type="text"
-              name="groomParents"
-              value={formData.groomParents}
-              onChange={handleFieldChange}
-              placeholder="Contoh: Bapak Budi & Ibu Ani"
-              className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
-          </div>
-        </div>
-
-        {/* Event Details */}
-        <div className="space-y-6">
-          <h3 className="text-lg font-medium text-gray-900">Detail Acara</h3>
-          
-          {/* Akad Section */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h4 className="font-medium text-gray-700 text-md">Akad Nikah</h4>
-              <label className="inline-flex relative items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.showAkad !== false}
-                  onChange={(e) => handleFieldChange({
-                    target: { name: 'showAkad', value: e.target.checked }
-                  })}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                <span className="ml-3 text-sm font-medium text-gray-700">Tampilkan</span>
-              </label>
-            </div>
-
-            {formData.showAkad !== false && (
-              <div className="pl-4 space-y-4 border-l-2 border-gray-200">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Tanggal Akad</label>
-                  <input
-                    type="date"
-                    name="akadDate"
-                    value={formData.akadDate || ''}
-                    onChange={handleFieldChange}
-                    className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Waktu Akad</label>
-                  <input
-                    type="time"
-                    name="akadTime"
-                    value={formData.akadTime || ''}
-                    onChange={handleFieldChange}
-                    className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Tempat Akad</label>
-                  <input
-                    type="text"
-                    name="akadVenue"
-                    value={formData.akadVenue || ''}
-                    onChange={handleFieldChange}
-                    placeholder="Masukkan lokasi akad nikah"
-                    className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Resepsi Section */}
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h4 className="font-medium text-gray-700 text-md">Resepsi</h4>
-              <label className="inline-flex relative items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.showResepsi !== false}
-                  onChange={(e) => handleFieldChange({
-                    target: { name: 'showResepsi', value: e.target.checked }
-                  })}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                <span className="ml-3 text-sm font-medium text-gray-700">Tampilkan</span>
-              </label>
-            </div>
-
-            {formData.showResepsi !== false && (
-              <div className="pl-4 space-y-4 border-l-2 border-gray-200">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Tanggal Resepsi</label>
-                  <input
-                    type="date"
-                    name="resepsiDate"
-                    value={formData.resepsiDate || ''}
-                    onChange={handleFieldChange}
-                    className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Waktu Resepsi</label>
-                  <input
-                    type="time"
-                    name="resepsiTime"
-                    value={formData.resepsiTime || ''}
-                    onChange={handleFieldChange}
-                    className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Tempat Resepsi</label>
-                  <input
-                    type="text"
-                    name="resepsiVenue"
-                    value={formData.resepsiVenue || ''}
-                    onChange={handleFieldChange}
-                    placeholder="Masukkan lokasi resepsi"
-                    className="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Timezone */}
-        <div className="space-y-4">
-          <TimeZoneSelector
-            value={formData.timeZone || 'WIB'}
-            onChange={(value) => {
-              setFormData({ ...formData, timeZone: value });
-            }}
-            className="mb-4"
-          />
-        </div>
-      </InvitationForm>
+        onSubmit={handleSubmit}
+        initialData={defaultFormData}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 };

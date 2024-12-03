@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { supabase } from '../../utils/supabaseClient';
 import type { InvitationData } from '../../types/invitation';
 import JavaneseTemplate from '../../components/templates/JavaneseTemplate';
+import ModernTemplate from '../../components/templates/ModernTemplate';
 
 interface Invitation {
   id: string;
@@ -29,70 +30,82 @@ const InvitationDisplay: React.FC = () => {
 
   useEffect(() => {
     const fetchInvitation = async () => {
+      if (!slug) {
+        setError('Invalid invitation URL');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const { data: invitation, error } = await supabase
+        console.log('Fetching invitation with slug:', slug);
+        
+        // Try to find by custom_slug first
+        let { data: invitation, error } = await supabase
           .from('invitations')
           .select('*')
           .eq('custom_slug', slug)
           .single();
 
-        if (error) throw error;
+        // If not found by custom_slug, try the generated slug
+        if (!invitation) {
+          const { data, error: slugError } = await supabase
+            .from('invitations')
+            .select('*')
+            .eq('slug', slug)
+            .single();
+
+          if (slugError) throw slugError;
+          invitation = data;
+        }
+
+        if (!invitation) {
+          throw new Error('Invitation not found');
+        }
 
         console.log('Fetched invitation data:', invitation);
 
-        if (invitation) {
-          const transformedData = {
-            id: invitation.id,
-            brideNames: invitation.bride_names || '',
-            groomNames: invitation.groom_names || '',
-            brideParents: invitation.bride_parents || '',
-            groomParents: invitation.groom_parents || '',
-            showAkad: invitation.show_akad || false,
-            akadDate: invitation.akad_date || '',
-            akadTime: invitation.akad_time || '',
-            akadVenue: invitation.akad_venue || '',
-            akadMapsUrl: invitation.akad_maps_url || '',
-            akadMapsEmbed: invitation.akad_maps_embed || '',
-            showResepsi: invitation.show_resepsi || false,
-            resepsiDate: invitation.resepsi_date || '',
-            resepsiTime: invitation.resepsi_time || '',
-            resepsiVenue: invitation.resepsi_venue || '',
-            resepsiMapsUrl: invitation.resepsi_maps_url || '',
-            resepsiMapsEmbed: invitation.resepsi_maps_embed || '',
-            openingText: invitation.opening_text || '',
-            invitationText: invitation.invitation_text || '',
-            message: invitation.message || '',
-            coverPhoto: invitation.cover_photo || '',
-            bridePhoto: invitation.bride_photo || '',
-            groomPhoto: invitation.groom_photo || '',
-            gallery: invitation.gallery || [],
-            socialLinks: invitation.social_links || [],
-            bankAccounts: invitation.bank_accounts || [],
-            googleMapsUrl: invitation.google_maps_url || '',
-            googleMapsEmbed: invitation.google_maps_embed || '',
-            template: invitation.template || 'javanese',
-            customSlug: invitation.custom_slug || '',
-            showMusicLibrary: invitation.show_music_library || false,
-            backgroundMusic: invitation.background_music || '',
-            timezone: invitation.timezone || 'WIB',
-            createdAt: invitation.created_at,
-            updatedAt: invitation.updated_at
-          };
+        const transformedData: InvitationData = {
+          id: invitation.id,
+          brideNames: invitation.bride_names || '',
+          groomNames: invitation.groom_names || '',
+          brideParents: invitation.bride_parents || '',
+          groomParents: invitation.groom_parents || '',
+          showAkad: invitation.show_akad || false,
+          akadDate: invitation.akad_date || '',
+          akadTime: invitation.akad_time || '',
+          akadVenue: invitation.akad_venue || '',
+          akadMapsUrl: invitation.akad_maps_url || '',
+          showResepsi: invitation.show_resepsi || false,
+          resepsiDate: invitation.resepsi_date || '',
+          resepsiTime: invitation.resepsi_time || '',
+          resepsiVenue: invitation.resepsi_venue || '',
+          resepsiMapsUrl: invitation.resepsi_maps_url || '',
+          openingText: invitation.opening_text || '',
+          invitationText: invitation.invitation_text || '',
+          message: invitation.message || '',
+          coverPhoto: invitation.cover_photo || '',
+          bridePhoto: invitation.bride_photo || '',
+          groomPhoto: invitation.groom_photo || '',
+          gallery: invitation.gallery || [],
+          socialLinks: invitation.social_links || [],
+          bankAccounts: invitation.bank_accounts || [],
+          template: invitation.template || 'javanese',
+          customSlug: invitation.custom_slug || '',
+          backgroundMusic: invitation.background_music || '',
+          timeZone: invitation.time_zone || 'WIB'
+        };
 
-          console.log('Transformed invitation data:', transformedData);
-          setInvitation(transformedData);
-          setLoading(false);
-        }
+        console.log('Transformed invitation data:', transformedData);
+        setInvitation(transformedData);
       } catch (error: any) {
         console.error('Error fetching invitation:', error);
         setError(error.message);
+      } finally {
         setLoading(false);
       }
     };
 
-    if (slug) {
-      fetchInvitation();
-    }
+    fetchInvitation();
   }, [slug]);
 
   if (loading) {
@@ -105,21 +118,21 @@ const InvitationDisplay: React.FC = () => {
 
   if (error || !invitation) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">
-            Invitation Not Found
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            The invitation you're looking for doesn't exist or has been removed.
-          </p>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+        <h1 className="mb-4 text-2xl font-bold text-gray-800">Invitation Not Found</h1>
+        <p className="text-gray-600">The invitation you're looking for doesn't exist or has been removed.</p>
       </div>
     );
   }
 
-  // Render the invitation using JavaneseTemplate
-  return <JavaneseTemplate data={invitation} isViewOnly={true} />;
+  // Render template based on invitation.template
+  switch (invitation.template) {
+    case 'modern':
+      return <ModernTemplate data={invitation} isViewOnly={true} />;
+    case 'javanese':
+    default:
+      return <JavaneseTemplate data={invitation} isViewOnly={true} />;
+  }
 };
 
 export default InvitationDisplay;
