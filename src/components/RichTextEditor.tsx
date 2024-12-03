@@ -24,7 +24,7 @@ export default function RichTextEditor({ value, onChange, label, height = 200 }:
       Paragraph,
       Text,
       Heading.configure({
-        levels: [1, 2],
+        levels: [1, 2, 3],
       }),
       BulletList,
       ListItem,
@@ -53,6 +53,12 @@ export default function RichTextEditor({ value, onChange, label, height = 200 }:
     return null;
   }
 
+  const headingButtons = [
+    { level: 1, label: 'H1' },
+    { level: 2, label: 'H2' },
+    { level: 3, label: 'H3' },
+  ];
+
   const alignmentButtons = [
     { alignment: 'left', icon: AlignLeft },
     { alignment: 'center', icon: AlignCenter },
@@ -63,19 +69,24 @@ export default function RichTextEditor({ value, onChange, label, height = 200 }:
   return (
     <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700">{label}</label>
-      <div style={{ height: `${height}px` }} className="rounded-lg border">
-        <div className="flex gap-2 p-2 border-b">
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              editor.chain().focus().toggleHeading({ level: 1 }).run();
-            }}
-            className={`p-2 rounded hover:bg-gray-100 ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-200' : ''}`}
-            title="Heading"
-          >
-            <HeadingIcon size={20} />
-          </button>
+      <div className="rounded-lg border">
+        <div className="flex gap-2 p-2 border-b flex-wrap">
+          {headingButtons.map(({ level, label }) => (
+            <button
+              key={level}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                editor.chain().focus().toggleHeading({ level }).run();
+              }}
+              className={`p-2 rounded hover:bg-gray-100 ${
+                editor.isActive('heading', { level }) ? 'bg-gray-200' : ''
+              }`}
+              title={`Heading ${level}`}
+            >
+              {label}
+            </button>
+          ))}
           <button
             type="button"
             onClick={(e) => {
@@ -142,8 +153,7 @@ export default function RichTextEditor({ value, onChange, label, height = 200 }:
         </div>
         <EditorContent 
           editor={editor} 
-          className="p-4 max-w-none prose prose-sm" 
-          style={{ height: `${height - 52}px`, overflowY: 'auto' }}
+          className="prose prose-sm max-w-none p-4 min-h-[200px] max-h-[600px] overflow-y-auto" 
         />
       </div>
     </div>

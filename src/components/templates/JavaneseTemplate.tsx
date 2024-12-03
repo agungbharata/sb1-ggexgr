@@ -8,6 +8,7 @@ import SocialMediaPreview from '../SocialMediaPreview';
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import BackgroundMusic from '../BackgroundMusic';
+import FloatingNavigation from '../FloatingNavigation';
 
 interface JavaneseTemplateProps {
   data: Partial<InvitationData>;
@@ -28,6 +29,7 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [activeSection, setActiveSection] = useState('opening');
 
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return '';
@@ -82,6 +84,34 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
     }
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(sectionId);
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['opening', 'quotes', 'mempelai', 'akad', 'resepsi'];
+      const current = sections.find(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return rect.top >= 0 && rect.top <= window.innerHeight / 2;
+        }
+        return false;
+      });
+      if (current) {
+        setActiveSection(current);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   useEffect(() => {
     const timer = setInterval(() => {
       if (data?.showAkad && data.akadDate && data.akadTime) {
@@ -96,9 +126,10 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
   }, [data?.akadDate, data?.akadTime, data?.resepsiDate, data?.resepsiTime]);
 
   return (
-    <div className="min-h-screen bg-[#F6E6D9]">
+    <div className="relative min-h-screen bg-[#F6E6D9]">
       {/* Cover Section */}
       <section 
+        id="opening"
         className="flex relative justify-center items-center min-h-screen bg-center bg-cover"
         style={{ 
           backgroundImage: data?.coverPhoto ? `url(${data.coverPhoto})` : 'url("/ornaments/batik-bg.jpg")'
@@ -526,6 +557,12 @@ const JavaneseTemplate: React.FC<JavaneseTemplateProps> = ({ data, isViewOnly })
           </div>
         )}
       </div>
+
+      {/* Floating Navigation */}
+      <FloatingNavigation 
+        activeSection={activeSection}
+        onNavigate={scrollToSection}
+      />
     </div>
   );
 };
